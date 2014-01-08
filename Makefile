@@ -3,7 +3,7 @@ createdist:
 
 
 test_parser:
-	PYTHONPATH=~/code/python/pypy/:. pytest tests/parser/test_parser.py
+	PYTHONPATH=~/code/python/pypy/:. py.test tests/parser/test_parser.py
 
 clean:
 	rm MANIFEST
