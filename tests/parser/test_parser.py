@@ -1,6 +1,8 @@
-import unittest
+from wlvlang.compiler.parser import parse_wlvlang
+import pytest
 
-class ParserTester(unittest.TestCase):
+
+class TestParser():
 
     def test_parse_if(self):
         ifexpression = """
@@ -11,3 +13,5 @@ class ParserTester(unittest.TestCase):
                 "goodbye";
             }
         }"""
+
+        parse_wlvlang(ifexpression)
