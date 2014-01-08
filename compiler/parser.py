@@ -92,8 +92,8 @@ if __name__ == '__main__':
     try:
         lexer, parser, transformer = make_all(ebnf)
         transformer = transformer.source
-        newcontent = ("%s%s%s\nparser = %r\n\n%s\n\n%s%s"
-                      % (pre, s,transformer.replace("ToAST", "WLVLANGToAST"), parser, lexer.get_dummy_repr(), s, after, ))
+        newcontent = ("%s%s%s\nparser = %r\n\n%s\n\n%s%s" % (pre, s,transformer.replace("ToAST", "WLVLANGToAST"), parser, lexer.get_dummy_repr(), s, after, ))
+        f.write(newcontent)
         print "success"
     except ParseError, e:
         print e.nice_error_message(filename="grammar.txt", source=ebnf)
