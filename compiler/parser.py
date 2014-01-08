@@ -93,8 +93,7 @@ if __name__ == '__main__':
         lexer, parser, transformer = make_all(ebnf)
         transformer = transformer.source
         newcontent = ("%s%s%s\nparser = %r\n\n%s\n\n%s%s"
-                      % (pre, s,transformer.replace("ToAST", "SLANGToAST"), parser, lexer.get_dummy_repr(), s, after, ))
-        f.write(newcontent)
+                      % (pre, s,transformer.replace("ToAST", "WLVLANGToAST"), parser, lexer.get_dummy_repr(), s, after, ))
         print "success"
     except ParseError, e:
-        print e.nice_error_message(filename="slang_grammar.txt", source=ebnf)
+        print e.nice_error_message(filename="grammar.txt", source=ebnf)
