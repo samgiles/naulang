@@ -83,7 +83,7 @@ def parse_wlvlang(module):
 
 if __name__ == '__main__':
     f = py.path.local(__file__)
-    ebnff = py.path.local("grammar.ebnf")
+    ebnff = py.path.local("grammar.txt")
     ebnf = ebnff.read()
     oldcontent = f.read()
     s = "# GENERATED CODE BETWEEN THIS LINE AND IT'S OTHER OCCURRENCE\n".lower()
