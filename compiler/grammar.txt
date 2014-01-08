@@ -1,0 +1,61 @@
+module: statementexpr+ [EOF];
+
+atomic: ATOM;
+number: FLOAT | INTEGER;
+string: STRING;
+bool: BOOLEAN;
+
+identifier: >atomic<
+          | >string<
+          | >number<
+          | >bool<
+          ;
+
+statementexpr: whilestatement
+             | ifstatement
+             | assignmentstatement [";"]
+             | unaryexpr [";"]
+             ;
+
+ifstatement: [IF L_PAREN] unaryexpr [RPAREN L_BRACE] statementexpr? [R_BRACE] ELSE [L_BRACE] statementexpr? [R_BRACE];
+
+whilestatement: [WHILE L_PAREN] unaryexpr [R_PAREN L_BRACE] statementexpr? [R_BRACE];
+
+assignmentstatement: LET atomic SINGLE_EQ unaryexpr | atomic SINGLE_EQ unaryexpr;
+
+unaryexpr: unaryoperator additiveexpr
+         | <additiveexpr>
+         ;
+
+unaryoperator: ADD | MINUS | NOT;
+
+additiveexpr: multitive PLUS additiveexpr
+            | multitive MINUS additiveexpr
+            | <multitiveexpr>
+            ;
+
+multitiveexpr: comparisonexpr MUL multitiveexpr
+             | comparisonexpr DIV multitiveexpr
+             | comparisonexpr MOD multitiveexpr
+             | <comparisonexpr>
+             ;
+
+comparisonexpr: equalityexpr LT comparisonexpr
+              | equalityexpr GT comparisonexpr
+              | <equalityexpr>
+              ;
+
+equalityexpr: logicalandexpr DOUBLE_EQ equalityexpr
+            | logicalandexpr NEQ equalityexpr
+            | <logicalandexpr>
+            ;
+
+logicalandexpr: logicalorexpr AND logicalandexpr
+              | <logicalorexpr>
+              ;
+
+logicalorexpr: primaryexpr OR logicalorexpr
+             | <primaryexpr>
+             ;
+
+primaryexpr: L_PAREN <unaryexpr> R_PAREN | <identifier>;
