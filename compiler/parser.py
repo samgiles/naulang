@@ -75,6 +75,11 @@ def parse_wlvlang(module):
 
     # Parse the token stream with the parser
     s = parser.parse(tokens)
+
+    # Create abstract syntax tree
+    s.visit(WLVLANGToAST())
+    assert len(s) == 1
+    s = s[0]
     return s
 
 
