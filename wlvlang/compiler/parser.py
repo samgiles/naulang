@@ -4793,7 +4793,7 @@ lexer = DummyLexer(recognize, DFA(65,
 
 if __name__ == '__main__':
     f = py.path.local(__file__)
-    ebnff = py.path.local("grammar.txt")
+    ebnff = py.path.local("grammar.ebnf")
     ebnf = ebnff.read()
     oldcontent = f.read()
     s = "# GENERATED CODE BETWEEN THIS LINE AND IT'S OTHER OCCURRENCE\n".lower()
@@ -4806,4 +4806,4 @@ if __name__ == '__main__':
         f.write(newcontent)
         print "success"
     except ParseError, e:
-        print e.nice_error_message(filename="grammar.txt", source=ebnf)
+        print e.nice_error_message(filename="grammar.ebnf", source=ebnf)
