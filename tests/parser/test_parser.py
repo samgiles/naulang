@@ -13,5 +13,6 @@ def test_assignment_statement():
     except ParseError, e:
         pytest.fail(e.nice_error_message(source=immutable_assignment))
 
-    repr(s)
-    assert True
+    print repr(s)
+
+    pytest.fail("Fail")
