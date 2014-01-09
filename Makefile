@@ -3,8 +3,10 @@ PYPYPATH=~/code/python/pypy/
 createdist:
 	python setup.py sdist
 
+generate_parser:
+	cd ./wlvlang/compiler && ./generateparser.sh
 
-test_parser:
+test_parser: generate_parser
 	PYTHONPATH=$(PYPYPATH):. py.test tests/parser/test_parser.py
 
 clean:
