@@ -78,8 +78,6 @@ def parse_wlvlang(module):
 
     # Create abstract syntax tree
     s.visit(WLVLANGToAST())
-    assert len(s) == 1
-    s = s[0]
     return s
 
 
