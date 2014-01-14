@@ -8,6 +8,7 @@ generate_parser:
 
 test_parser: generate_parser
 	PYTHONPATH=$(PYPYPATH):. py.test tests/parser/test_parser.py
+	PYTHONPATH=$(PYPYPATH):. py.test tests/parser/test_ast.py
 
 clean:
 	rm MANIFEST
