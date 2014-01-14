@@ -14,5 +14,3 @@ def test_assignment_statement():
         pytest.fail(e.nice_error_message(source=immutable_assignment))
 
     print repr(s)
-
-    pytest.fail("Fail")
