@@ -7,3 +7,6 @@ class ActivationRecord(object):
 
     def get_previous_record(self):
         return self.previous_record
+
+    def is_root_record(self):
+        return self.get_previous_record() == None
