@@ -1,5 +1,7 @@
 PYPYPATH=~/code/python/pypy/
 
+all: test_parser test_interpreter test_vmobjects
+
 createdist:
 	python setup.py sdist
 
@@ -12,6 +14,9 @@ test_parser: generate_parser
 
 test_interpreter:
 	PYTHONPATH=$(PYPYPATH):. py.test tests/interpreter/test_activationrecord.py
+
+test_vmobjects:
+	PYTHONPATH=$(PYPYPATH):. py.test tests/vmobjects/test_symbol.py
 
 clean:
 	rm MANIFEST
