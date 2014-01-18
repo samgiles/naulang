@@ -2,7 +2,7 @@ import pytest
 
 from wlvlang.interpreter.activationrecord import ActivationRecord
 from wlvlang.vmobjects.integer import Integer
-from wlvlang.vmobjects.primitives.integer_primitive import _mul, _add, _div, _mod
+from wlvlang.vmobjects.primitives.integer_primitive import _mul, _add, _div, _mod, _sub
 
 def test_get_value():
     subject = Integer(10)
@@ -34,6 +34,14 @@ def test_add_primitive():
     value = arec.pop()
     assert(value.get_value() == 300)
 
+def test_sub_primitive():
+    arec = setup_primitive_test(100, 200)
+
+    _sub(None, arec, None)
+
+    value = arec.pop()
+    assert(value.get_value() == -100)
+
 def test_div_primitive():
     arec = setup_primitive_test(100, 50)
 
@@ -49,3 +57,5 @@ def test_mod_primitive():
 
     value = arec.pop()
     assert(value.get_value() == 1)
+
+
