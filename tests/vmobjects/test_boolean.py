@@ -2,7 +2,7 @@ import pytest
 
 from wlvlang.vmobjects.boolean import Boolean
 from wlvlang.interpreter.activationrecord import ActivationRecord
-from wlvlang.vmobjects.primitives.boolean_primitive import _eq, _or
+from wlvlang.vmobjects.primitives.boolean_primitive import _eq, _or, _and
 
 def test_get_value():
     subjecta = Boolean(True)
@@ -72,5 +72,20 @@ def test_or_primitive_false_false():
 
     _or(None, arec, None)
 
+    value = arec.pop()
+    assert(value.get_value() == False)
+
+def test_and_primitive_true_true():
+    arec = setup_primitive_test(True, True)
+
+    _and(None, arec, None)
+
+    value = arec.pop()
+    assert(value.get_value() == True)
+
+def test_and_primitive_false_true():
+    arec = setup_primitive_test(False, True)
+
+    _and(None, arec, None)
     value = arec.pop()
     assert(value.get_value() == False)

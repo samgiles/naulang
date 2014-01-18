@@ -13,3 +13,10 @@ def _or(invokable, activation_record, interpreter):
 
     result = left.get_value() or right.get_value()
     activation_record.push(Boolean(result))
+
+def _and(invokable, activation_record, interpreter):
+    right = activation_record.pop()
+    left = activation_record.pop()
+
+    result = left.get_value() and right.get_value()
+    activation_record.push(Boolean(result))
