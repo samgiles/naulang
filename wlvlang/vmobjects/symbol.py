@@ -1,6 +1,7 @@
+from wlvlang.vmobjects.object import Object
 from rpython.rlib import jit
 
-class Symbol(object):
+class Symbol(Object):
 
     _immutable_fields_ = ["_string", "_arguments", "_argument_count"]
 

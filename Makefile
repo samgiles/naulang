@@ -22,6 +22,7 @@ test_vm:
 
 test_vmobjects:
 	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vmobjects/test_symbol.py
+	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vmobjects/test_integer.py
 
 clean:
 	rm MANIFEST
