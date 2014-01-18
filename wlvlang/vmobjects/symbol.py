@@ -1,3 +1,5 @@
+from rpython.rlib import jit
+
 class Symbol(object):
 
     _immutable_fields_ = ["_string", "_arguments", "_argument_count"]
@@ -22,3 +24,7 @@ class Symbol(object):
         parts.append(current)
 
         return parts
+
+    @jit.elidable
+    def get_string(self):
+        return self._string
