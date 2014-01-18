@@ -1,6 +1,7 @@
 import pytest
 
 from wlvlang.vmobjects.boolean import Boolean
+from wlvlang.vmobjects.primitives.boolean_primitive import _eq, _or
 
 def test_get_value():
     subjecta = Integer(True)
