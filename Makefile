@@ -2,7 +2,7 @@ PYPYPATH=~/code/python/pypy/
 PYTEST=py.test
 PYTESTARGS=
 
-all: test_parser test_interpreter test_vmobjects
+all: test_parser test_interpreter test_vmobjects test_vm
 
 createdist:
 	python setup.py sdist
@@ -16,6 +16,9 @@ test_parser: generate_parser
 
 test_interpreter:
 	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/interpreter/test_activationrecord.py
+
+test_vm:
+	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vm/test_symbol_table.py
 
 test_vmobjects:
 	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vmobjects/test_symbol.py
