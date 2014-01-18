@@ -1,11 +1,12 @@
 import pytest
 
 from wlvlang.vmobjects.boolean import Boolean
+from wlvlang.interpreter.activationrecord import ActivationRecord
 from wlvlang.vmobjects.primitives.boolean_primitive import _eq, _or
 
 def test_get_value():
-    subjecta = Integer(True)
-    subjectb = Integer(False)
+    subjecta = Boolean(True)
+    subjectb = Boolean(False)
 
     assert(subjecta.get_value() == True)
     assert(subjectb.get_value() == False)
