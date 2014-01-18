@@ -11,7 +11,7 @@ generate_parser:
 	cd ./wlvlang/compiler && PYPYPATH=$(PYPYPATH) WORKSPACE=i$(CURDIR)./generateparser.sh
 
 test_parser: generate_parser
-	@PyTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/parser/test_parser.py
+	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/parser/test_parser.py
 	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/parser/test_ast.py
 
 test_interpreter:
