@@ -9,7 +9,18 @@ class Object(object):
     """
 
     def __init__(self):
-        pass
+        self.slots = {}
+        self._class = None
 
-    def send(self, message_selector, arguments):
+    def send(self, activation_record, selector_string, arguments, vm_universe, interpreter):
+        selector = universe.symbol_for(selector_string)
+        activation_record.push(self)
+
+        for arg in arguments:
+            activation_record.push(arg)
+
+        invokable = self.get_class(universe).lookup_invokable(selector)
+        invokable.invoke(self, activation_record, interpreter)
+
+    def get_class(self, universe):
         pass

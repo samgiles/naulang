@@ -14,3 +14,7 @@ class Integer(Object):
 
     def __str__(self):
         return str(self.get_value())
+
+    def get_class(self, universe):
+        # Not keen on this coupling
+        return universe.integerClass
