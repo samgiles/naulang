@@ -1,5 +1,5 @@
 from wlvlang.vmobjects.integer import Integer
-from wlvlang.vmobject.boolean import Boolean
+from wlvlang.vmobjects.boolean import Boolean
 
 def _mul(invokable, activation_record, interpreter):
     right = activation_record.pop()
