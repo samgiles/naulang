@@ -1,4 +1,5 @@
 from wlvlang.vmobjects.integer import Integer
+from wlvlang.vmobject.boolean import Boolean
 
 def _mul(invokable, activation_record, interpreter):
     right = activation_record.pop()
@@ -45,34 +46,20 @@ def _eq(invokable, activation_record, interpreter):
 
     result = left.get_value() == right.get_value()
 
-    if result:
-        # TODO: Push the True object singleton
-        pass
-    else:
-        pass
-        # TODO: Push the False object singleton
+    activation_record.push(Boolean(result))
 
 def _lt(invokable, activation_record, interpreter):
     right = activation_record.pop()
     left = activation_record.pop()
 
     result = left.get_value() < right.get_value()
+    activation_record.push(Boolean(result))
 
-    if result:
-        # TODO: Push the True object singleton
-        pass
-    else:
-        pass
-        # TODO: Push the False object singleton
 
 def _gt(invokable, activation_record, interpreter):
     right = activation_record.pop()
     left  = activation_record.pop()
 
-    # TODO: Type checking
-    result = left.getvalue() > right.getvalue()
+    result = left.get_value() > right.get_value()
 
-    if result:
-        activation_record.push(interpreter.objspace.trueObject())
-    else:
-        activation_record.push(interpreter.objspace.falseObject())
+    activation_record.push(Boolean(result))
