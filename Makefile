@@ -19,6 +19,7 @@ test_interpreter:
 
 test_vm:
 	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vm/test_symbol_table.py
+	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vm/test_vm_universe.py
 
 test_vmobjects:
 	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vmobjects/test_symbol.py
