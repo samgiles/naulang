@@ -63,3 +63,18 @@ def _gt(invokable, activation_record, interpreter):
     result = left.get_value() > right.get_value()
 
     activation_record.push(Boolean(result))
+
+
+def init_integer_prims(universe):
+    primitives = {
+        "_mul": _mul,
+        "_add": _add,
+        "_sub": _sub,
+        "_div": _div,
+        "_mod": _mod,
+        "_eq": _mod,
+        "_lt": _lt,
+        "_gt": _gt
+    }
+
+    universe.integerClass.add_primitives(primitives)
