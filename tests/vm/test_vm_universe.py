@@ -19,5 +19,5 @@ def test_new_integer_class():
 
 def test_new_integer_class_has_primitive_ops():
     subject = VM_Universe()
-    ivkbl = subject.integerClass.lookup_invokable("_eq")
+    ivkbl = subject.integerClass.lookup_invokable("==")
     assert(ivkbl != None)
