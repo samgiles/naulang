@@ -18,3 +18,9 @@ class Class(Object):
         """ Primitives should be a dictionary
         keyed by signature """
         self._invokabletable.update(primitives)
+
+    def get_name(self):
+        return self._name
+
+    def set_name(self, name):
+        self._name = name
