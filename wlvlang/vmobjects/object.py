@@ -19,7 +19,11 @@ class Object(object):
             activation_record.push(arg)
 
         invokable = self.get_class(vm_universe).lookup_invokable(selector_string)
-        invokable(self, activation_record, interpreter)
+
+        if invokable:
+            invokable(self, activation_record, interpreter)
+
+        # TODO: Handle case where ivkbl could not be found
 
     def get_class(self, universe):
         pass
