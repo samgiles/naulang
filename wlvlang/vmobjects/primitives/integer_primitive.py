@@ -72,7 +72,7 @@ def init_integer_prims(universe):
         "_sub": _sub,
         "_div": _div,
         "_mod": _mod,
-        "_eq": _mod,
+        "_eq": _eq,
         "_lt": _lt,
         "_gt": _gt
     }
