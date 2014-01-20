@@ -18,6 +18,15 @@ class VM_Universe(object):
         # Initialise prims
         initialise_primitives(self)
 
-
     def new_integer(self, value):
         return Integer(value)
+
+    def symbol_for(self, string):
+        symbol = self._symbol_table.get(string, None)
+
+        if symbol:
+            return symbol
+
+        new_symbol = Symbol(string)
+        self._symbol_table.insert(new_symbol)
+        return new_symbol
