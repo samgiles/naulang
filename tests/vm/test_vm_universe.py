@@ -16,3 +16,8 @@ def test_new_integer_class():
     integer = subject.new_integer(10)
     assert(isinstance(integer.get_class(subject), Class))
     assert(integer.get_class(subject) == subject.integerClass)
+
+def test_new_integer_class_has_primitive_ops():
+    subject = VM_Universe()
+    ivkbl = subject.integerClass.lookup_invokable("_eq")
+    assert(ivkbl != None)
