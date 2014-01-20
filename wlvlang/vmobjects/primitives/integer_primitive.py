@@ -67,14 +67,14 @@ def _gt(invokable, activation_record, interpreter):
 
 def init_integer_prims(universe):
     primitives = {
-        "_mul": _mul,
-        "_add": _add,
-        "_sub": _sub,
-        "_div": _div,
-        "_mod": _mod,
-        "_eq": _eq,
-        "_lt": _lt,
-        "_gt": _gt
+        "*": _mul,
+        "+": _add,
+        "-": _sub,
+        "/": _div,
+        "%": _mod,
+        "==": _eq,
+        "<": _lt,
+        ">": _gt
     }
 
     universe.integerClass.add_primitives(primitives)

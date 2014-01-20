@@ -13,7 +13,7 @@ def test_primitive_invoke_integer():
     integera = universe.new_integer(10)
     integerb = universe.new_integer(100)
 
-    integera.send(arec, "_eq", [integerb], universe, None)
+    integera.send(arec, "==", [integerb], universe, None)
     value = arec.pop()
     assert(isinstance(value, Boolean))
     assert(value.get_value() == False)
