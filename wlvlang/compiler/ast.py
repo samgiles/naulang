@@ -1,44 +1,11 @@
-
 class Node:
-    pass
+    def __eq__(self, other):
+        pass
 
-class LetEq(Node):
-    """ Defines a node for the 'let [symbol] = [expression]' sub expression"""
+class ConstantInteger(Node):
 
-    def __init__(self, value_expression, identifier):
-        self.value_expression = value_expression
-        self.symbol = identifier
+    def __init__(self, value):
+        self._value = value
 
-    def child_value_expression(self):
-        return self.value_expression
-
-    def child_symbol(self):
-        return self.symbol
-
-class WhileExpression(Node):
-
-    def __init__(self, conditionexpression, bodystatements):
-        self.condition_expr = conditionexpression
-        self.bodystatements = bodystatements
-
-    def child_condition_expr(self):
-        return self.condition_expr
-
-    def child_bodystatements(self):
-        return self.bodystatements
-
-class IfExpression(Node):
-
-    def __init__(self, conditionexpression, truestatements, falsestatements):
-        self.condition_expr = conditionexpression
-        self.truestatement = truestatements
-        self.falsestatement = falsestatements
-
-    def child_condition_expr(self):
-        return self.condition_expr
-
-    def child_truestatements(self):
-        return self.truestatement
-
-    def child_falsestatements(self):
-        return self.falsestatement
+    def __eq__(self, other):
+        return isinstance(other, ConstantInteger) and other._value == self._value
