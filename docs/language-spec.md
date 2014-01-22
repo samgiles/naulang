@@ -31,3 +31,15 @@ enclosed: "[" expansion "]" |
           <primary>;
 primary: NONTERMINALNAME | SYMBOLNAME | QUOTE;
 ```
+
+Upper case production names represent lexical tokens and are usually represented by a regular expression or a double quoted string.
+
+# Lexical Elements
+
+## Comments
+
+Line comments start with the `#` character and end at the next new line character:
+
+```PYTHON
+# This is a comment
+```
