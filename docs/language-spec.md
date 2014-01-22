@@ -9,7 +9,7 @@ Programs are constructed from modules and can be compiled and linked or you can 
 
 The syntax is specified using an EBNF notation.  Note the [regular expression for quoted elements](https://bitbucket.org/pypy/pypy/src/c051852e3f7da50aeeabcca0e27af882d33ad3f0/rpython/rlib/parsing/ebnfparse.py?at=default#cl-16 "Regular Expressions defined for quoted elements in the RPython rlib default EBNF format")  is omitted here for simplicity's sake.
 
-```EBNF
+```ANTLR
 NONTERMINALNAME: "([a-z]|_)[a-z0-9_]*";
 SYMBOLNAME: "_*[A-Z]([A-Z]|_)*";
 QUOTED: # Any double quote '"' enclosed string or character
