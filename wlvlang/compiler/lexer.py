@@ -131,7 +131,7 @@ class Lexer(object):
 
 
     def current_position():
-        pass
+        return None
 
     def handle_plus(self):
         while True:
