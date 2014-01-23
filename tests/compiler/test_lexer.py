@@ -86,3 +86,54 @@ def test_handle_invalid_standard_form():
         number_token = l.handle_number()
 
     assert exceptinfo.value.msg == lexer.Lexer.INVALID_E_NOTATION
+
+def test_handle_plus_or_minus_plus_integer():
+    l = lexer.Lexer("+100")
+
+    # Advance past the + (in normal operation we would have found the plus,
+    # then called into handle_plus_or_minus).
+    l.read()
+
+    number_token = l.handle_plus_or_minus("+")
+
+    assert isinstance(number_token, lexer.NumberToken)
+    assert number_token.value == "+100"
+    assert number_token.floating_point == False
+    assert number_token.standard_form == False
+
+def test_handle_plus_or_minus_minus_integer():
+    l = lexer.Lexer("-100")
+
+    # Advance past the + (in normal operation we would have found the minus,
+    # then called into handle_plus_or_minus).
+    l.read()
+
+    number_token = l.handle_plus_or_minus("-")
+
+    assert isinstance(number_token, lexer.NumberToken)
+    assert number_token.value == "-100"
+    assert number_token.floating_point == False
+    assert number_token.standard_form == False
+
+def test_handle_plus_or_minus_symbol():
+    l = lexer.Lexer("+a")
+
+    # Advance past the + (in normal operation we would have found the minus,
+    # then called into handle_plus_or_minus).
+    l.read()
+
+    number_token = l.handle_plus_or_minus("+")
+
+    assert isinstance(number_token, lexer.SymbolToken)
+    assert number_token.value == "+"
+
+def test_handle_plus_or_minus_preincrement():
+    l = lexer.Lexer("++100")
+
+    # Advance past the + (in normal operation we would have found the minus,
+    # then called into handle_plus_or_minus).
+    l.read()
+
+    number_token = l.handle_plus_or_minus("+")
+    assert isinstance(number_token, lexer.SymbolToken)
+    assert number_token.value == "++"

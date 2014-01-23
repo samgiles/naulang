@@ -133,13 +133,25 @@ class Lexer(object):
     def current_position(self):
         return None
 
-    def handle_plus(self):
+    def handle_plus_or_minus(self, sign):
+        second_level = False
+        symbol = sign
         while True:
-            char = self.read()
+            char = self.peek()
 
             if char.isdigit():
+
+                # Unread twice so the next call to 'read' results in the plus symbol
+                # that brought us into this method from tokenise.
+                # We do this because the handle_number method will include
+                # the sign in the resulting token.
                 self.unread();
-                self.handle_number()
+                return self.handle_number()
+            elif not second_level and char == sign:
+                second_level = True
+                symbol += sign
+            else:
+                return SymbolToken(symbol)
 
 
     def tokenise(self):
@@ -160,16 +172,18 @@ class Lexer(object):
             elif char in "\r\n":
                 space_seen = newline_seen = True
                 #TODO
-            elif char == "+":
-                self.handle_plus()
-            elif char == "-":
-                pass
+            elif char == "+-":
+                yield self.handle_plus_or_minus(char)
 
     def next(self):
         pass
 
 class Token(object):
     pass
+
+class SymbolToken(Token):
+    def __init__(self, value):
+        self.value = value
 
 class NumberToken(Token):
 
