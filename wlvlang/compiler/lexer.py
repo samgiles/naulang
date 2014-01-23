@@ -252,6 +252,10 @@ class Lexer(object):
                 yield self.handle_exclamation()
             elif char == ".":
                 yield self.handle_dot()
+            elif char in "()":
+                yield SymbolToken(char)
+            elif char in "{}":
+                yield SymbolToken(char)
             else:
                 yield self.handle_identifiers(start_char=char)
 
