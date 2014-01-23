@@ -137,3 +137,14 @@ def test_handle_plus_or_minus_preincrement():
     number_token = l.handle_plus_or_minus("+")
     assert isinstance(number_token, lexer.SymbolToken)
     assert number_token.value == "++"
+
+def test_handle_plus_or_minus_predecrement():
+    l = lexer.Lexer("--100")
+
+    # Advance past the + (in normal operation we would have found the minus,
+    # then called into handle_plus_or_minus).
+    l.read()
+
+    number_token = l.handle_plus_or_minus("-")
+    assert isinstance(number_token, lexer.SymbolToken)
+    assert number_token.value == "--"
