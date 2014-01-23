@@ -148,3 +148,22 @@ def test_handle_plus_or_minus_predecrement():
     number_token = l.handle_plus_or_minus("-")
     assert isinstance(number_token, lexer.SymbolToken)
     assert number_token.value == "--"
+
+def test_tokenise():
+    l = lexer.Lexer("let a = 100\nlet b = 200\n let c = fn(a) {\nreturn a * b\n }")
+
+    tokens = l.tokenise()
+    assert "let" == tokens.next().value
+    assert "a" == tokens.next().value
+    assert "=" == tokens.next().value
+    assert "100" == tokens.next().value
+    assert "NEWLINE" == tokens.next().value
+    assert "let" == tokens.next().value
+    assert "b" == tokens.next().value
+    assert "=" == tokens.next().value
+    assert "200" == tokens.next().value
+    assert "NEWLINE" == tokens.next().value
+    assert "let" == tokens.next().value
+    assert "c" == tokens.next().value
+    assert "=" == tokens.next().value
+    assert "fn" == tokens.next().value
