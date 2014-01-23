@@ -199,6 +199,7 @@ class Lexer(object):
             self.unread()
             return self.handle_number()
 
+        self.unread()
         return SymbolToken(".")
 
     def handle_identifiers(self, start_char):
