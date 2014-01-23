@@ -3,7 +3,7 @@ import string
 from rpython.rlib.rstring import StringBuilder
 from rpython.rlib.runicode import unicode_encode_utf_8
 
-from rply import Token
+from rply import Token, LexerGenerator
 from rply.token import SourcePosition
 
 class LexerError(Exception):
@@ -11,6 +11,12 @@ class LexerError(Exception):
         self.pos = pos
         self.msg = "" if msg is None else msg
 
+class LexerWrapper(object):
+    def __init__(self, source, lexer=None):
+        self.lexer = Lexer(source).build() if lexer is None else lexer(source).build()
+
+    def next(self):
+        return self.lexer.next()
 
 class Lexer(object):
 
@@ -222,7 +228,7 @@ class Lexer(object):
     def current_position(self):
         return None
 
-    def tokenise(self):
+    def build(self):
         space_seen = False
         newline_seen = False
 
