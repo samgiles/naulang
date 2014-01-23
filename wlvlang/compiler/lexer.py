@@ -211,7 +211,10 @@ class Lexer(object):
 
             if char in "()=<> \t\r\n*+-%/!.":
                 self.unread()
-                return SymbolToken(current_symbol)
+                if current_symbol in self.keywords:
+                    return KeywordToken(current_symbol)
+                else:
+                    return SymbolToken(current_symbol)
 
             current_symbol += char
 
@@ -263,6 +266,10 @@ class Lexer(object):
 
 class Token(object):
     pass
+
+class KeywordToken(Token):
+    def __init__(self, value):
+        self.value = value
 
 class SymbolToken(Token):
     def __init__(self, value):
