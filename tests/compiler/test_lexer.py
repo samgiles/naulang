@@ -176,3 +176,94 @@ def test_simple_tokenise():
     assert "*" == tokens.next().value
     assert "b" == tokens.next().value
     assert "}" == tokens.next().value
+
+def test_nested_tokenise():
+    l = lexer.Lexer("""let main = fn(args) {
+    class Test(value) {
+        let compare = fn(other) {
+            return other.value - value
+        }
+    }
+
+    let test1 = new Test(12)
+    let test2 = new Test(13)
+    let result = test1.compare(test2)
+    print(result)
+}
+    """)
+
+    tokens = l.tokenise()
+
+    assert "let" == tokens.next().value
+    assert "main" == tokens.next().value
+    assert "=" == tokens.next().value
+    assert "fn" == tokens.next().value
+    assert "(" == tokens.next().value
+    assert "args" == tokens.next().value
+    assert ")" == tokens.next().value
+    assert "{" == tokens.next().value
+    assert "NEWLINE" == tokens.next().value
+    assert "class" == tokens.next().value
+    assert "Test" == tokens.next().value
+    assert "(" == tokens.next().value
+    assert "value" == tokens.next().value
+    assert ")" == tokens.next().value
+    assert "{" == tokens.next().value
+    assert "NEWLINE" == tokens.next().value
+    assert "let" == tokens.next().value
+    assert "compare" == tokens.next().value
+    assert "=" == tokens.next().value
+    assert "fn" == tokens.next().value
+    assert "(" == tokens.next().value
+    assert "other" == tokens.next().value
+    assert ")" == tokens.next().value
+    assert "{" == tokens.next().value
+    assert "NEWLINE" == tokens.next().value
+    assert "return" == tokens.next().value
+    assert "other" == tokens.next().value
+    assert "." == tokens.next().value
+    assert "value" == tokens.next().value
+    assert "-" == tokens.next().value
+    assert "value" == tokens.next().value
+    assert "NEWLINE" == tokens.next().value
+    assert "}" == tokens.next().value
+    assert "NEWLINE" == tokens.next().value
+    assert "}" == tokens.next().value
+    assert "NEWLINE" == tokens.next().value
+    assert "NEWLINE" == tokens.next().value
+    assert "let" == tokens.next().value
+    assert "test1" == tokens.next().value
+    assert "=" == tokens.next().value
+    assert "new" == tokens.next().value
+    assert "Test" == tokens.next().value
+    assert "(" == tokens.next().value
+    assert "12" == tokens.next().value
+    assert ")" == tokens.next().value
+    assert "NEWLINE" == tokens.next().value
+    assert "let" == tokens.next().value
+    assert "test2" == tokens.next().value
+    assert "=" == tokens.next().value
+    assert "new" == tokens.next().value
+    assert "Test" == tokens.next().value
+    assert "(" == tokens.next().value
+    assert "13" == tokens.next().value
+    assert ")" == tokens.next().value
+    assert "NEWLINE" == tokens.next().value
+    assert "let" == tokens.next().value
+    assert "result" == tokens.next().value
+    assert "=" == tokens.next().value
+    assert "test1" == tokens.next().value
+    assert "." == tokens.next().value
+    assert "compare" == tokens.next().value
+    assert "(" == tokens.next().value
+    assert "test2" == tokens.next().value
+    assert ")" == tokens.next().value
+    assert "NEWLINE" == tokens.next().value
+    assert "print" == tokens.next().value
+    assert "(" == tokens.next().value
+    assert "result" == tokens.next().value
+    assert ")" == tokens.next().value
+    assert "NEWLINE" == tokens.next().value
+    assert "}" == tokens.next().value
+
+
