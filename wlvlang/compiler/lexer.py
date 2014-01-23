@@ -61,6 +61,7 @@ class Lexer(object):
         floating_point_seen = False
         exponent_seen = False
         floating_point_in_exponent_seen = False
+        num_start = True
         digits = ""
         while True:
             char = self.read()
@@ -117,8 +118,14 @@ class Lexer(object):
                     digits += next_char
                 elif next_char.isdigit():
                     digits += next_char
+            elif num_start and char in "+-":
+                digits += char
             else:
                 return NumberToken(digits, floating_point_seen or floating_point_in_exponent_seen, exponent_seen)
+
+            # One iteration has occurred at this point, so we are no longer
+            # parsing the first character (which means we will no longer allow a + or - symbol
+            num_start = False
 
 
 

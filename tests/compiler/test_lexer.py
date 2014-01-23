@@ -53,3 +53,20 @@ def test_handle_number_standard_form():
     assert number_token.value == "100e0.10"
     assert number_token.floating_point == True
     assert number_token.standard_form == True
+
+def test_handle_number_signed():
+    l = lexer.Lexer("+1000")
+    number_token = l.handle_number()
+
+    assert isinstance(number_token, lexer.NumberToken)
+    assert number_token.value == "+1000"
+    assert number_token.floating_point == False
+    assert number_token.standard_form == False
+
+    l = lexer.Lexer("-1000")
+    number_token = l.handle_number()
+
+    assert isinstance(number_token, lexer.NumberToken)
+    assert number_token.value == "-1000"
+    assert number_token.floating_point == False
+    assert number_token.standard_form == False
