@@ -1,4 +1,5 @@
 import py
+import os
 
 from rpython.rlib.parsing.lexer import Lexer, DummyLexer
 from rpython.rlib.parsing.regexparse import parse_regex
@@ -17,6 +18,7 @@ def make_regular_expressions():
             # Ignore whitespace and comments, python style '# comments'
             ("IGNORE", parse_regex("([\\n\\t\\r\\s])|(#[^\\n]*)")),
             ("LET", parse_regex("let")),
+            ("FN", parse_regex("fn")),
             ("IF", parse_regex("if")),
             ("ELSE", parse_regex("else")),
             ("WHILE", parse_regex("while")),
@@ -25,6 +27,8 @@ def make_regular_expressions():
             ("R_PAREN", parse_regex("\)")),
             ("L_BRACE", parse_regex("{")),
             ("R_BRACE", parse_regex("}")),
+            ("L_BRACK", parse_regex("\[")),
+            ("R_BRACK", parse_regex("\]")),
             ("DOT", parse_regex("\.")),
             ("COMMA", parse_regex(",")),
             ("RETURN", parse_regex("return")),
@@ -95,10 +99,10 @@ class WLVLANGToAST(object):
         length = len(node.children)
         if length == 1:
             children = []
-            children.extend(self.visit_statementexpr(node.children[0]))
+            children.extend(self.visit_declaration(node.children[0]))
             return [Nonterminal(node.symbol, children)]
         children = []
-        children.extend(self.visit_statementexpr(node.children[0]))
+        children.extend(self.visit_declaration(node.children[0]))
         expr = self.visit__plus_symbol0(node.children[1])
         assert len(expr) == 1
         children.extend(expr[0].children)
@@ -128,111 +132,356 @@ class WLVLANGToAST(object):
         children = []
         children.extend([node.children[0]])
         return [Nonterminal(node.symbol, children)]
-    def visit_identifier(self, node):
+    def visit__star_symbol0(self, node):
         #auto-generated code, don't edit
         length = len(node.children)
-        if node.children[0].symbol == 'atomic':
+        if length == 2:
             children = []
-            expr = self.visit_atomic(node.children[0])
-            assert len(expr) == 1
-            children.extend(expr[0].children)
-            return [Nonterminal(node.symbol, children)]
-        if node.children[0].symbol == 'bool':
-            children = []
-            expr = self.visit_bool(node.children[0])
-            assert len(expr) == 1
-            children.extend(expr[0].children)
-            return [Nonterminal(node.symbol, children)]
-        if node.children[0].symbol == 'number':
-            children = []
-            expr = self.visit_number(node.children[0])
-            assert len(expr) == 1
-            children.extend(expr[0].children)
-            return [Nonterminal(node.symbol, children)]
-        children = []
-        expr = self.visit_string(node.children[0])
-        assert len(expr) == 1
-        children.extend(expr[0].children)
-        return [Nonterminal(node.symbol, children)]
-    def visit_statementexpr(self, node):
-        #auto-generated code, don't edit
-        length = len(node.children)
-        if length == 1:
-            if node.children[0].symbol == 'ifstatement':
-                children = []
-                children.extend(self.visit_ifstatement(node.children[0]))
-                return [Nonterminal(node.symbol, children)]
-            children = []
-            children.extend(self.visit_whilestatement(node.children[0]))
-            return [Nonterminal(node.symbol, children)]
-        if node.children[0].symbol == 'assignmentstatement':
-            children = []
-            children.extend(self.visit_assignmentstatement(node.children[0]))
-            return [Nonterminal(node.symbol, children)]
-        children = []
-        children.extend(self.visit_unaryexpr(node.children[0]))
-        return [Nonterminal(node.symbol, children)]
-    def visit__maybe_symbol0(self, node):
-        #auto-generated code, don't edit
-        children = []
-        children.extend(self.visit_statementexpr(node.children[0]))
-        return [Nonterminal(node.symbol, children)]
-    def visit__maybe_symbol1(self, node):
-        #auto-generated code, don't edit
-        children = []
-        children.extend(self.visit_statementexpr(node.children[0]))
-        return [Nonterminal(node.symbol, children)]
-    def visit_ifstatement(self, node):
-        #auto-generated code, don't edit
-        length = len(node.children)
-        if length == 6:
-            children = []
-            children.extend(self.visit_unaryexpr(node.children[2]))
-            expr = self.visit___ifstatement_rest_0_0(node.children[5])
-            assert len(expr) == 1
-            children.extend(expr[0].children)
-            return [Nonterminal(node.symbol, children)]
-        children = []
-        children.extend(self.visit_unaryexpr(node.children[2]))
-        expr = self.visit__maybe_symbol0(node.children[5])
-        assert len(expr) == 1
-        children.extend(expr[0].children)
-        expr = self.visit___ifstatement_rest_0_0(node.children[6])
-        assert len(expr) == 1
-        children.extend(expr[0].children)
-        return [Nonterminal(node.symbol, children)]
-    def visit__maybe_symbol2(self, node):
-        #auto-generated code, don't edit
-        children = []
-        children.extend(self.visit_statementexpr(node.children[0]))
-        return [Nonterminal(node.symbol, children)]
-    def visit_whilestatement(self, node):
-        #auto-generated code, don't edit
-        length = len(node.children)
-        if length == 6:
-            children = []
-            children.extend(self.visit_unaryexpr(node.children[2]))
-            return [Nonterminal(node.symbol, children)]
-        children = []
-        children.extend(self.visit_unaryexpr(node.children[2]))
-        expr = self.visit__maybe_symbol2(node.children[5])
-        assert len(expr) == 1
-        children.extend(expr[0].children)
-        return [Nonterminal(node.symbol, children)]
-    def visit_assignmentstatement(self, node):
-        #auto-generated code, don't edit
-        length = len(node.children)
-        if length == 3:
-            children = []
-            children.extend(self.visit_atomic(node.children[0]))
+            children.extend([node.children[0]])
             children.extend([node.children[1]])
-            children.extend(self.visit_unaryexpr(node.children[2]))
             return [Nonterminal(node.symbol, children)]
         children = []
         children.extend([node.children[0]])
-        children.extend(self.visit_atomic(node.children[1]))
+        children.extend([node.children[1]])
+        expr = self.visit__star_symbol0(node.children[2])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        return [Nonterminal(node.symbol, children)]
+    def visit_plainid(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 1:
+            children = []
+            children.extend([node.children[0]])
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        children.extend([node.children[0]])
+        expr = self.visit__star_symbol0(node.children[1])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        return [Nonterminal(node.symbol, children)]
+    def visit_id(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if node.children[0].symbol == 'FLOAT':
+            children = []
+            children.extend([node.children[0]])
+            return [Nonterminal(node.symbol, children)]
+        if node.children[0].symbol == 'INTEGER':
+            children = []
+            children.extend([node.children[0]])
+            return [Nonterminal(node.symbol, children)]
+        if node.children[0].symbol == 'STRING':
+            children = []
+            children.extend([node.children[0]])
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        children.extend(self.visit_plainid(node.children[0]))
+        return [Nonterminal(node.symbol, children)]
+    def visit__star_symbol1(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 2:
+            children = []
+            children.extend([node.children[0]])
+            children.extend(self.visit_plainid(node.children[1]))
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        children.extend([node.children[0]])
+        children.extend(self.visit_plainid(node.children[1]))
+        expr = self.visit__star_symbol1(node.children[2])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        return [Nonterminal(node.symbol, children)]
+    def visit_qualifiedid(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 1:
+            children = []
+            children.extend(self.visit_id(node.children[0]))
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        children.extend(self.visit_id(node.children[0]))
+        expr = self.visit__star_symbol1(node.children[1])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        return [Nonterminal(node.symbol, children)]
+    def visit_identifier(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if node.children[0].symbol == 'bool':
+            return self.visit_bool(node.children[0])
+        children = []
+        children.extend(self.visit_id(node.children[0]))
+        return [Nonterminal(node.symbol, children)]
+    def visit__star_symbol2(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 1:
+            children = []
+            children.extend(self.visit_blockitem(node.children[0]))
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        children.extend(self.visit_blockitem(node.children[0]))
+        expr = self.visit__star_symbol2(node.children[1])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        return [Nonterminal(node.symbol, children)]
+    def visit_blockstatement(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 2:
+            children = []
+            children.extend([node.children[0]])
+            children.extend([node.children[1]])
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        children.extend([node.children[0]])
+        expr = self.visit__star_symbol2(node.children[1])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
         children.extend([node.children[2]])
-        children.extend(self.visit_unaryexpr(node.children[3]))
+        return [Nonterminal(node.symbol, children)]
+    def visit_blockitem(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if node.children[0].symbol == 'declaration':
+            return self.visit_declaration(node.children[0])
+        children = []
+        children.extend(self.visit_statement(node.children[0]))
+        return [Nonterminal(node.symbol, children)]
+    def visit__maybe_symbol3(self, node):
+        #auto-generated code, don't edit
+        children = []
+        children.extend([node.children[0]])
+        children.extend(self.visit_blockstatement(node.children[1]))
+        return [Nonterminal(node.symbol, children)]
+    def visit__maybe_symbol4(self, node):
+        #auto-generated code, don't edit
+        children = []
+        children.extend(self.visit_expressionroot(node.children[0]))
+        return [Nonterminal(node.symbol, children)]
+    def visit_statement(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 1:
+            children = []
+            children.extend(self.visit_expressionroot(node.children[0]))
+            return [Nonterminal(node.symbol, children)]
+        if length == 2:
+            children = []
+            children.extend([node.children[0]])
+            children.extend([node.children[1]])
+            return [Nonterminal(node.symbol, children)]
+        if length == 3:
+            if node.children[0].symbol == 'IF':
+                children = []
+                children.extend([node.children[0]])
+                children.extend(self.visit_expressionroot(node.children[1]))
+                children.extend(self.visit_blockstatement(node.children[2]))
+                return [Nonterminal(node.symbol, children)]
+            if node.children[0].symbol == 'RETURN':
+                children = []
+                children.extend([node.children[0]])
+                expr = self.visit__maybe_symbol4(node.children[1])
+                assert len(expr) == 1
+                children.extend(expr[0].children)
+                children.extend([node.children[2]])
+                return [Nonterminal(node.symbol, children)]
+            children = []
+            children.extend([node.children[0]])
+            children.extend(self.visit_expressionroot(node.children[1]))
+            children.extend(self.visit_blockstatement(node.children[2]))
+            return [Nonterminal(node.symbol, children)]
+        if length == 4:
+            children = []
+            children.extend([node.children[0]])
+            children.extend(self.visit_expressionroot(node.children[1]))
+            children.extend(self.visit_blockstatement(node.children[2]))
+            expr = self.visit__maybe_symbol3(node.children[3])
+            assert len(expr) == 1
+            children.extend(expr[0].children)
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        children.extend([node.children[0]])
+        children.extend(self.visit_blockstatement(node.children[1]))
+        children.extend([node.children[2]])
+        children.extend(self.visit_expressionroot(node.children[3]))
+        children.extend([node.children[4]])
+        return [Nonterminal(node.symbol, children)]
+    def visit_declaration(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 4:
+            children = []
+            children.extend(self.visit_plainid(node.children[0]))
+            children.extend([node.children[1]])
+            children.extend(self.visit_expressionroot(node.children[2]))
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        children.extend([node.children[0]])
+        children.extend(self.visit_plainid(node.children[1]))
+        children.extend([node.children[2]])
+        children.extend(self.visit_expressionroot(node.children[3]))
+        return [Nonterminal(node.symbol, children)]
+    def visit_expressionroot(self, node):
+        #auto-generated code, don't edit
+        return self.visit_functioncallexpr(node.children[0])
+    def visit_functioncallexpr(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 1:
+            children = []
+            children.extend(self.visit_functionexpression(node.children[0]))
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        children.extend(self.visit_functionexpression(node.children[0]))
+        children.extend(self.visit_argumentexprlist(node.children[1]))
+        return [Nonterminal(node.symbol, children)]
+    def visit_functionexpression(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 1:
+            return self.visit_postfixexpr(node.children[0])
+        children = []
+        children.extend([node.children[0]])
+        children.extend(self.visit_functionparameterlist(node.children[1]))
+        children.extend(self.visit_blockstatement(node.children[2]))
+        return [Nonterminal(node.symbol, children)]
+    def visit__maybe_symbol5(self, node):
+        #auto-generated code, don't edit
+        children = []
+        children.extend([node.children[0]])
+        children.extend(self.visit_primaryexpr(node.children[1]))
+        return [Nonterminal(node.symbol, children)]
+    def visit__maybe_symbol6(self, node):
+        #auto-generated code, don't edit
+        children = []
+        children.extend([node.children[0]])
+        children.extend(self.visit_primaryexpr(node.children[1]))
+        return [Nonterminal(node.symbol, children)]
+    def visit__maybe_symbol7(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 2:
+            children = []
+            children.extend([node.children[0]])
+            children.extend([node.children[1]])
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        children.extend([node.children[0]])
+        children.extend([node.children[1]])
+        expr = self.visit__maybe_symbol6(node.children[2])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        return [Nonterminal(node.symbol, children)]
+    def visit__star_symbol8(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 2:
+            children = []
+            children.extend([node.children[0]])
+            expr = self.visit____star_symbol8_rest_0_0(node.children[1])
+            assert len(expr) == 1
+            children.extend(expr[0].children)
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        children.extend([node.children[0]])
+        expr = self.visit__maybe_symbol5(node.children[1])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        expr = self.visit____star_symbol8_rest_0_0(node.children[2])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        return [Nonterminal(node.symbol, children)]
+    def visit_functionparameterlist(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 2:
+            children = []
+            children.extend([node.children[0]])
+            children.extend([node.children[1]])
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        children.extend([node.children[0]])
+        expr = self.visit__star_symbol8(node.children[1])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        children.extend([node.children[2]])
+        return [Nonterminal(node.symbol, children)]
+    def visit__maybe_symbol9(self, node):
+        #auto-generated code, don't edit
+        children = []
+        children.extend([node.children[0]])
+        children.extend([node.children[1]])
+        return [Nonterminal(node.symbol, children)]
+    def visit__maybe_symbol10(self, node):
+        #auto-generated code, don't edit
+        children = []
+        children.extend([node.children[0]])
+        children.extend([node.children[1]])
+        return [Nonterminal(node.symbol, children)]
+    def visit__star_symbol11(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 2:
+            children = []
+            children.extend([node.children[0]])
+            expr = self.visit____star_symbol11_rest_0_0(node.children[1])
+            assert len(expr) == 1
+            children.extend(expr[0].children)
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        children.extend([node.children[0]])
+        expr = self.visit__maybe_symbol10(node.children[1])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        expr = self.visit____star_symbol11_rest_0_0(node.children[2])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        return [Nonterminal(node.symbol, children)]
+    def visit__star_symbol12(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 1:
+            children = []
+            expr = self.visit____star_symbol12_rest_0_0(node.children[0])
+            assert len(expr) == 1
+            children.extend(expr[0].children)
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        expr = self.visit__maybe_symbol9(node.children[0])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        expr = self.visit____star_symbol12_rest_0_0(node.children[1])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        return [Nonterminal(node.symbol, children)]
+    def visit_argumentexprlist(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 2:
+            children = []
+            children.extend([node.children[0]])
+            children.extend([node.children[1]])
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        children.extend([node.children[0]])
+        expr = self.visit__star_symbol12(node.children[1])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        children.extend([node.children[2]])
+        return [Nonterminal(node.symbol, children)]
+    def visit_postfixexpr(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 1:
+            return self.visit_unaryexpr(node.children[0])
+        children = []
+        children.extend(self.visit_unaryexpr(node.children[0]))
+        children.extend([node.children[1]])
+        children.extend(self.visit_postfixexpr(node.children[2]))
+        children.extend([node.children[3]])
         return [Nonterminal(node.symbol, children)]
     def visit_unaryexpr(self, node):
         #auto-generated code, don't edit
@@ -261,19 +510,19 @@ class WLVLANGToAST(object):
         #auto-generated code, don't edit
         length = len(node.children)
         if length == 1:
-            return self.visit_multitiveexpr(node.children[0])
-        if node.children[1].symbol == 'MINUS':
+            return self.visit_multiplicativeexpr(node.children[0])
+        if node.children[1].symbol == 'ADD':
             children = []
-            children.extend([node.children[0]])
+            children.extend(self.visit_multiplicativeexpr(node.children[0]))
             children.extend([node.children[1]])
             children.extend(self.visit_additiveexpr(node.children[2]))
             return [Nonterminal(node.symbol, children)]
         children = []
-        children.extend([node.children[0]])
+        children.extend(self.visit_multiplicativeexpr(node.children[0]))
         children.extend([node.children[1]])
         children.extend(self.visit_additiveexpr(node.children[2]))
         return [Nonterminal(node.symbol, children)]
-    def visit_multitiveexpr(self, node):
+    def visit_multiplicativeexpr(self, node):
         #auto-generated code, don't edit
         length = len(node.children)
         if length == 1:
@@ -282,18 +531,18 @@ class WLVLANGToAST(object):
             children = []
             children.extend(self.visit_comparisonexpr(node.children[0]))
             children.extend([node.children[1]])
-            children.extend(self.visit_multitiveexpr(node.children[2]))
+            children.extend(self.visit_multiplicativeexpr(node.children[2]))
             return [Nonterminal(node.symbol, children)]
         if node.children[1].symbol == 'MOD':
             children = []
             children.extend(self.visit_comparisonexpr(node.children[0]))
             children.extend([node.children[1]])
-            children.extend(self.visit_multitiveexpr(node.children[2]))
+            children.extend(self.visit_multiplicativeexpr(node.children[2]))
             return [Nonterminal(node.symbol, children)]
         children = []
         children.extend(self.visit_comparisonexpr(node.children[0]))
         children.extend([node.children[1]])
-        children.extend(self.visit_multitiveexpr(node.children[2]))
+        children.extend(self.visit_multiplicativeexpr(node.children[2]))
         return [Nonterminal(node.symbol, children)]
     def visit_comparisonexpr(self, node):
         #auto-generated code, don't edit
@@ -352,17 +601,79 @@ class WLVLANGToAST(object):
         length = len(node.children)
         if length == 1:
             return self.visit_identifier(node.children[0])
-        return self.visit_unaryexpr(node.children[1])
-    def visit___ifstatement_rest_0_0(self, node):
+        children = []
+        children.extend([node.children[0]])
+        children.extend(self.visit_unaryexpr(node.children[1]))
+        children.extend([node.children[2]])
+        return [Nonterminal(node.symbol, children)]
+    def visit____star_symbol8_rest_0_0(self, node):
         #auto-generated code, don't edit
         length = len(node.children)
-        if length == 4:
+        if length == 1:
             children = []
-            children.extend([node.children[1]])
+            expr = self.visit____star_symbol8_rest_0_1(node.children[0])
+            assert len(expr) == 1
+            children.extend(expr[0].children)
             return [Nonterminal(node.symbol, children)]
         children = []
-        children.extend([node.children[1]])
-        expr = self.visit__maybe_symbol1(node.children[3])
+        expr = self.visit__maybe_symbol7(node.children[0])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        expr = self.visit____star_symbol8_rest_0_1(node.children[1])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        return [Nonterminal(node.symbol, children)]
+    def visit____star_symbol8_rest_0_1(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 0:
+            children = []
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        expr = self.visit__star_symbol8(node.children[0])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        return [Nonterminal(node.symbol, children)]
+    def visit____star_symbol11_rest_0_0(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 1:
+            children = []
+            children.extend(self.visit_primaryexpr(node.children[0]))
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        children.extend(self.visit_primaryexpr(node.children[0]))
+        expr = self.visit__star_symbol11(node.children[1])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        return [Nonterminal(node.symbol, children)]
+    def visit____star_symbol12_rest_0_0(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 2:
+            children = []
+            children.extend(self.visit_primaryexpr(node.children[0]))
+            expr = self.visit____star_symbol12_rest_0_1(node.children[1])
+            assert len(expr) == 1
+            children.extend(expr[0].children)
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        children.extend(self.visit_primaryexpr(node.children[0]))
+        expr = self.visit__star_symbol11(node.children[1])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        expr = self.visit____star_symbol12_rest_0_1(node.children[2])
+        assert len(expr) == 1
+        children.extend(expr[0].children)
+        return [Nonterminal(node.symbol, children)]
+    def visit____star_symbol12_rest_0_1(self, node):
+        #auto-generated code, don't edit
+        length = len(node.children)
+        if length == 0:
+            children = []
+            return [Nonterminal(node.symbol, children)]
+        children = []
+        expr = self.visit__star_symbol12(node.children[0])
         assert len(expr) == 1
         children.extend(expr[0].children)
         return [Nonterminal(node.symbol, children)]
@@ -380,29 +691,52 @@ class WLVLANGToAST(object):
                 pass
         return r[0]
 parser = PackratParser([Rule('module', [['_plus_symbol0', 'EOF']]),
-  Rule('_plus_symbol0', [['statementexpr', '_plus_symbol0'], ['statementexpr']]),
+  Rule('_plus_symbol0', [['declaration', '_plus_symbol0'], ['declaration']]),
   Rule('atomic', [['ATOM']]),
   Rule('number', [['FLOAT'], ['INTEGER']]),
   Rule('string', [['STRING']]),
   Rule('bool', [['BOOLEAN']]),
-  Rule('identifier', [['atomic'], ['string'], ['number'], ['bool']]),
-  Rule('statementexpr', [['whilestatement'], ['ifstatement'], ['assignmentstatement', '__0_;'], ['unaryexpr', '__0_;']]),
-  Rule('_maybe_symbol0', [['statementexpr']]),
-  Rule('_maybe_symbol1', [['statementexpr']]),
-  Rule('ifstatement', [['IF', 'L_PAREN', 'unaryexpr', 'RPAREN', 'L_BRACE', '_maybe_symbol0', '__ifstatement_rest_0_0'], ['IF', 'L_PAREN', 'unaryexpr', 'RPAREN', 'L_BRACE', '__ifstatement_rest_0_0']]),
-  Rule('_maybe_symbol2', [['statementexpr']]),
-  Rule('whilestatement', [['WHILE', 'L_PAREN', 'unaryexpr', 'R_PAREN', 'L_BRACE', '_maybe_symbol2', 'R_BRACE'], ['WHILE', 'L_PAREN', 'unaryexpr', 'R_PAREN', 'L_BRACE', 'R_BRACE']]),
-  Rule('assignmentstatement', [['LET', 'atomic', 'SINGLE_EQ', 'unaryexpr'], ['atomic', 'SINGLE_EQ', 'unaryexpr']]),
+  Rule('_star_symbol0', [['__0_.', 'ATOM', '_star_symbol0'], ['__0_.', 'ATOM']]),
+  Rule('plainid', [['ATOM', '_star_symbol0'], ['ATOM']]),
+  Rule('id', [['plainid'], ['STRING'], ['FLOAT'], ['INTEGER']]),
+  Rule('_star_symbol1', [['DOT', 'plainid', '_star_symbol1'], ['DOT', 'plainid']]),
+  Rule('qualifiedid', [['id', '_star_symbol1'], ['id']]),
+  Rule('identifier', [['id'], ['bool']]),
+  Rule('_star_symbol2', [['blockitem', '_star_symbol2'], ['blockitem']]),
+  Rule('blockstatement', [['L_BRACE', '_star_symbol2', 'R_BRACE'], ['L_BRACE', 'R_BRACE']]),
+  Rule('blockitem', [['declaration'], ['statement']]),
+  Rule('_maybe_symbol3', [['ELSE', 'blockstatement']]),
+  Rule('_maybe_symbol4', [['expressionroot']]),
+  Rule('statement', [['IF', 'expressionroot', 'blockstatement', '_maybe_symbol3'], ['IF', 'expressionroot', 'blockstatement'], ['WHILE', 'expressionroot', 'blockstatement'], ['__1_do', 'blockstatement', 'WHILE', 'expressionroot', '__2_;'], ['RETURN', '_maybe_symbol4', '__2_;'], ['RETURN', '__2_;'], ['expressionroot']]),
+  Rule('declaration', [['LET', 'plainid', 'SINGLE_EQ', 'expressionroot', '__2_;'], ['plainid', 'SINGLE_EQ', 'expressionroot', '__2_;']]),
+  Rule('expressionroot', [['functioncallexpr']]),
+  Rule('functioncallexpr', [['functionexpression'], ['functionexpression', 'argumentexprlist']]),
+  Rule('functionexpression', [['postfixexpr'], ['FN', 'functionparameterlist', 'blockstatement']]),
+  Rule('_maybe_symbol5', [['SINGLE_EQ', 'primaryexpr']]),
+  Rule('_maybe_symbol6', [['SINGLE_EQ', 'primaryexpr']]),
+  Rule('_maybe_symbol7', [['__3_,', 'ATOM', '_maybe_symbol6'], ['__3_,', 'ATOM']]),
+  Rule('_star_symbol8', [['ATOM', '_maybe_symbol5', '___star_symbol8_rest_0_0'], ['ATOM', '___star_symbol8_rest_0_0']]),
+  Rule('functionparameterlist', [['L_PAREN', '_star_symbol8', 'R_PAREN'], ['L_PAREN', 'R_PAREN']]),
+  Rule('_maybe_symbol9', [['ATOM', '__4_=']]),
+  Rule('_maybe_symbol10', [['ATOM', '__4_=']]),
+  Rule('_star_symbol11', [['__3_,', '_maybe_symbol10', '___star_symbol11_rest_0_0'], ['__3_,', '___star_symbol11_rest_0_0']]),
+  Rule('_star_symbol12', [['_maybe_symbol9', '___star_symbol12_rest_0_0'], ['___star_symbol12_rest_0_0']]),
+  Rule('argumentexprlist', [['L_PAREN', '_star_symbol12', 'R_PAREN'], ['L_PAREN', 'R_PAREN']]),
+  Rule('postfixexpr', [['unaryexpr'], ['unaryexpr', 'L_BRACK', 'postfixexpr', 'R_BRACK']]),
   Rule('unaryexpr', [['unaryoperator', 'additiveexpr'], ['additiveexpr']]),
   Rule('unaryoperator', [['ADD'], ['MINUS'], ['NOT']]),
-  Rule('additiveexpr', [['multitive', 'PLUS', 'additiveexpr'], ['multitive', 'MINUS', 'additiveexpr'], ['multitiveexpr']]),
-  Rule('multitiveexpr', [['comparisonexpr', 'MUL', 'multitiveexpr'], ['comparisonexpr', 'DIV', 'multitiveexpr'], ['comparisonexpr', 'MOD', 'multitiveexpr'], ['comparisonexpr']]),
+  Rule('additiveexpr', [['multiplicativeexpr', 'ADD', 'additiveexpr'], ['multiplicativeexpr', 'MINUS', 'additiveexpr'], ['multiplicativeexpr']]),
+  Rule('multiplicativeexpr', [['comparisonexpr', 'MUL', 'multiplicativeexpr'], ['comparisonexpr', 'DIV', 'multiplicativeexpr'], ['comparisonexpr', 'MOD', 'multiplicativeexpr'], ['comparisonexpr']]),
   Rule('comparisonexpr', [['equalityexpr', 'LT', 'comparisonexpr'], ['equalityexpr', 'GT', 'comparisonexpr'], ['equalityexpr']]),
   Rule('equalityexpr', [['logicalandexpr', 'DOUBLE_EQ', 'equalityexpr'], ['logicalandexpr', 'NEQ', 'equalityexpr'], ['logicalandexpr']]),
   Rule('logicalandexpr', [['logicalorexpr', 'AND', 'logicalandexpr'], ['logicalorexpr']]),
   Rule('logicalorexpr', [['primaryexpr', 'OR', 'logicalorexpr'], ['primaryexpr']]),
-  Rule('primaryexpr', [['L_PAREN', 'unaryexpr', 'R_PAREN'], ['identifier']]),
-  Rule('__ifstatement_rest_0_0', [['R_BRACE', 'ELSE', 'L_BRACE', '_maybe_symbol1', 'R_BRACE'], ['R_BRACE', 'ELSE', 'L_BRACE', 'R_BRACE']])],
+  Rule('primaryexpr', [['identifier'], ['L_PAREN', 'unaryexpr', 'R_PAREN']]),
+  Rule('___star_symbol8_rest_0_0', [['_maybe_symbol7', '___star_symbol8_rest_0_1'], ['___star_symbol8_rest_0_1']]),
+  Rule('___star_symbol8_rest_0_1', [['_star_symbol8'], []]),
+  Rule('___star_symbol11_rest_0_0', [['primaryexpr', '_star_symbol11'], ['primaryexpr']]),
+  Rule('___star_symbol12_rest_0_0', [['primaryexpr', '_star_symbol11', '___star_symbol12_rest_0_1'], ['primaryexpr', '___star_symbol12_rest_0_1']]),
+  Rule('___star_symbol12_rest_0_1', [['_star_symbol12'], []])],
  'module')
 
 def recognize(runner, i):
@@ -462,9 +796,11 @@ def recognize(runner, i):
                 state = 16
             elif char == '>':
                 state = 17
-            elif 'b' <= char <= 'd':
-                state = 18
             elif 'x' <= char <= 'z':
+                state = 18
+            elif char == 'b':
+                state = 18
+            elif char == 'c':
                 state = 18
             elif char == 'g':
                 state = 18
@@ -488,32 +824,38 @@ def recognize(runner, i):
                 state = 18
             elif char == 's':
                 state = 18
-            elif char == 'a':
-                state = 19
-            elif char == 'e':
-                state = 20
-            elif char == 'f':
-                state = 21
-            elif char == 'i':
-                state = 22
-            elif char == 'l':
-                state = 23
-            elif char == 'o':
-                state = 24
-            elif char == 'n':
-                state = 25
-            elif char == 'r':
-                state = 26
-            elif char == 't':
-                state = 27
-            elif char == 'w':
-                state = 28
             elif char == '(':
+                state = 19
+            elif char == '[':
+                state = 20
+            elif char == ']':
+                state = 21
+            elif char == 'a':
+                state = 22
+            elif char == 'e':
+                state = 23
+            elif char == 'd':
+                state = 24
+            elif char == 'f':
+                state = 25
+            elif char == 'i':
+                state = 26
+            elif char == 'l':
+                state = 27
+            elif char == 'o':
+                state = 28
+            elif char == 'n':
                 state = 29
-            elif char == '{':
+            elif char == 'r':
                 state = 30
-            elif char == '}':
+            elif char == 't':
                 state = 31
+            elif char == 'w':
+                state = 32
+            elif char == '{':
+                state = 33
+            elif char == '}':
+                state = 34
             else:
                 break
         if state == 2:
@@ -524,7 +866,7 @@ def recognize(runner, i):
                 runner.state = 2
                 return ~i
             if char == '=':
-                state = 64
+                state = 69
             else:
                 break
         if state == 3:
@@ -551,7 +893,9 @@ def recognize(runner, i):
             except IndexError:
                 runner.state = 4
                 return ~i
-            if ']' <= char <= '\xff':
+            if char == '"':
+                state = 68
+            elif ']' <= char <= '\xff':
                 state = 4
                 continue
             elif '#' <= char <= '[':
@@ -560,8 +904,6 @@ def recognize(runner, i):
             elif '\x00' <= char <= '!':
                 state = 4
                 continue
-            elif char == '"':
-                state = 63
             else:
                 break
         if state == 12:
@@ -574,7 +916,7 @@ def recognize(runner, i):
                 runner.state = 12
                 return i
             if '0' <= char <= '9':
-                state = 60
+                state = 65
             else:
                 break
         if state == 13:
@@ -586,15 +928,15 @@ def recognize(runner, i):
             except IndexError:
                 runner.state = 13
                 return i
-            if char == 'E':
-                state = 58
-            elif char == 'e':
-                state = 58
-            elif char == '.':
-                state = 59
+            if char == '.':
+                state = 64
             elif '0' <= char <= '9':
                 state = 13
                 continue
+            elif char == 'E':
+                state = 63
+            elif char == 'e':
+                state = 63
             else:
                 break
         if state == 15:
@@ -607,7 +949,7 @@ def recognize(runner, i):
                 runner.state = 15
                 return i
             if char == '=':
-                state = 57
+                state = 62
             else:
                 break
         if state == 18:
@@ -633,14 +975,14 @@ def recognize(runner, i):
                 continue
             else:
                 break
-        if state == 19:
+        if state == 22:
             runner.last_matched_index = i - 1
             runner.last_matched_state = state
             try:
                 char = input[i]
                 i += 1
             except IndexError:
-                runner.state = 19
+                runner.state = 22
                 return i
             if '@' <= char <= 'Z':
                 state = 18
@@ -658,19 +1000,21 @@ def recognize(runner, i):
                 state = 18
                 continue
             elif char == 'n':
-                state = 55
+                state = 60
             else:
                 break
-        if state == 20:
+        if state == 23:
             runner.last_matched_index = i - 1
             runner.last_matched_state = state
             try:
                 char = input[i]
                 i += 1
             except IndexError:
-                runner.state = 20
+                runner.state = 23
                 return i
-            if '@' <= char <= 'Z':
+            if char == 'l':
+                state = 57
+            elif '@' <= char <= 'Z':
                 state = 18
                 continue
             elif 'm' <= char <= 'z':
@@ -685,23 +1029,52 @@ def recognize(runner, i):
             elif char == '_':
                 state = 18
                 continue
-            elif char == 'l':
-                state = 52
             else:
                 break
-        if state == 21:
+        if state == 24:
             runner.last_matched_index = i - 1
             runner.last_matched_state = state
             try:
                 char = input[i]
                 i += 1
             except IndexError:
-                runner.state = 21
+                runner.state = 24
+                return i
+            if char == 'o':
+                state = 56
+            elif '@' <= char <= 'Z':
+                state = 18
+                continue
+            elif 'a' <= char <= 'n':
+                state = 18
+                continue
+            elif 'p' <= char <= 'z':
+                state = 18
+                continue
+            elif '0' <= char <= '9':
+                state = 18
+                continue
+            elif char == '_':
+                state = 18
+                continue
+            else:
+                break
+        if state == 25:
+            runner.last_matched_index = i - 1
+            runner.last_matched_state = state
+            try:
+                char = input[i]
+                i += 1
+            except IndexError:
+                runner.state = 25
                 return i
             if '@' <= char <= 'Z':
                 state = 18
                 continue
-            elif 'b' <= char <= 'z':
+            elif 'b' <= char <= 'm':
+                state = 18
+                continue
+            elif 'o' <= char <= 'z':
                 state = 18
                 continue
             elif '0' <= char <= '9':
@@ -711,21 +1084,21 @@ def recognize(runner, i):
                 state = 18
                 continue
             elif char == 'a':
-                state = 50
+                state = 53
+            elif char == 'n':
+                state = 54
             else:
                 break
-        if state == 22:
+        if state == 26:
             runner.last_matched_index = i - 1
             runner.last_matched_state = state
             try:
                 char = input[i]
                 i += 1
             except IndexError:
-                runner.state = 22
+                runner.state = 26
                 return i
-            if char == 'f':
-                state = 49
-            elif '@' <= char <= 'Z':
+            if '@' <= char <= 'Z':
                 state = 18
                 continue
             elif 'g' <= char <= 'z':
@@ -740,16 +1113,18 @@ def recognize(runner, i):
             elif char == '_':
                 state = 18
                 continue
+            elif char == 'f':
+                state = 52
             else:
                 break
-        if state == 23:
+        if state == 27:
             runner.last_matched_index = i - 1
             runner.last_matched_state = state
             try:
                 char = input[i]
                 i += 1
             except IndexError:
-                runner.state = 23
+                runner.state = 27
                 return i
             if '@' <= char <= 'Z':
                 state = 18
@@ -767,19 +1142,21 @@ def recognize(runner, i):
                 state = 18
                 continue
             elif char == 'e':
-                state = 47
+                state = 50
             else:
                 break
-        if state == 24:
+        if state == 28:
             runner.last_matched_index = i - 1
             runner.last_matched_state = state
             try:
                 char = input[i]
                 i += 1
             except IndexError:
-                runner.state = 24
+                runner.state = 28
                 return i
-            if '@' <= char <= 'Z':
+            if char == 'r':
+                state = 49
+            elif '@' <= char <= 'Z':
                 state = 18
                 continue
             elif 'a' <= char <= 'q':
@@ -794,18 +1171,16 @@ def recognize(runner, i):
             elif char == '_':
                 state = 18
                 continue
-            elif char == 'r':
-                state = 46
             else:
                 break
-        if state == 25:
+        if state == 29:
             runner.last_matched_index = i - 1
             runner.last_matched_state = state
             try:
                 char = input[i]
                 i += 1
             except IndexError:
-                runner.state = 25
+                runner.state = 29
                 return i
             if '@' <= char <= 'Z':
                 state = 18
@@ -823,17 +1198,17 @@ def recognize(runner, i):
                 state = 18
                 continue
             elif char == 'o':
-                state = 44
+                state = 47
             else:
                 break
-        if state == 26:
+        if state == 30:
             runner.last_matched_index = i - 1
             runner.last_matched_state = state
             try:
                 char = input[i]
                 i += 1
             except IndexError:
-                runner.state = 26
+                runner.state = 30
                 return i
             if '@' <= char <= 'Z':
                 state = 18
@@ -851,17 +1226,17 @@ def recognize(runner, i):
                 state = 18
                 continue
             elif char == 'e':
-                state = 39
+                state = 42
             else:
                 break
-        if state == 27:
+        if state == 31:
             runner.last_matched_index = i - 1
             runner.last_matched_state = state
             try:
                 char = input[i]
                 i += 1
             except IndexError:
-                runner.state = 27
+                runner.state = 31
                 return i
             if '@' <= char <= 'Z':
                 state = 18
@@ -879,21 +1254,19 @@ def recognize(runner, i):
                 state = 18
                 continue
             elif char == 'r':
-                state = 36
+                state = 39
             else:
                 break
-        if state == 28:
+        if state == 32:
             runner.last_matched_index = i - 1
             runner.last_matched_state = state
             try:
                 char = input[i]
                 i += 1
             except IndexError:
-                runner.state = 28
+                runner.state = 32
                 return i
-            if char == 'h':
-                state = 32
-            elif '@' <= char <= 'Z':
+            if '@' <= char <= 'Z':
                 state = 18
                 continue
             elif 'i' <= char <= 'z':
@@ -908,20 +1281,20 @@ def recognize(runner, i):
             elif char == '_':
                 state = 18
                 continue
+            elif char == 'h':
+                state = 35
             else:
                 break
-        if state == 32:
+        if state == 35:
             runner.last_matched_index = i - 1
             runner.last_matched_state = state
             try:
                 char = input[i]
                 i += 1
             except IndexError:
-                runner.state = 32
+                runner.state = 35
                 return i
-            if char == 'i':
-                state = 33
-            elif '@' <= char <= 'Z':
+            if '@' <= char <= 'Z':
                 state = 18
                 continue
             elif 'j' <= char <= 'z':
@@ -936,16 +1309,18 @@ def recognize(runner, i):
             elif char == '_':
                 state = 18
                 continue
+            elif char == 'i':
+                state = 36
             else:
                 break
-        if state == 33:
+        if state == 36:
             runner.last_matched_index = i - 1
             runner.last_matched_state = state
             try:
                 char = input[i]
                 i += 1
             except IndexError:
-                runner.state = 33
+                runner.state = 36
                 return i
             if '@' <= char <= 'Z':
                 state = 18
@@ -963,85 +1338,6 @@ def recognize(runner, i):
                 state = 18
                 continue
             elif char == 'l':
-                state = 34
-            else:
-                break
-        if state == 34:
-            runner.last_matched_index = i - 1
-            runner.last_matched_state = state
-            try:
-                char = input[i]
-                i += 1
-            except IndexError:
-                runner.state = 34
-                return i
-            if '@' <= char <= 'Z':
-                state = 18
-                continue
-            elif 'f' <= char <= 'z':
-                state = 18
-                continue
-            elif '0' <= char <= '9':
-                state = 18
-                continue
-            elif 'a' <= char <= 'd':
-                state = 18
-                continue
-            elif char == '_':
-                state = 18
-                continue
-            elif char == 'e':
-                state = 35
-            else:
-                break
-        if state == 35:
-            runner.last_matched_index = i - 1
-            runner.last_matched_state = state
-            try:
-                char = input[i]
-                i += 1
-            except IndexError:
-                runner.state = 35
-                return i
-            if '@' <= char <= 'Z':
-                state = 18
-                continue
-            elif 'a' <= char <= 'z':
-                state = 18
-                continue
-            elif '0' <= char <= '9':
-                state = 18
-                continue
-            elif char == '_':
-                state = 18
-                continue
-            else:
-                break
-        if state == 36:
-            runner.last_matched_index = i - 1
-            runner.last_matched_state = state
-            try:
-                char = input[i]
-                i += 1
-            except IndexError:
-                runner.state = 36
-                return i
-            if '@' <= char <= 'Z':
-                state = 18
-                continue
-            elif 'a' <= char <= 't':
-                state = 18
-                continue
-            elif '0' <= char <= '9':
-                state = 18
-                continue
-            elif 'v' <= char <= 'z':
-                state = 18
-                continue
-            elif char == '_':
-                state = 18
-                continue
-            elif char == 'u':
                 state = 37
             else:
                 break
@@ -1105,18 +1401,18 @@ def recognize(runner, i):
             except IndexError:
                 runner.state = 39
                 return i
-            if char == 't':
+            if char == 'u':
                 state = 40
             elif '@' <= char <= 'Z':
                 state = 18
                 continue
-            elif 'a' <= char <= 's':
+            elif 'a' <= char <= 't':
                 state = 18
                 continue
             elif '0' <= char <= '9':
                 state = 18
                 continue
-            elif 'u' <= char <= 'z':
+            elif 'v' <= char <= 'z':
                 state = 18
                 continue
             elif char == '_':
@@ -1133,18 +1429,18 @@ def recognize(runner, i):
             except IndexError:
                 runner.state = 40
                 return i
-            if char == 'u':
+            if char == 'e':
                 state = 41
             elif '@' <= char <= 'Z':
                 state = 18
                 continue
-            elif 'a' <= char <= 't':
+            elif 'f' <= char <= 'z':
                 state = 18
                 continue
             elif '0' <= char <= '9':
                 state = 18
                 continue
-            elif 'v' <= char <= 'z':
+            elif 'a' <= char <= 'd':
                 state = 18
                 continue
             elif char == '_':
@@ -1164,62 +1460,6 @@ def recognize(runner, i):
             if '@' <= char <= 'Z':
                 state = 18
                 continue
-            elif 'a' <= char <= 'q':
-                state = 18
-                continue
-            elif '0' <= char <= '9':
-                state = 18
-                continue
-            elif 's' <= char <= 'z':
-                state = 18
-                continue
-            elif char == '_':
-                state = 18
-                continue
-            elif char == 'r':
-                state = 42
-            else:
-                break
-        if state == 42:
-            runner.last_matched_index = i - 1
-            runner.last_matched_state = state
-            try:
-                char = input[i]
-                i += 1
-            except IndexError:
-                runner.state = 42
-                return i
-            if '@' <= char <= 'Z':
-                state = 18
-                continue
-            elif 'a' <= char <= 'm':
-                state = 18
-                continue
-            elif 'o' <= char <= 'z':
-                state = 18
-                continue
-            elif '0' <= char <= '9':
-                state = 18
-                continue
-            elif char == '_':
-                state = 18
-                continue
-            elif char == 'n':
-                state = 43
-            else:
-                break
-        if state == 43:
-            runner.last_matched_index = i - 1
-            runner.last_matched_state = state
-            try:
-                char = input[i]
-                i += 1
-            except IndexError:
-                runner.state = 43
-                return i
-            if '@' <= char <= 'Z':
-                state = 18
-                continue
             elif 'a' <= char <= 'z':
                 state = 18
                 continue
@@ -1231,14 +1471,14 @@ def recognize(runner, i):
                 continue
             else:
                 break
-        if state == 44:
+        if state == 42:
             runner.last_matched_index = i - 1
             runner.last_matched_state = state
             try:
                 char = input[i]
                 i += 1
             except IndexError:
-                runner.state = 44
+                runner.state = 42
                 return i
             if '@' <= char <= 'Z':
                 state = 18
@@ -1256,6 +1496,62 @@ def recognize(runner, i):
                 state = 18
                 continue
             elif char == 't':
+                state = 43
+            else:
+                break
+        if state == 43:
+            runner.last_matched_index = i - 1
+            runner.last_matched_state = state
+            try:
+                char = input[i]
+                i += 1
+            except IndexError:
+                runner.state = 43
+                return i
+            if '@' <= char <= 'Z':
+                state = 18
+                continue
+            elif 'a' <= char <= 't':
+                state = 18
+                continue
+            elif '0' <= char <= '9':
+                state = 18
+                continue
+            elif 'v' <= char <= 'z':
+                state = 18
+                continue
+            elif char == '_':
+                state = 18
+                continue
+            elif char == 'u':
+                state = 44
+            else:
+                break
+        if state == 44:
+            runner.last_matched_index = i - 1
+            runner.last_matched_state = state
+            try:
+                char = input[i]
+                i += 1
+            except IndexError:
+                runner.state = 44
+                return i
+            if '@' <= char <= 'Z':
+                state = 18
+                continue
+            elif 'a' <= char <= 'q':
+                state = 18
+                continue
+            elif '0' <= char <= '9':
+                state = 18
+                continue
+            elif 's' <= char <= 'z':
+                state = 18
+                continue
+            elif char == '_':
+                state = 18
+                continue
+            elif char == 'r':
                 state = 45
             else:
                 break
@@ -1271,7 +1567,10 @@ def recognize(runner, i):
             if '@' <= char <= 'Z':
                 state = 18
                 continue
-            elif 'a' <= char <= 'z':
+            elif 'a' <= char <= 'm':
+                state = 18
+                continue
+            elif 'o' <= char <= 'z':
                 state = 18
                 continue
             elif '0' <= char <= '9':
@@ -1280,6 +1579,8 @@ def recognize(runner, i):
             elif char == '_':
                 state = 18
                 continue
+            elif char == 'n':
+                state = 46
             else:
                 break
         if state == 46:
@@ -1391,19 +1692,19 @@ def recognize(runner, i):
             if '@' <= char <= 'Z':
                 state = 18
                 continue
-            elif 'm' <= char <= 'z':
-                state = 18
-                continue
-            elif 'a' <= char <= 'k':
+            elif 'a' <= char <= 's':
                 state = 18
                 continue
             elif '0' <= char <= '9':
                 state = 18
                 continue
+            elif 'u' <= char <= 'z':
+                state = 18
+                continue
             elif char == '_':
                 state = 18
                 continue
-            elif char == 'l':
+            elif char == 't':
                 state = 51
             else:
                 break
@@ -1419,20 +1720,14 @@ def recognize(runner, i):
             if '@' <= char <= 'Z':
                 state = 18
                 continue
-            elif 'a' <= char <= 'r':
+            elif 'a' <= char <= 'z':
                 state = 18
                 continue
             elif '0' <= char <= '9':
                 state = 18
                 continue
-            elif 't' <= char <= 'z':
-                state = 18
-                continue
             elif char == '_':
                 state = 18
-                continue
-            elif char == 's':
-                state = 37
                 continue
             else:
                 break
@@ -1448,20 +1743,15 @@ def recognize(runner, i):
             if '@' <= char <= 'Z':
                 state = 18
                 continue
-            elif 'a' <= char <= 'r':
+            elif 'a' <= char <= 'z':
                 state = 18
                 continue
             elif '0' <= char <= '9':
                 state = 18
                 continue
-            elif 't' <= char <= 'z':
-                state = 18
-                continue
             elif char == '_':
                 state = 18
                 continue
-            elif char == 's':
-                state = 53
             else:
                 break
         if state == 53:
@@ -1476,20 +1766,20 @@ def recognize(runner, i):
             if '@' <= char <= 'Z':
                 state = 18
                 continue
-            elif 'f' <= char <= 'z':
+            elif 'm' <= char <= 'z':
+                state = 18
+                continue
+            elif 'a' <= char <= 'k':
                 state = 18
                 continue
             elif '0' <= char <= '9':
                 state = 18
                 continue
-            elif 'a' <= char <= 'd':
-                state = 18
-                continue
             elif char == '_':
                 state = 18
                 continue
-            elif char == 'e':
-                state = 54
+            elif char == 'l':
+                state = 55
             else:
                 break
         if state == 54:
@@ -1524,18 +1814,19 @@ def recognize(runner, i):
             except IndexError:
                 runner.state = 55
                 return i
-            if char == 'd':
-                state = 56
+            if char == 's':
+                state = 40
+                continue
             elif '@' <= char <= 'Z':
                 state = 18
                 continue
-            elif 'e' <= char <= 'z':
+            elif 'a' <= char <= 'r':
                 state = 18
                 continue
             elif '0' <= char <= '9':
                 state = 18
                 continue
-            elif 'a' <= char <= 'c':
+            elif 't' <= char <= 'z':
                 state = 18
                 continue
             elif char == '_':
@@ -1566,30 +1857,83 @@ def recognize(runner, i):
                 continue
             else:
                 break
+        if state == 57:
+            runner.last_matched_index = i - 1
+            runner.last_matched_state = state
+            try:
+                char = input[i]
+                i += 1
+            except IndexError:
+                runner.state = 57
+                return i
+            if '@' <= char <= 'Z':
+                state = 18
+                continue
+            elif 'a' <= char <= 'r':
+                state = 18
+                continue
+            elif '0' <= char <= '9':
+                state = 18
+                continue
+            elif 't' <= char <= 'z':
+                state = 18
+                continue
+            elif char == '_':
+                state = 18
+                continue
+            elif char == 's':
+                state = 58
+            else:
+                break
         if state == 58:
+            runner.last_matched_index = i - 1
+            runner.last_matched_state = state
             try:
                 char = input[i]
                 i += 1
             except IndexError:
                 runner.state = 58
-                return ~i
-            if char == '+':
-                state = 61
-            elif char == '-':
-                state = 61
+                return i
+            if '@' <= char <= 'Z':
+                state = 18
+                continue
+            elif 'f' <= char <= 'z':
+                state = 18
+                continue
             elif '0' <= char <= '9':
-                state = 62
+                state = 18
+                continue
+            elif 'a' <= char <= 'd':
+                state = 18
+                continue
+            elif char == '_':
+                state = 18
+                continue
+            elif char == 'e':
+                state = 59
             else:
                 break
         if state == 59:
+            runner.last_matched_index = i - 1
+            runner.last_matched_state = state
             try:
                 char = input[i]
                 i += 1
             except IndexError:
                 runner.state = 59
-                return ~i
-            if '0' <= char <= '9':
-                state = 60
+                return i
+            if '@' <= char <= 'Z':
+                state = 18
+                continue
+            elif 'a' <= char <= 'z':
+                state = 18
+                continue
+            elif '0' <= char <= '9':
+                state = 18
+                continue
+            elif char == '_':
+                state = 18
+                continue
             else:
                 break
         if state == 60:
@@ -1601,39 +1945,116 @@ def recognize(runner, i):
             except IndexError:
                 runner.state = 60
                 return i
-            if char == 'E':
-                state = 58
+            if '@' <= char <= 'Z':
+                state = 18
                 continue
-            elif char == 'e':
-                state = 58
+            elif 'e' <= char <= 'z':
+                state = 18
                 continue
             elif '0' <= char <= '9':
-                state = 60
+                state = 18
                 continue
+            elif 'a' <= char <= 'c':
+                state = 18
+                continue
+            elif char == '_':
+                state = 18
+                continue
+            elif char == 'd':
+                state = 61
             else:
                 break
         if state == 61:
-            try:
-                char = input[i]
-                i += 1
-            except IndexError:
-                runner.state = 61
-                return ~i
-            if '0' <= char <= '9':
-                state = 62
-            else:
-                break
-        if state == 62:
             runner.last_matched_index = i - 1
             runner.last_matched_state = state
             try:
                 char = input[i]
                 i += 1
             except IndexError:
-                runner.state = 62
+                runner.state = 61
+                return i
+            if '@' <= char <= 'Z':
+                state = 18
+                continue
+            elif 'a' <= char <= 'z':
+                state = 18
+                continue
+            elif '0' <= char <= '9':
+                state = 18
+                continue
+            elif char == '_':
+                state = 18
+                continue
+            else:
+                break
+        if state == 63:
+            try:
+                char = input[i]
+                i += 1
+            except IndexError:
+                runner.state = 63
+                return ~i
+            if char == '+':
+                state = 66
+            elif char == '-':
+                state = 66
+            elif '0' <= char <= '9':
+                state = 67
+            else:
+                break
+        if state == 64:
+            try:
+                char = input[i]
+                i += 1
+            except IndexError:
+                runner.state = 64
+                return ~i
+            if '0' <= char <= '9':
+                state = 65
+            else:
+                break
+        if state == 65:
+            runner.last_matched_index = i - 1
+            runner.last_matched_state = state
+            try:
+                char = input[i]
+                i += 1
+            except IndexError:
+                runner.state = 65
                 return i
             if '0' <= char <= '9':
-                state = 62
+                state = 65
+                continue
+            elif char == 'E':
+                state = 63
+                continue
+            elif char == 'e':
+                state = 63
+                continue
+            else:
+                break
+        if state == 66:
+            try:
+                char = input[i]
+                i += 1
+            except IndexError:
+                runner.state = 66
+                return ~i
+            if '0' <= char <= '9':
+                state = 67
+            else:
+                break
+        if state == 67:
+            runner.last_matched_index = i - 1
+            runner.last_matched_state = state
+            try:
+                char = input[i]
+                i += 1
+            except IndexError:
+                runner.state = 67
+                return i
+            if '0' <= char <= '9':
+                state = 67
                 continue
             else:
                 break
@@ -1647,7 +2068,7 @@ def recognize(runner, i):
         break
     runner.state = state
     return ~i
-lexer = DummyLexer(recognize, DFA(65,
+lexer = DummyLexer(recognize, DFA(70,
  {(0, '\t'): 1,
   (0, '\n'): 1,
   (0, '\x0c'): 1,
@@ -1657,7 +2078,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (0, '"'): 4,
   (0, '#'): 3,
   (0, '%'): 5,
-  (0, '('): 29,
+  (0, '('): 19,
   (0, ')'): 6,
   (0, '*'): 8,
   (0, '+'): 7,
@@ -1680,35 +2101,37 @@ lexer = DummyLexer(recognize, DFA(65,
   (0, '='): 15,
   (0, '>'): 17,
   (0, '@'): 18,
-  (0, 'a'): 19,
+  (0, '['): 20,
+  (0, ']'): 21,
+  (0, 'a'): 22,
   (0, 'b'): 18,
   (0, 'c'): 18,
-  (0, 'd'): 18,
-  (0, 'e'): 20,
-  (0, 'f'): 21,
+  (0, 'd'): 24,
+  (0, 'e'): 23,
+  (0, 'f'): 25,
   (0, 'g'): 18,
   (0, 'h'): 18,
-  (0, 'i'): 22,
+  (0, 'i'): 26,
   (0, 'j'): 18,
   (0, 'k'): 18,
-  (0, 'l'): 23,
+  (0, 'l'): 27,
   (0, 'm'): 18,
-  (0, 'n'): 25,
-  (0, 'o'): 24,
+  (0, 'n'): 29,
+  (0, 'o'): 28,
   (0, 'p'): 18,
   (0, 'q'): 18,
-  (0, 'r'): 26,
+  (0, 'r'): 30,
   (0, 's'): 18,
-  (0, 't'): 27,
+  (0, 't'): 31,
   (0, 'u'): 18,
   (0, 'v'): 18,
-  (0, 'w'): 28,
+  (0, 'w'): 32,
   (0, 'x'): 18,
   (0, 'y'): 18,
   (0, 'z'): 18,
-  (0, '{'): 30,
-  (0, '}'): 31,
-  (2, '='): 64,
+  (0, '{'): 33,
+  (0, '}'): 34,
+  (2, '='): 69,
   (3, '\x00'): 3,
   (3, '\x01'): 3,
   (3, '\x02'): 3,
@@ -1998,7 +2421,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (4, '\x1f'): 4,
   (4, ' '): 4,
   (4, '!'): 4,
-  (4, '"'): 63,
+  (4, '"'): 68,
   (4, '#'): 4,
   (4, '$'): 4,
   (4, '%'): 4,
@@ -2219,17 +2642,17 @@ lexer = DummyLexer(recognize, DFA(65,
   (4, '\xfd'): 4,
   (4, '\xfe'): 4,
   (4, '\xff'): 4,
-  (12, '0'): 60,
-  (12, '1'): 60,
-  (12, '2'): 60,
-  (12, '3'): 60,
-  (12, '4'): 60,
-  (12, '5'): 60,
-  (12, '6'): 60,
-  (12, '7'): 60,
-  (12, '8'): 60,
-  (12, '9'): 60,
-  (13, '.'): 59,
+  (12, '0'): 65,
+  (12, '1'): 65,
+  (12, '2'): 65,
+  (12, '3'): 65,
+  (12, '4'): 65,
+  (12, '5'): 65,
+  (12, '6'): 65,
+  (12, '7'): 65,
+  (12, '8'): 65,
+  (12, '9'): 65,
+  (13, '.'): 64,
   (13, '0'): 13,
   (13, '1'): 13,
   (13, '2'): 13,
@@ -2240,9 +2663,9 @@ lexer = DummyLexer(recognize, DFA(65,
   (13, '7'): 13,
   (13, '8'): 13,
   (13, '9'): 13,
-  (13, 'E'): 58,
-  (13, 'e'): 58,
-  (15, '='): 57,
+  (13, 'E'): 63,
+  (13, 'e'): 63,
+  (15, '='): 62,
   (18, '0'): 18,
   (18, '1'): 18,
   (18, '2'): 18,
@@ -2307,198 +2730,6 @@ lexer = DummyLexer(recognize, DFA(65,
   (18, 'x'): 18,
   (18, 'y'): 18,
   (18, 'z'): 18,
-  (19, '0'): 18,
-  (19, '1'): 18,
-  (19, '2'): 18,
-  (19, '3'): 18,
-  (19, '4'): 18,
-  (19, '5'): 18,
-  (19, '6'): 18,
-  (19, '7'): 18,
-  (19, '8'): 18,
-  (19, '9'): 18,
-  (19, '@'): 18,
-  (19, 'A'): 18,
-  (19, 'B'): 18,
-  (19, 'C'): 18,
-  (19, 'D'): 18,
-  (19, 'E'): 18,
-  (19, 'F'): 18,
-  (19, 'G'): 18,
-  (19, 'H'): 18,
-  (19, 'I'): 18,
-  (19, 'J'): 18,
-  (19, 'K'): 18,
-  (19, 'L'): 18,
-  (19, 'M'): 18,
-  (19, 'N'): 18,
-  (19, 'O'): 18,
-  (19, 'P'): 18,
-  (19, 'Q'): 18,
-  (19, 'R'): 18,
-  (19, 'S'): 18,
-  (19, 'T'): 18,
-  (19, 'U'): 18,
-  (19, 'V'): 18,
-  (19, 'W'): 18,
-  (19, 'X'): 18,
-  (19, 'Y'): 18,
-  (19, 'Z'): 18,
-  (19, '_'): 18,
-  (19, 'a'): 18,
-  (19, 'b'): 18,
-  (19, 'c'): 18,
-  (19, 'd'): 18,
-  (19, 'e'): 18,
-  (19, 'f'): 18,
-  (19, 'g'): 18,
-  (19, 'h'): 18,
-  (19, 'i'): 18,
-  (19, 'j'): 18,
-  (19, 'k'): 18,
-  (19, 'l'): 18,
-  (19, 'm'): 18,
-  (19, 'n'): 55,
-  (19, 'o'): 18,
-  (19, 'p'): 18,
-  (19, 'q'): 18,
-  (19, 'r'): 18,
-  (19, 's'): 18,
-  (19, 't'): 18,
-  (19, 'u'): 18,
-  (19, 'v'): 18,
-  (19, 'w'): 18,
-  (19, 'x'): 18,
-  (19, 'y'): 18,
-  (19, 'z'): 18,
-  (20, '0'): 18,
-  (20, '1'): 18,
-  (20, '2'): 18,
-  (20, '3'): 18,
-  (20, '4'): 18,
-  (20, '5'): 18,
-  (20, '6'): 18,
-  (20, '7'): 18,
-  (20, '8'): 18,
-  (20, '9'): 18,
-  (20, '@'): 18,
-  (20, 'A'): 18,
-  (20, 'B'): 18,
-  (20, 'C'): 18,
-  (20, 'D'): 18,
-  (20, 'E'): 18,
-  (20, 'F'): 18,
-  (20, 'G'): 18,
-  (20, 'H'): 18,
-  (20, 'I'): 18,
-  (20, 'J'): 18,
-  (20, 'K'): 18,
-  (20, 'L'): 18,
-  (20, 'M'): 18,
-  (20, 'N'): 18,
-  (20, 'O'): 18,
-  (20, 'P'): 18,
-  (20, 'Q'): 18,
-  (20, 'R'): 18,
-  (20, 'S'): 18,
-  (20, 'T'): 18,
-  (20, 'U'): 18,
-  (20, 'V'): 18,
-  (20, 'W'): 18,
-  (20, 'X'): 18,
-  (20, 'Y'): 18,
-  (20, 'Z'): 18,
-  (20, '_'): 18,
-  (20, 'a'): 18,
-  (20, 'b'): 18,
-  (20, 'c'): 18,
-  (20, 'd'): 18,
-  (20, 'e'): 18,
-  (20, 'f'): 18,
-  (20, 'g'): 18,
-  (20, 'h'): 18,
-  (20, 'i'): 18,
-  (20, 'j'): 18,
-  (20, 'k'): 18,
-  (20, 'l'): 52,
-  (20, 'm'): 18,
-  (20, 'n'): 18,
-  (20, 'o'): 18,
-  (20, 'p'): 18,
-  (20, 'q'): 18,
-  (20, 'r'): 18,
-  (20, 's'): 18,
-  (20, 't'): 18,
-  (20, 'u'): 18,
-  (20, 'v'): 18,
-  (20, 'w'): 18,
-  (20, 'x'): 18,
-  (20, 'y'): 18,
-  (20, 'z'): 18,
-  (21, '0'): 18,
-  (21, '1'): 18,
-  (21, '2'): 18,
-  (21, '3'): 18,
-  (21, '4'): 18,
-  (21, '5'): 18,
-  (21, '6'): 18,
-  (21, '7'): 18,
-  (21, '8'): 18,
-  (21, '9'): 18,
-  (21, '@'): 18,
-  (21, 'A'): 18,
-  (21, 'B'): 18,
-  (21, 'C'): 18,
-  (21, 'D'): 18,
-  (21, 'E'): 18,
-  (21, 'F'): 18,
-  (21, 'G'): 18,
-  (21, 'H'): 18,
-  (21, 'I'): 18,
-  (21, 'J'): 18,
-  (21, 'K'): 18,
-  (21, 'L'): 18,
-  (21, 'M'): 18,
-  (21, 'N'): 18,
-  (21, 'O'): 18,
-  (21, 'P'): 18,
-  (21, 'Q'): 18,
-  (21, 'R'): 18,
-  (21, 'S'): 18,
-  (21, 'T'): 18,
-  (21, 'U'): 18,
-  (21, 'V'): 18,
-  (21, 'W'): 18,
-  (21, 'X'): 18,
-  (21, 'Y'): 18,
-  (21, 'Z'): 18,
-  (21, '_'): 18,
-  (21, 'a'): 50,
-  (21, 'b'): 18,
-  (21, 'c'): 18,
-  (21, 'd'): 18,
-  (21, 'e'): 18,
-  (21, 'f'): 18,
-  (21, 'g'): 18,
-  (21, 'h'): 18,
-  (21, 'i'): 18,
-  (21, 'j'): 18,
-  (21, 'k'): 18,
-  (21, 'l'): 18,
-  (21, 'm'): 18,
-  (21, 'n'): 18,
-  (21, 'o'): 18,
-  (21, 'p'): 18,
-  (21, 'q'): 18,
-  (21, 'r'): 18,
-  (21, 's'): 18,
-  (21, 't'): 18,
-  (21, 'u'): 18,
-  (21, 'v'): 18,
-  (21, 'w'): 18,
-  (21, 'x'): 18,
-  (21, 'y'): 18,
-  (21, 'z'): 18,
   (22, '0'): 18,
   (22, '1'): 18,
   (22, '2'): 18,
@@ -2542,7 +2773,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (22, 'c'): 18,
   (22, 'd'): 18,
   (22, 'e'): 18,
-  (22, 'f'): 49,
+  (22, 'f'): 18,
   (22, 'g'): 18,
   (22, 'h'): 18,
   (22, 'i'): 18,
@@ -2550,7 +2781,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (22, 'k'): 18,
   (22, 'l'): 18,
   (22, 'm'): 18,
-  (22, 'n'): 18,
+  (22, 'n'): 60,
   (22, 'o'): 18,
   (22, 'p'): 18,
   (22, 'q'): 18,
@@ -2605,14 +2836,14 @@ lexer = DummyLexer(recognize, DFA(65,
   (23, 'b'): 18,
   (23, 'c'): 18,
   (23, 'd'): 18,
-  (23, 'e'): 47,
+  (23, 'e'): 18,
   (23, 'f'): 18,
   (23, 'g'): 18,
   (23, 'h'): 18,
   (23, 'i'): 18,
   (23, 'j'): 18,
   (23, 'k'): 18,
-  (23, 'l'): 18,
+  (23, 'l'): 57,
   (23, 'm'): 18,
   (23, 'n'): 18,
   (23, 'o'): 18,
@@ -2679,10 +2910,10 @@ lexer = DummyLexer(recognize, DFA(65,
   (24, 'l'): 18,
   (24, 'm'): 18,
   (24, 'n'): 18,
-  (24, 'o'): 18,
+  (24, 'o'): 56,
   (24, 'p'): 18,
   (24, 'q'): 18,
-  (24, 'r'): 46,
+  (24, 'r'): 18,
   (24, 's'): 18,
   (24, 't'): 18,
   (24, 'u'): 18,
@@ -2729,7 +2960,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (25, 'Y'): 18,
   (25, 'Z'): 18,
   (25, '_'): 18,
-  (25, 'a'): 18,
+  (25, 'a'): 53,
   (25, 'b'): 18,
   (25, 'c'): 18,
   (25, 'd'): 18,
@@ -2742,8 +2973,8 @@ lexer = DummyLexer(recognize, DFA(65,
   (25, 'k'): 18,
   (25, 'l'): 18,
   (25, 'm'): 18,
-  (25, 'n'): 18,
-  (25, 'o'): 44,
+  (25, 'n'): 54,
+  (25, 'o'): 18,
   (25, 'p'): 18,
   (25, 'q'): 18,
   (25, 'r'): 18,
@@ -2797,8 +3028,8 @@ lexer = DummyLexer(recognize, DFA(65,
   (26, 'b'): 18,
   (26, 'c'): 18,
   (26, 'd'): 18,
-  (26, 'e'): 39,
-  (26, 'f'): 18,
+  (26, 'e'): 18,
+  (26, 'f'): 52,
   (26, 'g'): 18,
   (26, 'h'): 18,
   (26, 'i'): 18,
@@ -2861,7 +3092,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (27, 'b'): 18,
   (27, 'c'): 18,
   (27, 'd'): 18,
-  (27, 'e'): 18,
+  (27, 'e'): 50,
   (27, 'f'): 18,
   (27, 'g'): 18,
   (27, 'h'): 18,
@@ -2874,7 +3105,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (27, 'o'): 18,
   (27, 'p'): 18,
   (27, 'q'): 18,
-  (27, 'r'): 36,
+  (27, 'r'): 18,
   (27, 's'): 18,
   (27, 't'): 18,
   (27, 'u'): 18,
@@ -2928,7 +3159,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (28, 'e'): 18,
   (28, 'f'): 18,
   (28, 'g'): 18,
-  (28, 'h'): 32,
+  (28, 'h'): 18,
   (28, 'i'): 18,
   (28, 'j'): 18,
   (28, 'k'): 18,
@@ -2938,7 +3169,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (28, 'o'): 18,
   (28, 'p'): 18,
   (28, 'q'): 18,
-  (28, 'r'): 18,
+  (28, 'r'): 49,
   (28, 's'): 18,
   (28, 't'): 18,
   (28, 'u'): 18,
@@ -2947,6 +3178,198 @@ lexer = DummyLexer(recognize, DFA(65,
   (28, 'x'): 18,
   (28, 'y'): 18,
   (28, 'z'): 18,
+  (29, '0'): 18,
+  (29, '1'): 18,
+  (29, '2'): 18,
+  (29, '3'): 18,
+  (29, '4'): 18,
+  (29, '5'): 18,
+  (29, '6'): 18,
+  (29, '7'): 18,
+  (29, '8'): 18,
+  (29, '9'): 18,
+  (29, '@'): 18,
+  (29, 'A'): 18,
+  (29, 'B'): 18,
+  (29, 'C'): 18,
+  (29, 'D'): 18,
+  (29, 'E'): 18,
+  (29, 'F'): 18,
+  (29, 'G'): 18,
+  (29, 'H'): 18,
+  (29, 'I'): 18,
+  (29, 'J'): 18,
+  (29, 'K'): 18,
+  (29, 'L'): 18,
+  (29, 'M'): 18,
+  (29, 'N'): 18,
+  (29, 'O'): 18,
+  (29, 'P'): 18,
+  (29, 'Q'): 18,
+  (29, 'R'): 18,
+  (29, 'S'): 18,
+  (29, 'T'): 18,
+  (29, 'U'): 18,
+  (29, 'V'): 18,
+  (29, 'W'): 18,
+  (29, 'X'): 18,
+  (29, 'Y'): 18,
+  (29, 'Z'): 18,
+  (29, '_'): 18,
+  (29, 'a'): 18,
+  (29, 'b'): 18,
+  (29, 'c'): 18,
+  (29, 'd'): 18,
+  (29, 'e'): 18,
+  (29, 'f'): 18,
+  (29, 'g'): 18,
+  (29, 'h'): 18,
+  (29, 'i'): 18,
+  (29, 'j'): 18,
+  (29, 'k'): 18,
+  (29, 'l'): 18,
+  (29, 'm'): 18,
+  (29, 'n'): 18,
+  (29, 'o'): 47,
+  (29, 'p'): 18,
+  (29, 'q'): 18,
+  (29, 'r'): 18,
+  (29, 's'): 18,
+  (29, 't'): 18,
+  (29, 'u'): 18,
+  (29, 'v'): 18,
+  (29, 'w'): 18,
+  (29, 'x'): 18,
+  (29, 'y'): 18,
+  (29, 'z'): 18,
+  (30, '0'): 18,
+  (30, '1'): 18,
+  (30, '2'): 18,
+  (30, '3'): 18,
+  (30, '4'): 18,
+  (30, '5'): 18,
+  (30, '6'): 18,
+  (30, '7'): 18,
+  (30, '8'): 18,
+  (30, '9'): 18,
+  (30, '@'): 18,
+  (30, 'A'): 18,
+  (30, 'B'): 18,
+  (30, 'C'): 18,
+  (30, 'D'): 18,
+  (30, 'E'): 18,
+  (30, 'F'): 18,
+  (30, 'G'): 18,
+  (30, 'H'): 18,
+  (30, 'I'): 18,
+  (30, 'J'): 18,
+  (30, 'K'): 18,
+  (30, 'L'): 18,
+  (30, 'M'): 18,
+  (30, 'N'): 18,
+  (30, 'O'): 18,
+  (30, 'P'): 18,
+  (30, 'Q'): 18,
+  (30, 'R'): 18,
+  (30, 'S'): 18,
+  (30, 'T'): 18,
+  (30, 'U'): 18,
+  (30, 'V'): 18,
+  (30, 'W'): 18,
+  (30, 'X'): 18,
+  (30, 'Y'): 18,
+  (30, 'Z'): 18,
+  (30, '_'): 18,
+  (30, 'a'): 18,
+  (30, 'b'): 18,
+  (30, 'c'): 18,
+  (30, 'd'): 18,
+  (30, 'e'): 42,
+  (30, 'f'): 18,
+  (30, 'g'): 18,
+  (30, 'h'): 18,
+  (30, 'i'): 18,
+  (30, 'j'): 18,
+  (30, 'k'): 18,
+  (30, 'l'): 18,
+  (30, 'm'): 18,
+  (30, 'n'): 18,
+  (30, 'o'): 18,
+  (30, 'p'): 18,
+  (30, 'q'): 18,
+  (30, 'r'): 18,
+  (30, 's'): 18,
+  (30, 't'): 18,
+  (30, 'u'): 18,
+  (30, 'v'): 18,
+  (30, 'w'): 18,
+  (30, 'x'): 18,
+  (30, 'y'): 18,
+  (30, 'z'): 18,
+  (31, '0'): 18,
+  (31, '1'): 18,
+  (31, '2'): 18,
+  (31, '3'): 18,
+  (31, '4'): 18,
+  (31, '5'): 18,
+  (31, '6'): 18,
+  (31, '7'): 18,
+  (31, '8'): 18,
+  (31, '9'): 18,
+  (31, '@'): 18,
+  (31, 'A'): 18,
+  (31, 'B'): 18,
+  (31, 'C'): 18,
+  (31, 'D'): 18,
+  (31, 'E'): 18,
+  (31, 'F'): 18,
+  (31, 'G'): 18,
+  (31, 'H'): 18,
+  (31, 'I'): 18,
+  (31, 'J'): 18,
+  (31, 'K'): 18,
+  (31, 'L'): 18,
+  (31, 'M'): 18,
+  (31, 'N'): 18,
+  (31, 'O'): 18,
+  (31, 'P'): 18,
+  (31, 'Q'): 18,
+  (31, 'R'): 18,
+  (31, 'S'): 18,
+  (31, 'T'): 18,
+  (31, 'U'): 18,
+  (31, 'V'): 18,
+  (31, 'W'): 18,
+  (31, 'X'): 18,
+  (31, 'Y'): 18,
+  (31, 'Z'): 18,
+  (31, '_'): 18,
+  (31, 'a'): 18,
+  (31, 'b'): 18,
+  (31, 'c'): 18,
+  (31, 'd'): 18,
+  (31, 'e'): 18,
+  (31, 'f'): 18,
+  (31, 'g'): 18,
+  (31, 'h'): 18,
+  (31, 'i'): 18,
+  (31, 'j'): 18,
+  (31, 'k'): 18,
+  (31, 'l'): 18,
+  (31, 'm'): 18,
+  (31, 'n'): 18,
+  (31, 'o'): 18,
+  (31, 'p'): 18,
+  (31, 'q'): 18,
+  (31, 'r'): 39,
+  (31, 's'): 18,
+  (31, 't'): 18,
+  (31, 'u'): 18,
+  (31, 'v'): 18,
+  (31, 'w'): 18,
+  (31, 'x'): 18,
+  (31, 'y'): 18,
+  (31, 'z'): 18,
   (32, '0'): 18,
   (32, '1'): 18,
   (32, '2'): 18,
@@ -2992,8 +3415,8 @@ lexer = DummyLexer(recognize, DFA(65,
   (32, 'e'): 18,
   (32, 'f'): 18,
   (32, 'g'): 18,
-  (32, 'h'): 18,
-  (32, 'i'): 33,
+  (32, 'h'): 35,
+  (32, 'i'): 18,
   (32, 'j'): 18,
   (32, 'k'): 18,
   (32, 'l'): 18,
@@ -3011,134 +3434,6 @@ lexer = DummyLexer(recognize, DFA(65,
   (32, 'x'): 18,
   (32, 'y'): 18,
   (32, 'z'): 18,
-  (33, '0'): 18,
-  (33, '1'): 18,
-  (33, '2'): 18,
-  (33, '3'): 18,
-  (33, '4'): 18,
-  (33, '5'): 18,
-  (33, '6'): 18,
-  (33, '7'): 18,
-  (33, '8'): 18,
-  (33, '9'): 18,
-  (33, '@'): 18,
-  (33, 'A'): 18,
-  (33, 'B'): 18,
-  (33, 'C'): 18,
-  (33, 'D'): 18,
-  (33, 'E'): 18,
-  (33, 'F'): 18,
-  (33, 'G'): 18,
-  (33, 'H'): 18,
-  (33, 'I'): 18,
-  (33, 'J'): 18,
-  (33, 'K'): 18,
-  (33, 'L'): 18,
-  (33, 'M'): 18,
-  (33, 'N'): 18,
-  (33, 'O'): 18,
-  (33, 'P'): 18,
-  (33, 'Q'): 18,
-  (33, 'R'): 18,
-  (33, 'S'): 18,
-  (33, 'T'): 18,
-  (33, 'U'): 18,
-  (33, 'V'): 18,
-  (33, 'W'): 18,
-  (33, 'X'): 18,
-  (33, 'Y'): 18,
-  (33, 'Z'): 18,
-  (33, '_'): 18,
-  (33, 'a'): 18,
-  (33, 'b'): 18,
-  (33, 'c'): 18,
-  (33, 'd'): 18,
-  (33, 'e'): 18,
-  (33, 'f'): 18,
-  (33, 'g'): 18,
-  (33, 'h'): 18,
-  (33, 'i'): 18,
-  (33, 'j'): 18,
-  (33, 'k'): 18,
-  (33, 'l'): 34,
-  (33, 'm'): 18,
-  (33, 'n'): 18,
-  (33, 'o'): 18,
-  (33, 'p'): 18,
-  (33, 'q'): 18,
-  (33, 'r'): 18,
-  (33, 's'): 18,
-  (33, 't'): 18,
-  (33, 'u'): 18,
-  (33, 'v'): 18,
-  (33, 'w'): 18,
-  (33, 'x'): 18,
-  (33, 'y'): 18,
-  (33, 'z'): 18,
-  (34, '0'): 18,
-  (34, '1'): 18,
-  (34, '2'): 18,
-  (34, '3'): 18,
-  (34, '4'): 18,
-  (34, '5'): 18,
-  (34, '6'): 18,
-  (34, '7'): 18,
-  (34, '8'): 18,
-  (34, '9'): 18,
-  (34, '@'): 18,
-  (34, 'A'): 18,
-  (34, 'B'): 18,
-  (34, 'C'): 18,
-  (34, 'D'): 18,
-  (34, 'E'): 18,
-  (34, 'F'): 18,
-  (34, 'G'): 18,
-  (34, 'H'): 18,
-  (34, 'I'): 18,
-  (34, 'J'): 18,
-  (34, 'K'): 18,
-  (34, 'L'): 18,
-  (34, 'M'): 18,
-  (34, 'N'): 18,
-  (34, 'O'): 18,
-  (34, 'P'): 18,
-  (34, 'Q'): 18,
-  (34, 'R'): 18,
-  (34, 'S'): 18,
-  (34, 'T'): 18,
-  (34, 'U'): 18,
-  (34, 'V'): 18,
-  (34, 'W'): 18,
-  (34, 'X'): 18,
-  (34, 'Y'): 18,
-  (34, 'Z'): 18,
-  (34, '_'): 18,
-  (34, 'a'): 18,
-  (34, 'b'): 18,
-  (34, 'c'): 18,
-  (34, 'd'): 18,
-  (34, 'e'): 35,
-  (34, 'f'): 18,
-  (34, 'g'): 18,
-  (34, 'h'): 18,
-  (34, 'i'): 18,
-  (34, 'j'): 18,
-  (34, 'k'): 18,
-  (34, 'l'): 18,
-  (34, 'm'): 18,
-  (34, 'n'): 18,
-  (34, 'o'): 18,
-  (34, 'p'): 18,
-  (34, 'q'): 18,
-  (34, 'r'): 18,
-  (34, 's'): 18,
-  (34, 't'): 18,
-  (34, 'u'): 18,
-  (34, 'v'): 18,
-  (34, 'w'): 18,
-  (34, 'x'): 18,
-  (34, 'y'): 18,
-  (34, 'z'): 18,
   (35, '0'): 18,
   (35, '1'): 18,
   (35, '2'): 18,
@@ -3185,7 +3480,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (35, 'f'): 18,
   (35, 'g'): 18,
   (35, 'h'): 18,
-  (35, 'i'): 18,
+  (35, 'i'): 36,
   (35, 'j'): 18,
   (35, 'k'): 18,
   (35, 'l'): 18,
@@ -3252,7 +3547,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (36, 'i'): 18,
   (36, 'j'): 18,
   (36, 'k'): 18,
-  (36, 'l'): 18,
+  (36, 'l'): 37,
   (36, 'm'): 18,
   (36, 'n'): 18,
   (36, 'o'): 18,
@@ -3261,7 +3556,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (36, 'r'): 18,
   (36, 's'): 18,
   (36, 't'): 18,
-  (36, 'u'): 37,
+  (36, 'u'): 18,
   (36, 'v'): 18,
   (36, 'w'): 18,
   (36, 'x'): 18,
@@ -3452,8 +3747,8 @@ lexer = DummyLexer(recognize, DFA(65,
   (39, 'q'): 18,
   (39, 'r'): 18,
   (39, 's'): 18,
-  (39, 't'): 40,
-  (39, 'u'): 18,
+  (39, 't'): 18,
+  (39, 'u'): 40,
   (39, 'v'): 18,
   (39, 'w'): 18,
   (39, 'x'): 18,
@@ -3501,7 +3796,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (40, 'b'): 18,
   (40, 'c'): 18,
   (40, 'd'): 18,
-  (40, 'e'): 18,
+  (40, 'e'): 41,
   (40, 'f'): 18,
   (40, 'g'): 18,
   (40, 'h'): 18,
@@ -3517,7 +3812,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (40, 'r'): 18,
   (40, 's'): 18,
   (40, 't'): 18,
-  (40, 'u'): 41,
+  (40, 'u'): 18,
   (40, 'v'): 18,
   (40, 'w'): 18,
   (40, 'x'): 18,
@@ -3578,7 +3873,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (41, 'o'): 18,
   (41, 'p'): 18,
   (41, 'q'): 18,
-  (41, 'r'): 42,
+  (41, 'r'): 18,
   (41, 's'): 18,
   (41, 't'): 18,
   (41, 'u'): 18,
@@ -3638,13 +3933,13 @@ lexer = DummyLexer(recognize, DFA(65,
   (42, 'k'): 18,
   (42, 'l'): 18,
   (42, 'm'): 18,
-  (42, 'n'): 43,
+  (42, 'n'): 18,
   (42, 'o'): 18,
   (42, 'p'): 18,
   (42, 'q'): 18,
   (42, 'r'): 18,
   (42, 's'): 18,
-  (42, 't'): 18,
+  (42, 't'): 43,
   (42, 'u'): 18,
   (42, 'v'): 18,
   (42, 'w'): 18,
@@ -3709,7 +4004,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (43, 'r'): 18,
   (43, 's'): 18,
   (43, 't'): 18,
-  (43, 'u'): 18,
+  (43, 'u'): 44,
   (43, 'v'): 18,
   (43, 'w'): 18,
   (43, 'x'): 18,
@@ -3770,9 +4065,9 @@ lexer = DummyLexer(recognize, DFA(65,
   (44, 'o'): 18,
   (44, 'p'): 18,
   (44, 'q'): 18,
-  (44, 'r'): 18,
+  (44, 'r'): 45,
   (44, 's'): 18,
-  (44, 't'): 45,
+  (44, 't'): 18,
   (44, 'u'): 18,
   (44, 'v'): 18,
   (44, 'w'): 18,
@@ -3830,7 +4125,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (45, 'k'): 18,
   (45, 'l'): 18,
   (45, 'm'): 18,
-  (45, 'n'): 18,
+  (45, 'n'): 46,
   (45, 'o'): 18,
   (45, 'p'): 18,
   (45, 'q'): 18,
@@ -4148,7 +4443,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (50, 'i'): 18,
   (50, 'j'): 18,
   (50, 'k'): 18,
-  (50, 'l'): 51,
+  (50, 'l'): 18,
   (50, 'm'): 18,
   (50, 'n'): 18,
   (50, 'o'): 18,
@@ -4156,7 +4451,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (50, 'q'): 18,
   (50, 'r'): 18,
   (50, 's'): 18,
-  (50, 't'): 18,
+  (50, 't'): 51,
   (50, 'u'): 18,
   (50, 'v'): 18,
   (50, 'w'): 18,
@@ -4219,7 +4514,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (51, 'p'): 18,
   (51, 'q'): 18,
   (51, 'r'): 18,
-  (51, 's'): 37,
+  (51, 's'): 18,
   (51, 't'): 18,
   (51, 'u'): 18,
   (51, 'v'): 18,
@@ -4283,7 +4578,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (52, 'p'): 18,
   (52, 'q'): 18,
   (52, 'r'): 18,
-  (52, 's'): 53,
+  (52, 's'): 18,
   (52, 't'): 18,
   (52, 'u'): 18,
   (52, 'v'): 18,
@@ -4333,14 +4628,14 @@ lexer = DummyLexer(recognize, DFA(65,
   (53, 'b'): 18,
   (53, 'c'): 18,
   (53, 'd'): 18,
-  (53, 'e'): 54,
+  (53, 'e'): 18,
   (53, 'f'): 18,
   (53, 'g'): 18,
   (53, 'h'): 18,
   (53, 'i'): 18,
   (53, 'j'): 18,
   (53, 'k'): 18,
-  (53, 'l'): 18,
+  (53, 'l'): 55,
   (53, 'm'): 18,
   (53, 'n'): 18,
   (53, 'o'): 18,
@@ -4460,7 +4755,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (55, 'a'): 18,
   (55, 'b'): 18,
   (55, 'c'): 18,
-  (55, 'd'): 56,
+  (55, 'd'): 18,
   (55, 'e'): 18,
   (55, 'f'): 18,
   (55, 'g'): 18,
@@ -4475,7 +4770,7 @@ lexer = DummyLexer(recognize, DFA(65,
   (55, 'p'): 18,
   (55, 'q'): 18,
   (55, 'r'): 18,
-  (55, 's'): 18,
+  (55, 's'): 40,
   (55, 't'): 18,
   (55, 'u'): 18,
   (55, 'v'): 18,
@@ -4547,60 +4842,380 @@ lexer = DummyLexer(recognize, DFA(65,
   (56, 'x'): 18,
   (56, 'y'): 18,
   (56, 'z'): 18,
-  (58, '+'): 61,
-  (58, '-'): 61,
-  (58, '0'): 62,
-  (58, '1'): 62,
-  (58, '2'): 62,
-  (58, '3'): 62,
-  (58, '4'): 62,
-  (58, '5'): 62,
-  (58, '6'): 62,
-  (58, '7'): 62,
-  (58, '8'): 62,
-  (58, '9'): 62,
-  (59, '0'): 60,
-  (59, '1'): 60,
-  (59, '2'): 60,
-  (59, '3'): 60,
-  (59, '4'): 60,
-  (59, '5'): 60,
-  (59, '6'): 60,
-  (59, '7'): 60,
-  (59, '8'): 60,
-  (59, '9'): 60,
-  (60, '0'): 60,
-  (60, '1'): 60,
-  (60, '2'): 60,
-  (60, '3'): 60,
-  (60, '4'): 60,
-  (60, '5'): 60,
-  (60, '6'): 60,
-  (60, '7'): 60,
-  (60, '8'): 60,
-  (60, '9'): 60,
-  (60, 'E'): 58,
-  (60, 'e'): 58,
-  (61, '0'): 62,
-  (61, '1'): 62,
-  (61, '2'): 62,
-  (61, '3'): 62,
-  (61, '4'): 62,
-  (61, '5'): 62,
-  (61, '6'): 62,
-  (61, '7'): 62,
-  (61, '8'): 62,
-  (61, '9'): 62,
-  (62, '0'): 62,
-  (62, '1'): 62,
-  (62, '2'): 62,
-  (62, '3'): 62,
-  (62, '4'): 62,
-  (62, '5'): 62,
-  (62, '6'): 62,
-  (62, '7'): 62,
-  (62, '8'): 62,
-  (62, '9'): 62},
+  (57, '0'): 18,
+  (57, '1'): 18,
+  (57, '2'): 18,
+  (57, '3'): 18,
+  (57, '4'): 18,
+  (57, '5'): 18,
+  (57, '6'): 18,
+  (57, '7'): 18,
+  (57, '8'): 18,
+  (57, '9'): 18,
+  (57, '@'): 18,
+  (57, 'A'): 18,
+  (57, 'B'): 18,
+  (57, 'C'): 18,
+  (57, 'D'): 18,
+  (57, 'E'): 18,
+  (57, 'F'): 18,
+  (57, 'G'): 18,
+  (57, 'H'): 18,
+  (57, 'I'): 18,
+  (57, 'J'): 18,
+  (57, 'K'): 18,
+  (57, 'L'): 18,
+  (57, 'M'): 18,
+  (57, 'N'): 18,
+  (57, 'O'): 18,
+  (57, 'P'): 18,
+  (57, 'Q'): 18,
+  (57, 'R'): 18,
+  (57, 'S'): 18,
+  (57, 'T'): 18,
+  (57, 'U'): 18,
+  (57, 'V'): 18,
+  (57, 'W'): 18,
+  (57, 'X'): 18,
+  (57, 'Y'): 18,
+  (57, 'Z'): 18,
+  (57, '_'): 18,
+  (57, 'a'): 18,
+  (57, 'b'): 18,
+  (57, 'c'): 18,
+  (57, 'd'): 18,
+  (57, 'e'): 18,
+  (57, 'f'): 18,
+  (57, 'g'): 18,
+  (57, 'h'): 18,
+  (57, 'i'): 18,
+  (57, 'j'): 18,
+  (57, 'k'): 18,
+  (57, 'l'): 18,
+  (57, 'm'): 18,
+  (57, 'n'): 18,
+  (57, 'o'): 18,
+  (57, 'p'): 18,
+  (57, 'q'): 18,
+  (57, 'r'): 18,
+  (57, 's'): 58,
+  (57, 't'): 18,
+  (57, 'u'): 18,
+  (57, 'v'): 18,
+  (57, 'w'): 18,
+  (57, 'x'): 18,
+  (57, 'y'): 18,
+  (57, 'z'): 18,
+  (58, '0'): 18,
+  (58, '1'): 18,
+  (58, '2'): 18,
+  (58, '3'): 18,
+  (58, '4'): 18,
+  (58, '5'): 18,
+  (58, '6'): 18,
+  (58, '7'): 18,
+  (58, '8'): 18,
+  (58, '9'): 18,
+  (58, '@'): 18,
+  (58, 'A'): 18,
+  (58, 'B'): 18,
+  (58, 'C'): 18,
+  (58, 'D'): 18,
+  (58, 'E'): 18,
+  (58, 'F'): 18,
+  (58, 'G'): 18,
+  (58, 'H'): 18,
+  (58, 'I'): 18,
+  (58, 'J'): 18,
+  (58, 'K'): 18,
+  (58, 'L'): 18,
+  (58, 'M'): 18,
+  (58, 'N'): 18,
+  (58, 'O'): 18,
+  (58, 'P'): 18,
+  (58, 'Q'): 18,
+  (58, 'R'): 18,
+  (58, 'S'): 18,
+  (58, 'T'): 18,
+  (58, 'U'): 18,
+  (58, 'V'): 18,
+  (58, 'W'): 18,
+  (58, 'X'): 18,
+  (58, 'Y'): 18,
+  (58, 'Z'): 18,
+  (58, '_'): 18,
+  (58, 'a'): 18,
+  (58, 'b'): 18,
+  (58, 'c'): 18,
+  (58, 'd'): 18,
+  (58, 'e'): 59,
+  (58, 'f'): 18,
+  (58, 'g'): 18,
+  (58, 'h'): 18,
+  (58, 'i'): 18,
+  (58, 'j'): 18,
+  (58, 'k'): 18,
+  (58, 'l'): 18,
+  (58, 'm'): 18,
+  (58, 'n'): 18,
+  (58, 'o'): 18,
+  (58, 'p'): 18,
+  (58, 'q'): 18,
+  (58, 'r'): 18,
+  (58, 's'): 18,
+  (58, 't'): 18,
+  (58, 'u'): 18,
+  (58, 'v'): 18,
+  (58, 'w'): 18,
+  (58, 'x'): 18,
+  (58, 'y'): 18,
+  (58, 'z'): 18,
+  (59, '0'): 18,
+  (59, '1'): 18,
+  (59, '2'): 18,
+  (59, '3'): 18,
+  (59, '4'): 18,
+  (59, '5'): 18,
+  (59, '6'): 18,
+  (59, '7'): 18,
+  (59, '8'): 18,
+  (59, '9'): 18,
+  (59, '@'): 18,
+  (59, 'A'): 18,
+  (59, 'B'): 18,
+  (59, 'C'): 18,
+  (59, 'D'): 18,
+  (59, 'E'): 18,
+  (59, 'F'): 18,
+  (59, 'G'): 18,
+  (59, 'H'): 18,
+  (59, 'I'): 18,
+  (59, 'J'): 18,
+  (59, 'K'): 18,
+  (59, 'L'): 18,
+  (59, 'M'): 18,
+  (59, 'N'): 18,
+  (59, 'O'): 18,
+  (59, 'P'): 18,
+  (59, 'Q'): 18,
+  (59, 'R'): 18,
+  (59, 'S'): 18,
+  (59, 'T'): 18,
+  (59, 'U'): 18,
+  (59, 'V'): 18,
+  (59, 'W'): 18,
+  (59, 'X'): 18,
+  (59, 'Y'): 18,
+  (59, 'Z'): 18,
+  (59, '_'): 18,
+  (59, 'a'): 18,
+  (59, 'b'): 18,
+  (59, 'c'): 18,
+  (59, 'd'): 18,
+  (59, 'e'): 18,
+  (59, 'f'): 18,
+  (59, 'g'): 18,
+  (59, 'h'): 18,
+  (59, 'i'): 18,
+  (59, 'j'): 18,
+  (59, 'k'): 18,
+  (59, 'l'): 18,
+  (59, 'm'): 18,
+  (59, 'n'): 18,
+  (59, 'o'): 18,
+  (59, 'p'): 18,
+  (59, 'q'): 18,
+  (59, 'r'): 18,
+  (59, 's'): 18,
+  (59, 't'): 18,
+  (59, 'u'): 18,
+  (59, 'v'): 18,
+  (59, 'w'): 18,
+  (59, 'x'): 18,
+  (59, 'y'): 18,
+  (59, 'z'): 18,
+  (60, '0'): 18,
+  (60, '1'): 18,
+  (60, '2'): 18,
+  (60, '3'): 18,
+  (60, '4'): 18,
+  (60, '5'): 18,
+  (60, '6'): 18,
+  (60, '7'): 18,
+  (60, '8'): 18,
+  (60, '9'): 18,
+  (60, '@'): 18,
+  (60, 'A'): 18,
+  (60, 'B'): 18,
+  (60, 'C'): 18,
+  (60, 'D'): 18,
+  (60, 'E'): 18,
+  (60, 'F'): 18,
+  (60, 'G'): 18,
+  (60, 'H'): 18,
+  (60, 'I'): 18,
+  (60, 'J'): 18,
+  (60, 'K'): 18,
+  (60, 'L'): 18,
+  (60, 'M'): 18,
+  (60, 'N'): 18,
+  (60, 'O'): 18,
+  (60, 'P'): 18,
+  (60, 'Q'): 18,
+  (60, 'R'): 18,
+  (60, 'S'): 18,
+  (60, 'T'): 18,
+  (60, 'U'): 18,
+  (60, 'V'): 18,
+  (60, 'W'): 18,
+  (60, 'X'): 18,
+  (60, 'Y'): 18,
+  (60, 'Z'): 18,
+  (60, '_'): 18,
+  (60, 'a'): 18,
+  (60, 'b'): 18,
+  (60, 'c'): 18,
+  (60, 'd'): 61,
+  (60, 'e'): 18,
+  (60, 'f'): 18,
+  (60, 'g'): 18,
+  (60, 'h'): 18,
+  (60, 'i'): 18,
+  (60, 'j'): 18,
+  (60, 'k'): 18,
+  (60, 'l'): 18,
+  (60, 'm'): 18,
+  (60, 'n'): 18,
+  (60, 'o'): 18,
+  (60, 'p'): 18,
+  (60, 'q'): 18,
+  (60, 'r'): 18,
+  (60, 's'): 18,
+  (60, 't'): 18,
+  (60, 'u'): 18,
+  (60, 'v'): 18,
+  (60, 'w'): 18,
+  (60, 'x'): 18,
+  (60, 'y'): 18,
+  (60, 'z'): 18,
+  (61, '0'): 18,
+  (61, '1'): 18,
+  (61, '2'): 18,
+  (61, '3'): 18,
+  (61, '4'): 18,
+  (61, '5'): 18,
+  (61, '6'): 18,
+  (61, '7'): 18,
+  (61, '8'): 18,
+  (61, '9'): 18,
+  (61, '@'): 18,
+  (61, 'A'): 18,
+  (61, 'B'): 18,
+  (61, 'C'): 18,
+  (61, 'D'): 18,
+  (61, 'E'): 18,
+  (61, 'F'): 18,
+  (61, 'G'): 18,
+  (61, 'H'): 18,
+  (61, 'I'): 18,
+  (61, 'J'): 18,
+  (61, 'K'): 18,
+  (61, 'L'): 18,
+  (61, 'M'): 18,
+  (61, 'N'): 18,
+  (61, 'O'): 18,
+  (61, 'P'): 18,
+  (61, 'Q'): 18,
+  (61, 'R'): 18,
+  (61, 'S'): 18,
+  (61, 'T'): 18,
+  (61, 'U'): 18,
+  (61, 'V'): 18,
+  (61, 'W'): 18,
+  (61, 'X'): 18,
+  (61, 'Y'): 18,
+  (61, 'Z'): 18,
+  (61, '_'): 18,
+  (61, 'a'): 18,
+  (61, 'b'): 18,
+  (61, 'c'): 18,
+  (61, 'd'): 18,
+  (61, 'e'): 18,
+  (61, 'f'): 18,
+  (61, 'g'): 18,
+  (61, 'h'): 18,
+  (61, 'i'): 18,
+  (61, 'j'): 18,
+  (61, 'k'): 18,
+  (61, 'l'): 18,
+  (61, 'm'): 18,
+  (61, 'n'): 18,
+  (61, 'o'): 18,
+  (61, 'p'): 18,
+  (61, 'q'): 18,
+  (61, 'r'): 18,
+  (61, 's'): 18,
+  (61, 't'): 18,
+  (61, 'u'): 18,
+  (61, 'v'): 18,
+  (61, 'w'): 18,
+  (61, 'x'): 18,
+  (61, 'y'): 18,
+  (61, 'z'): 18,
+  (63, '+'): 66,
+  (63, '-'): 66,
+  (63, '0'): 67,
+  (63, '1'): 67,
+  (63, '2'): 67,
+  (63, '3'): 67,
+  (63, '4'): 67,
+  (63, '5'): 67,
+  (63, '6'): 67,
+  (63, '7'): 67,
+  (63, '8'): 67,
+  (63, '9'): 67,
+  (64, '0'): 65,
+  (64, '1'): 65,
+  (64, '2'): 65,
+  (64, '3'): 65,
+  (64, '4'): 65,
+  (64, '5'): 65,
+  (64, '6'): 65,
+  (64, '7'): 65,
+  (64, '8'): 65,
+  (64, '9'): 65,
+  (65, '0'): 65,
+  (65, '1'): 65,
+  (65, '2'): 65,
+  (65, '3'): 65,
+  (65, '4'): 65,
+  (65, '5'): 65,
+  (65, '6'): 65,
+  (65, '7'): 65,
+  (65, '8'): 65,
+  (65, '9'): 65,
+  (65, 'E'): 63,
+  (65, 'e'): 63,
+  (66, '0'): 67,
+  (66, '1'): 67,
+  (66, '2'): 67,
+  (66, '3'): 67,
+  (66, '4'): 67,
+  (66, '5'): 67,
+  (66, '6'): 67,
+  (66, '7'): 67,
+  (66, '8'): 67,
+  (66, '9'): 67,
+  (67, '0'): 67,
+  (67, '1'): 67,
+  (67, '2'): 67,
+  (67, '3'): 67,
+  (67, '4'): 67,
+  (67, '5'): 67,
+  (67, '6'): 67,
+  (67, '7'): 67,
+  (67, '8'): 67,
+  (67, '9'): 67},
  set([0,
       1,
       3,
@@ -4657,10 +5272,15 @@ lexer = DummyLexer(recognize, DFA(65,
       55,
       56,
       57,
+      58,
+      59,
       60,
+      61,
       62,
-      63,
-      64]),
+      65,
+      67,
+      68,
+      69]),
  set([0,
       1,
       3,
@@ -4717,10 +5337,15 @@ lexer = DummyLexer(recognize, DFA(65,
       55,
       56,
       57,
+      58,
+      59,
       60,
+      61,
       62,
-      63,
-      64]),
+      65,
+      67,
+      68,
+      69]),
  ['INTEGER',
   'IGNORE',
   '1',
@@ -4735,22 +5360,25 @@ lexer = DummyLexer(recognize, DFA(65,
   'DIV',
   'DOT',
   'INTEGER',
-  '__0_;',
+  '__2_;',
   'SINGLE_EQ',
   'LT',
   'GT',
   'ATOM',
-  'ATOM',
-  'ATOM',
-  'ATOM',
-  'ATOM',
-  'ATOM',
-  'ATOM',
-  'ATOM',
-  'ATOM',
-  'ATOM',
-  'ATOM',
   'L_PAREN',
+  'L_BRACK',
+  'R_BRACK',
+  'ATOM',
+  'ATOM',
+  'ATOM',
+  'ATOM',
+  'ATOM',
+  'ATOM',
+  'ATOM',
+  'ATOM',
+  'ATOM',
+  'ATOM',
+  'ATOM',
   'L_BRACE',
   'R_BRACE',
   'ATOM',
@@ -4772,6 +5400,8 @@ lexer = DummyLexer(recognize, DFA(65,
   'LET',
   'IF',
   'ATOM',
+  'FN',
+  'ATOM',
   'ATOM',
   'ATOM',
   'ATOM',
@@ -4791,7 +5421,8 @@ lexer = DummyLexer(recognize, DFA(65,
 
 if __name__ == '__main__':
     f = py.path.local(__file__)
-    ebnff = py.path.local("grammar.ebnf")
+    grammar_file = os.path.dirname(os.path.realpath(__file__)) + "/grammar.ebnf"
+    ebnff = py.path.local(grammar_file)
     ebnf = ebnff.read()
     oldcontent = f.read()
     s = "# GENERATED CODE BETWEEN THIS LINE AND IT'S OTHER OCCURRENCE\n".lower()

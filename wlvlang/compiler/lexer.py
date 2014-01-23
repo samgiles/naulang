@@ -13,10 +13,70 @@ class LexerError(Exception):
 
 class LexerWrapper(object):
     def __init__(self, source, lexer=None):
-        self.lexer = Lexer(source).build() if lexer is None else lexer(source).build()
+        if lexer is None:
+            l = Lexer(source)
+        else:
+            l = lexer(source)
+
+        self.lexer = l.build()
 
     def next(self):
         return self.lexer.next()
+
+class RplyLexer(object):
+    ignore = r"([\n\t\r\s])|(#[^\n]*)"
+    terminals = [
+        ("IDENTIFIER",  r"[a-zA-Z_$][a-zA-Z_0-9]*"),
+        ("DECIMALLITERAL", r"(((0|[1-9][0-9]*)(\.[0-9]*)?)|(\.[0-9]+))([eE][\+\-]?[0-9]*)?"),
+        ("HEXINTEGERLITERAL", r"0[xX][0-9a-fA-F]+"),
+        ("OCTALINTEGERLITERAL", r"0[oO][0-7]+"),
+        ("BINARYINTEGERLITERAL", r"0[bB][0-1]+"),
+        ("SINGLESTRING", r"'([^'\\]|\\.)*'"),
+        ("DOUBLESTRING", r"\"([^\"\\]|\\.)*\""),
+        ("SINGLE_EQ", r"="),
+        ("LET", r"let"),
+        ("CLASS", r"class"),
+        ("FN", r"fn"),
+        ("DOT", r"\."),
+        ("L_PAREN", r"\("),
+        ("R_PAREN", r"\)"),
+        ("L_BRACE", r"\{"),
+        ("R_BRACE", r"\}"),
+        ("L_BRACK", r"\["),
+        ("R_BRACK", r"\]"),
+        ("IF", r"if"),
+        ("ELSE", r"else"),
+        ("WHILE", r"while"),
+        ("FOR", r"for"),
+        ("IN", r"in"),
+        ("DOUBLE_EQ", r"=="),
+        ("NEQ", r"!="),
+        ("LT", r"<"),
+        ("GT", r">"),
+        ("LTEQ", r"<="),
+        ("GTEQ", r">="),
+        ("PLUS", r"\+"),
+        ("MINUS", r"-"),
+        ("MUL", r"\*"),
+        ("DIV", r"/"),
+        ("MOD", r"%"),
+        ("AND", r"and"),
+        ("OR", r"or"),
+        ("NOT", r"not"),
+    ]
+
+    def __init__(self, source):
+        self.lg = LexerGenerator()
+        self.lg.ignore(self.ignore)
+
+        for rules, re in self.terminals:
+            self.lg.add(rules, re)
+
+        self.lexer = self.lg.build()
+        self.source = source
+
+    def build(self):
+        return self.lexer.lex(self.source)
 
 class Lexer(object):
 
