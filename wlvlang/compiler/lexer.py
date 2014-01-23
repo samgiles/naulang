@@ -87,7 +87,7 @@ class Lexer(object):
             elif char in "eE":
 
                 if exponent_seen:
-                    raise LexerError(self.current_position(), self.INVALID_FLOAT_MSG)
+                    raise LexerError(self.current_position(), self.INVALID_E_NOTATION)
 
                 exponent_seen = True
                 digits += char
@@ -109,7 +109,7 @@ class Lexer(object):
 
                 if next_char == ".":
                     if floating_point_in_exponent_seen or not self.peek().isdigit():
-                        raise LexerError(self.current_position(), self.INVALID_E_NOTATION)
+                        raise LexerError(self.current_position(), self.INVALID_FLOAT_MSG)
 
                     floating_point_in_exponent_seen = True
                     # Prefix with a 0 to avoid any ambiguity in the potential form: 1e.10 instead we

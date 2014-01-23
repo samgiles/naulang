@@ -78,3 +78,11 @@ def test_handle_invalid_float():
         number_token = l.handle_number()
 
     assert exceptinfo.value.msg == lexer.Lexer.INVALID_FLOAT_MSG
+
+def test_handle_invalid_standard_form():
+    l = lexer.Lexer("10e00e12")
+
+    with pytest.raises(lexer.LexerError) as exceptinfo:
+        number_token = l.handle_number()
+
+    assert exceptinfo.value.msg == lexer.Lexer.INVALID_E_NOTATION
