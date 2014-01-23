@@ -70,3 +70,11 @@ def test_handle_number_signed():
     assert number_token.value == "-1000"
     assert number_token.floating_point == False
     assert number_token.standard_form == False
+
+def test_handle_invalid_float():
+    l = lexer.Lexer("10.00.12")
+
+    with pytest.raises(lexer.LexerError) as exceptinfo:
+        number_token = l.handle_number()
+
+    assert exceptinfo.value.msg == lexer.Lexer.INVALID_FLOAT_MSG

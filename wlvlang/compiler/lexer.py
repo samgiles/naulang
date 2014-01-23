@@ -130,7 +130,7 @@ class Lexer(object):
 
 
 
-    def current_position():
+    def current_position(self):
         return None
 
     def handle_plus(self):
