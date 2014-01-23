@@ -151,7 +151,7 @@ class Lexer(object):
 
     def handle_less_or_greater_than(self, symbol):
         char = self.read()
-        if char == symbol or char == "=":
+        if char == symbol or char == "=" or char == "-":
             return SymbolToken(symbol + char)
 
         self.unread()
