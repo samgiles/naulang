@@ -15,6 +15,7 @@ test_parser: generate_parser
 
 test_compiler:
 	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/compiler/test_ast.py
+	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/compiler/test_lexer.py
 
 test_interpreter:
 	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/interpreter/test_*.py
