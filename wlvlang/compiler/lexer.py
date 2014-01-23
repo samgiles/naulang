@@ -19,6 +19,8 @@ class Lexer(object):
     INVALID_FLOAT_MSG = "Invalid floating point"
     INVALID_E_NOTATION = "Invalid standard form number"
 
+    keywords = [ "return", "fn", "for", "while", "do"]
+
     def __init__(self, source):
             self.current_idx = 0
             self.column_num = 0
@@ -127,12 +129,6 @@ class Lexer(object):
             # parsing the first character (which means we will no longer allow a + or - symbol
             num_start = False
 
-
-
-
-    def current_position(self):
-        return None
-
     def handle_plus_or_minus(self, sign):
         second_level = False
         symbol = sign
@@ -153,6 +149,74 @@ class Lexer(object):
             else:
                 return SymbolToken(symbol)
 
+    def handle_less_or_greater_than(self, symbol):
+        char = self.read()
+        if char == symbol or char == "=":
+            return SymbolToken(symbol + char)
+
+        self.unread()
+        return SymbolToken(symbol)
+
+
+    def handle_equals(self):
+        char = self.read()
+
+        if char == "=":
+            return SymbolToken("==")
+
+        self.unread()
+        return SymbolToken("=")
+
+    def handle_exclamation(self):
+        char = self.read()
+
+        if char == "=":
+            return SymbolToken("!=")
+
+        self.unread()
+        return SymbolToken("!")
+
+    def handle_multiply(self):
+        char = self.read()
+
+        if char == "*":
+            return SymbolToken("**")
+
+        self.unread()
+        return SymbolToken("*")
+
+    def handle_divide(self):
+        return SymbolToken("/")
+
+    def handle_mod(self):
+        return SymbolToken("%")
+
+    def handle_dot(self):
+        next_char = self.read()
+
+        if next_char.isdigit():
+            self.unread()
+            self.unread()
+            return self.handle_number()
+
+        return SymbolToken(".")
+
+    def handle_identifiers(self, start_char):
+        current_symbol = start_char
+        while True:
+
+            # Run until next opchar or whitespace
+            char = self.read()
+
+            if char in "()=<> \t\r\n*+-%/!.":
+                self.unread()
+                return SymbolToken(current_symbol)
+
+            current_symbol += char
+
+
+    def current_position(self):
+        return None
 
     def tokenise(self):
         space_seen = False
@@ -171,12 +235,26 @@ class Lexer(object):
                 self.handle_comment()
             elif char in "\r\n":
                 space_seen = newline_seen = True
-                #TODO
-            elif char == "+-":
+                yield SymbolToken("NEWLINE")
+            elif char in "+-":
                 yield self.handle_plus_or_minus(char)
+            elif char == "*":
+                yield self.handle_multiply()
+            elif char == "/":
+                yield self.handle_divide()
+            elif char == "%":
+                yield self.handle_mod()
+            elif char in "<>":
+                yield self.handle_less_or_greater_than(char)
+            elif char == "=":
+                yield self.handle_equals()
+            elif char == "!":
+                yield self.handle_exclamation()
+            elif char == ".":
+                yield self.handle_dot()
+            else:
+                yield self.handle_identifiers(start_char=char)
 
-    def next(self):
-        pass
 
 class Token(object):
     pass
