@@ -24,22 +24,13 @@ class Interpreter(object):
                 signature = method.get_literal(literal_index)
                 pass
             elif bytecode == Bytecode.BRANCH:
-                # Unconditional Branch
-                label_offset = method.get_bytecode(current_pc + 1)
-                pc = current_pc + label_offset
-            elif bytecode == Bytecode.BRANCH_EQ:
-                # Condition branch
-                # TODO: Send invoke _eq operation on type on top of
-                # the stack, then test boolean condition on top of the
-                # stack, and branch accordingly
-                pass
-            elif bytecode == Bytecode.IFEQ:
+                # Branch if the value on the top of the stack is a boolean true
+                val = activation_record.pop()
+                new_pc = activation_record.pop().get_value()
 
-                pass
-            elif bytecode == Bytecode.IFGT:
-                pass
-            elif bytecode == Bytecode.IFLT:
-                pass
+                if val.get_value():
+                    pc = new_pc
+
             elif bytecode == Bytecode.ADD:
                 self._send(activation_record, "+", activation_record.peek().get_class())
             elif bytecode == Bytecode.SUB:
@@ -51,6 +42,13 @@ class Interpreter(object):
             elif bytecode == Bytecode.MOD:
                 self._send(activation_record, "%", activation_record.peek().get_class())
             elif bytecode == Bytecode.PUSH:
-                pass
+                # Push a literal from the arec at a predefined constant
+                stack_position = activation_record.pop()
+                activation_record.push(activation_record.get_element_at(stack_position.get_value()))
             elif bytecode == Bytecode.POP:
-                pass
+                activation_record.pop()
+            else:
+                raise TypeError("Bytecode is not implemented: " + str(bytecode))
+
+            if pc == current_pc:
+                pc = pc + 1
