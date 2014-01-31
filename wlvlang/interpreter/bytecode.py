@@ -3,15 +3,13 @@ class Bytecode(object):
     HALT       = 0
     SEND       = 1
     BRANCH     = 2
-    BRANCH_NEQ = 3
-    BRANCH_EQ  = 4
-    ADD     = 6
-    SUB     = 7
-    MUL     = 8
-    DIV     = 9
-    MOD     = 10
-    PUSH   = 11
-    POP     = 12
+    ADD     = 3
+    SUB     = 4
+    MUL     = 5
+    DIV     = 6
+    MOD     = 7
+    PUSH    = 8
+    POP     = 9
 
 
 def _sorted_bytecode_names(cls):
