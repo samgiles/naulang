@@ -3,6 +3,10 @@ from wlvlang.interpreter.bytecode import Bytecode
 class Interpreter(object):
 
 
+    def _send(self, arec, signature, classs, bytecode_index):
+        invokable = classs.lookup_invokable(signature)
+        invokable.invoke(arec, self)
+
     def interpret(method, activation_record):
         """ Interpreter Main Loop """
 
@@ -16,9 +20,9 @@ class Interpreter(object):
             if bytecode == Bytecode.HALT:
                 return
             elif bytecode == Bytecode.SEND:
+                signature_index = method.get_bytecode(current_pc + 1)
+                signature = method.get_literal(literal_index)
                 pass
-
-            # Control Flow
             elif bytecode == Bytecode.BRANCH:
                 # Unconditional Branch
                 label_offset = method.get_bytecode(current_pc + 1)
@@ -37,15 +41,15 @@ class Interpreter(object):
             elif bytecode == Bytecode.IFLT:
                 pass
             elif bytecode == Bytecode.ADD:
-                pass
+                self._send(activation_record, "+", activation_record.peek().get_class())
             elif bytecode == Bytecode.SUB:
-                pass
+                self._send(activation_record, "-", activation_record.peek().get_class())
             elif bytecode == Bytecode.MUL:
-                pass
+                self._send(activation_record, "*", activation_record.peek().get_class())
             elif bytecode == Bytecode.DIV:
-                pass
+                self._send(activation_record, "/", activation_record.peek().get_class())
             elif bytecode == Bytecode.MOD:
-                pass
+                self._send(activation_record, "%", activation_record.peek().get_class())
             elif bytecode == Bytecode.PUSH:
                 pass
             elif bytecode == Bytecode.POP:
