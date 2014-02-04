@@ -1,5 +1,52 @@
 
 class ActivationRecord(object):
+    """
+        Defines an Activation Record.
+
+        The shape of the stack is as follows, where the top of the stack is
+        the lowest item in the diagram (keeping to the same convention as
+        "The Dragon Book" (Compilers: Principles, Techniques and Tools -
+        Aho, Lam Sethi and Ullman 2014 (International Ed.)
+
+        --------------------
+        | Parameters       |
+        |------------------|
+        | Return Vals      |
+        |------------------|
+        | Caller Record    |
+        | aka Control Link |
+        |------------------|
+        | Access Link      |
+        |------------------|
+        | Machine Status   |
+        |------------------|
+        | Local Data       |
+        |------------------|
+        | Temporaries      |
+        --------------------
+
+        Parameters: refer to the parameters used by the calling procedure.
+                    NOTE: In register based machines these are often placed
+                    in registers for efficiency
+
+        Return Values: Refers to the return value of the function (if there is one)
+                        May be placed in a register for efficiency in some machines.
+
+        Control Link:  Refers to the caller.
+
+        Access Link:   Refers to Activation Records that may contain the nested procedure
+                    for access to non-local data.
+
+        Machine Status: Contains machine state that may need to be restored after
+                        a method has completed.
+
+        Local Data:  Contains local constant data that is to be used during the execution of the
+                    method.
+
+        Temporaries: Contains any temporary variables that may need to be allocated and used
+                     during the execution of the procedure.
+
+    """
 
     _immutable_fields_ = ["_stack"]
 
