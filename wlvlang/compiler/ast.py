@@ -153,7 +153,7 @@ class AddOp(Node):
         self._rhs.compile(context)
         context.emit(Bytecode.ADD)
 
-class SubstractOp(Node):
+class SubtractOp(Node):
     def __init__(self, lhs, rhs):
         self._lhs = lhs
         self._rhs = rhs
@@ -368,7 +368,7 @@ class Transformer(object):
 
         if len(node.children) == 3 and node.children[1].additional_info == "=":
             # Normal assignment
-            return Assignment(node.children[0].additional_info, self.visit_bool(node.children[2]))
+            return Assignment(node.children[0].symbol, self.visit_bool(node.children[2]))
 
         if node.children[0].additional_info == 'while':
             return WhileStatement(self.visit_bool(node.children[2]), self._get_statements(node.children[5]))
