@@ -18,8 +18,6 @@ class ActivationRecord(object):
         |------------------|
         | Return Vals      |
         |------------------|
-        | Machine Status   |
-        |------------------|
         | Local Data       |
         |------------------|
         | Temporaries      |
@@ -37,9 +35,6 @@ class ActivationRecord(object):
         Access Link:   Refers to Activation Records that may contain the nested procedure
                     for access to non-local data.
 
-        Machine Status: Contains machine state that may need to be restored after
-                        a method has completed.
-
         Local Data:  Contains local constant data that is to be used during the execution of the
                     method.
 
@@ -50,10 +45,10 @@ class ActivationRecord(object):
 
     _immutable_fields_ = ["_stack"]
 
-    def __init__(self, locals_count, previous_record, access_link=None):
+    def __init__(self, locals_count, temp_size, previous_record, access_link=None):
         """ The locals_count should include the parameters """
 
-        self._stack = [None] * (locals_count + 1)
+        self._stack = [None] * (locals_count + temp_size + 2)
         self._stack_pointer = 0
         self.push(previous_record)
         self.push(access_link)
@@ -68,6 +63,11 @@ class ActivationRecord(object):
     def get_access_link(self):
         """ Get the access link for this object (if it has one).  Returns None if it does not """
         return self._stack[1];
+
+    def get_element_at(self, index):
+        """ Get the element at a specific index in the arec stack """
+        assert index < len(self._stack)
+        return  self._stack[index]
 
     def is_root_record(self):
         return self.get_previous_record() == None
