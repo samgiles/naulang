@@ -5,30 +5,377 @@ class Node:
     def __ne__(self, other):
         return not self == other
 
+    def compiler(self, context):
+        pass
+
+class Block(Node):
+    def __init__(self, statements):
+        self._statements = statements
+
+    def compile(self, context):
+        for statement in self._statements:
+            statement.compile(context)
 
 
-class ConstantInteger(Node):
+class Statement(Node):
+    def __init__(self, expression):
+        self._expression = expression
+
+    def compiler(self, context):
+        self._expression.compile(context)
+
+class BooleanConstant(Node):
 
     def __init__(self, value):
         self._value = value
 
-    def __eq__(self, other):
-        return isinstance(other, ConstantInteger) and other._value == self._value
+    def compile(self, context):
+        from wlvlang.vmobjects.boolean import Boolean
+        boolean = Boolean(self._value)
+        context.emit(Bytecode.LOAD_CONST, context.register_constant(boolean))
 
-class ConstantFloat(Node):
+class StringConstant(Node):
 
     def __init__(self, value):
         self._value = value
 
-    def __eq__(self, other):
-        return isinstance(other, ConstantFloat) and other._value == self._value
+    def compile(self, context):
+        pass
 
-class Send(Node):
+class IntegerConstant(Node):
 
-    def __init__(self, primaryexpression, message, arguments=[]):
-        self._primary = primaryexpression
-        self._message = message
-        self._arguments = arguments
+    def __init__(self, value):
+        self._value = value
 
-    def __eq__(self, other):
-        return isinstance(other, Send) and self._message == other._message and self._primary == other._primary and self._arguments == other._arguments
+    def compile(self, context):
+        from wlvlang.vmobjects.integer import Integer
+        integer = Integer(self._value)
+        context.emit(Bytecode.LOAD_CONST, context.register_constant(integer))
+
+class Assignment(Node):
+
+    def __init__(self, variable_name, expression):
+        self._varname = variable_name
+        self._expression = expression
+
+    def compiler(self, context):
+        pass
+
+class Or(Node):
+
+    def __init__(self, lhs, rhs):
+        self._lhs = lhs
+        self._rhs = rhs
+
+    def compile(self, context):
+        self._lhs.compile(context)
+        self._rhs.compile(context)
+        context.emit(Bytecode.OR)
+
+class And(Node):
+    def __init__(self, lhs, rhs):
+        self._lhs = lhs
+        self._rhs = rhs
+
+    def compile(self, context):
+        self._lhs.compile(context)
+        self._rhs.compile(context)
+        context.emit(Bytecode.AND)
+
+class Equals(Node):
+
+    def __init__(self, lhs, rhs):
+        self._lhs = lhs
+        self._rhs = rhs
+
+    def compile(self, context):
+        self._lhs.compile(context)
+        self._rhs.compile(context)
+        context.emit(Bytecode.EQUAL)
+
+class NotEquals(Node):
+    def __init__(self, lhs, rhs):
+        self._lhs = lhs
+        self._rhs = rhs
+
+    def compile(self, context):
+        self._lhs.compile(context)
+        self._rhs.compile(context)
+        context.emit(Bytecode.NOT_EQUAL)
+
+class LessThan(Node):
+    def __init__(self, lhs, rhs):
+        self._lhs = lhs
+        self._rhs = rhs
+
+    def compile(self, context):
+        self._lhs.compile(context)
+        self._rhs.compile(context)
+        context.emit(Bytecode.LESS_THAN)
+
+class LessThanOrEqual(Node):
+    def __init__(self, lhs, rhs):
+        self._lhs = lhs
+        self._rhs = rhs
+
+    def compile(self, context):
+        self._lhs.compile(context)
+        self._rhs.compile(context)
+        context.emit(Bytecode.LESS_THAN_EQ)
+
+class GreaterThan(Node):
+    def __init__(self, lhs, rhs):
+        self._lhs = lhs
+        self._rhs = rhs
+
+    def compile(self, context):
+        self._lhs.compile(context)
+        self._rhs.compile(context)
+        context.emit(Bytecode.GREATER_THAN)
+
+class GreaterThanOrEqual(Node):
+    def __init__(self, lhs, rhs):
+        self._lhs = lhs
+        self._rhs = rhs
+
+    def compile(self, context):
+        self._lhs.compile(context)
+        self._rhs.compile(context)
+        context.emit(Bytecode.LESS_THAN_EQ)
+
+class AddOp(Node):
+    def __init__(self, lhs, rhs):
+        self._lhs = lhs
+        self._rhs = rhs
+
+    def compile(self, context):
+        self._lhs.compile(context)
+        self._rhs.compile(context)
+        context.emit(Bytecode.ADD)
+
+class SubstractOp(Node):
+    def __init__(self, lhs, rhs):
+        self._lhs = lhs
+        self._rhs = rhs
+
+    def compile(self, context):
+        self._lhs.compile(context)
+        self._rhs.compile(context)
+        context.emit(Bytecode.SUB)
+
+class MulOp(Node):
+    def __init__(self, lhs, rhs):
+        self._lhs = lhs
+        self._rhs = rhs
+
+    def compile(self, context):
+        self._lhs.compile(context)
+        self._rhs.compile(context)
+        context.emit(Bytecode.MUL)
+
+class DivOp(Node):
+    def __init__(self, lhs, rhs):
+        self._lhs = lhs
+        self._rhs = rhs
+
+    def compile(self, context):
+        self._lhs.compile(context)
+        self._rhs.compile(context)
+        context.emit(Bytecode.DIV)
+
+class UnaryNot(Node):
+    def __init__(self, expression):
+        self._expression =expression
+
+    def compile(self, context):
+        self._expression.compile(context)
+        context.emit(Bytecode.NOT)
+
+class UnaryNegate(Node):
+    def __init__(self, expression):
+        self._expression =expression
+
+    def compile(self, context):
+        self._expression.compile(context)
+        context.emit(Bytecode.NEG)
+
+class WhileStatement(Node):
+
+    def __init__(self, condition, block):
+        self._condition = condition
+        self._statements = block
+
+    def compile(self, context):
+        pos = len(context.data)
+        self._condition.compile(context)
+        context.emit(bytecode.JUMP_IF_FALSE)
+        jmp_back_to = len(context.data) - 1
+        self._statements.compile(context)
+        context.emit(Bytecode.JUMP_BACK, pos)
+        context.data[jmp_back_to] = chr(len(context.data))
+
+class IfStatement(Node):
+    def __init__(self, condition, block):
+        self._condition = condition
+        self._statements = block
+
+    def compile(self, context):
+        self._condition.compile(context)
+        context.emit(Bytecode.JUMP_IF_FALSE, 0)
+        position = len(context.data) - 1
+        self._statements.compile(context)
+        context.data[position] = chr(len(context.data))
+
+class PrintStatement(Node):
+    def __init__(self, expression):
+        self._expression = expression
+
+    def compile(self, context):
+        self._expression.compile(context)
+        context.emit(Bytecode.PRINT)
+
+class Transformer(object):
+
+    def _get_statements(self, kleene):
+        statements = []
+
+        while len(kleene.children) == 2:
+            statements.append(self.visit_stmt(kleene.children[0]))
+            kleene = kleene.children[1]
+
+        statements.append(self.visit_stmt(kleene.children[0]))
+        return statements
+
+    def visit_program(self, node):
+        statements = self._get_statements(node.children[0])
+        return statements
+
+    def visit_bool(self, node):
+        if len(node.children) == 1:
+            return self.visit_join(node.children[0])
+
+        return Or(self.visit_join(node.children[0]), self.visit_bool(node.children[2]))
+
+    def visit_join(self, node):
+        if len(node.children) == 1:
+            return self.visit_equality(node.children[0])
+
+        return And(self.visit_equality(node.children[0]), self.visit_join(node.children[2]))
+
+    def visit_equality(self, node):
+        if len(node.children) == 1:
+            return self.visit_relation(node.children[0])
+
+        if node.children[1].additional_info == "==":
+            return Equals(self.visit_relation(node.children[0]), self.visit_expr(node.children[2]))
+
+        if node.children[1].additional_info == "!=":
+            return NotEquals(self.visit_relation(node.children[0]), self.visit_expr(node.children[2]))
+
+        raise TypeError("Failed to parse an equality expression")
+
+    def visit_relation(self, node):
+        if len(node.children) == 1:
+            return self.visit_expr(node.children[0])
+
+        if node.children[1].additional_info == "<":
+            return LessThan(self.visit_expr(node.children[0]), self.visit_expr(node.children[2]))
+        if node.children[1].additional_info == "<=":
+            return LessThanOrEqual(self.visit_expr(node.children[0]), self.visit_expr(node.children[2]))
+        if node.children[1].additional_info == ">":
+            return GreaterThan(self.visit_expr(node.children[0]), self.visit_expr(node.children[2]))
+        if node.children[1].additional_info == ">=":
+            return GreaterThanOrEqual(self.visit_expr(node.children[0]), self.visit_expr(node.children[2]))
+
+        raise TypeError("Failed to parse a relation expression")
+
+
+    def visit_expr(self, node):
+        if len(node.children) == 1:
+            return self.visit_term(node.children[0])
+
+        if node.children[1].additional_info == "+":
+            return AddOp(self.visit_term(node.children[0]), self.visit_expr(node.children[2]))
+
+        if node.children[1].additional_info == "-":
+            return SubtractOp(self.visit_term(node.children[0]), self.visit_expr(node.children[2]))
+
+        raise TypeError("Failed to parse an additive expression")
+
+    def visit_term(self, node):
+        if len(node.children) == 1:
+            return self.visit_unary(node.children[0])
+
+        if node.children[1].additional_info == "*":
+            return MulOp(self.visit_unary(node.children[0]), self.visit_term(node.children[2]))
+        if node.children[1].additional_info == "/":
+            return DivOp(self.visit_unary(node.children[0]), self.visit_term(node.children[2]))
+
+        raise TypeError("Failed to parse an multitive expression")
+
+    def visit_unary(self, node):
+        if len(node.children) == 1:
+            return self.visit_factor(node.children[0])
+
+        if node.children[0].additional_info == "not" or node.children[0].additional_info == "!":
+            return UnaryNot(self.visit_unary(node.children[1]))
+
+        if node.children[0].additional_info == "-":
+            return UnaryNegate(self.visit_unary(node.children[1]))
+
+        raise TypeError("Failed to parse an unary expression")
+
+    def visit_factor(self, node):
+        if len(node.children) == 1:
+            return self.visit_atom(node.children[0])
+
+        return self.visit_bool(node.children[1])
+
+    def visit_atom(self, node):
+        if node.children[0].symbol == "booleanliteral":
+            return self.visit_booleanliteral(node.children[0])
+
+        if node.children[0].symbol == "numericliteral":
+            return self.visit_numericliteral(node.children[0])
+
+        if node.children[0].symbol == "stringliteral":
+            return self.visit_stringliteral(node.children[0])
+
+        if node.children[0].symbol == "identifier":
+            return self.visit_identifier(node.children[0])
+
+        raise TypeError("Failed to parse an atom")
+
+
+    def visit_booleanliteral(self, node):
+        if node.additional_info == "true":
+            return BooleanConstant(True)
+
+        return BooleanConstant(False)
+
+    def visit_numericliteral(self, node):
+        if node.symbol == "FLOATLITERAL":
+            pass # TODO
+
+        if node.symbol == "INTEGERLITERAL":
+            # TODO: Convert string to bigint accordingly
+            return IntegerConstant(int(node.additional_info))
+
+    def visit_stringliteral(self, node):
+        return StringConstant(node.children[0].additional_info)
+
+    def visit_stmt(self, node):
+
+        if len(node.children) == 3 and node.children[1].additional_info == "=":
+            # Normal assignment
+            return Assignment(node.children[0].additional_info, self.visit_bool(node.children[2]))
+
+        if node.children[0].additional_info == 'while':
+            return WhileStatement(self.visit_bool(node.children[2]), self._get_statements(node.children[5]))
+
+        if node.children[0].additional_info == 'if':
+            return IfStatement(self.visit_bool(node.children[2]), self._get_statements(node.children[5]))
+
+        if node.children[0].additional_info == 'print':
+            return PrintStatement(self.visit_bool(node.children[1]))
+
