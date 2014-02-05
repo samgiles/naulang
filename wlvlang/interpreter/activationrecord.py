@@ -9,14 +9,14 @@ class ActivationRecord(object):
         Aho, Lam Sethi and Ullman 2014 (International Ed.)
 
         |------------------|
+        | Access Link      |
+        |------------------|
         | Caller Record    |
         | aka Control Link |
         --------------------
         | Parameters       |
         |------------------|
         | Return Vals      |
-        |------------------|
-        | Access Link      |
         |------------------|
         | Machine Status   |
         |------------------|
@@ -62,7 +62,7 @@ class ActivationRecord(object):
             See Activation Recrord layout for
             explanation as to why the index is always 0
         """
-        return self._stack[0];
+        return self._stack[1];
 
     def is_root_record(self):
         return self.get_previous_record() == None
