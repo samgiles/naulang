@@ -81,3 +81,7 @@ class ActivationRecord(object):
         """ Pop an object off of the stack """
         self._stack_pointer = self._stack_pointer - 1
         return self._stack[self._stack_pointer]
+
+    def peek(self):
+        """ Peek at the object on top of the stack. """
+        return self._stack[self._stack_pointer - 1]
