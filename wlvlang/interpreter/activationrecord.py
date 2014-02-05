@@ -53,9 +53,6 @@ class ActivationRecord(object):
     def __init__(self, locals_count, previous_record):
         """ The locals_count should include the parameters """
 
-        # TODO: Not sure this stack will be useful initialised like this
-        # pretty sure I'll need to initialise with an object type from the
-        # runtime's object space.
         self._stack = [None] * (locals_count + 1)
         self._stack_pointer = 0
         self.push(previous_record)
