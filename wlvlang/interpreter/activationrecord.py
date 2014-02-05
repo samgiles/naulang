@@ -8,13 +8,13 @@ class ActivationRecord(object):
         "The Dragon Book" (Compilers: Principles, Techniques and Tools -
         Aho, Lam Sethi and Ullman 2014 (International Ed.)
 
+        |------------------|
+        | Caller Record    |
+        | aka Control Link |
         --------------------
         | Parameters       |
         |------------------|
         | Return Vals      |
-        |------------------|
-        | Caller Record    |
-        | aka Control Link |
         |------------------|
         | Access Link      |
         |------------------|
@@ -51,16 +51,21 @@ class ActivationRecord(object):
     _immutable_fields_ = ["_stack"]
 
     def __init__(self, locals_count, previous_record):
+        """ The locals_count should include the parameters """
 
         # TODO: Not sure this stack will be useful initialised like this
         # pretty sure I'll need to initialise with an object type from the
         # runtime's object space.
-        self._stack = [None] * locals_count
+        self._stack = [None] * (locals_count + 1)
         self._stack_pointer = 0
-        self.previous_record = previous_record
+        self.push(previous_record)
 
     def get_previous_record(self):
-        return self.previous_record
+        """ Get the previous activation record.
+            See Activation Recrord layout for
+            explanation as to why the index is always 0
+        """
+        return self._stack[0];
 
     def is_root_record(self):
         return self.get_previous_record() == None
