@@ -16,6 +16,9 @@ class Block(Node):
         for statement in self._statements:
             statement.compile(context)
 
+    def __repr__(self):
+        return "Block(%r)" % (repr(self._statements))
+
 
 class Statement(Node):
     def __init__(self, expression):
@@ -23,6 +26,9 @@ class Statement(Node):
 
     def compiler(self, context):
         self._expression.compile(context)
+
+    def __repr__(self):
+        return "Statement(%r)" % (repr(self._expression))
 
 class BooleanConstant(Node):
 
@@ -34,6 +40,9 @@ class BooleanConstant(Node):
         boolean = Boolean(self._value)
         context.emit(Bytecode.LOAD_CONST, context.register_constant(boolean))
 
+    def __repr__(self):
+        return "BooleanConstant(%r)" % (self._value)
+
 class StringConstant(Node):
 
     def __init__(self, value):
@@ -41,6 +50,9 @@ class StringConstant(Node):
 
     def compile(self, context):
         pass
+
+    def __repr__(self):
+        return "StringConstant(%s)" % (self._value)
 
 class IntegerConstant(Node):
 
@@ -52,6 +64,9 @@ class IntegerConstant(Node):
         integer = Integer(self._value)
         context.emit(Bytecode.LOAD_CONST, context.register_constant(integer))
 
+    def __repr__(self):
+        return "IntegerConstant(%d)" % (self._value)
+
 class Assignment(Node):
 
     def __init__(self, variable_name, expression):
@@ -60,6 +75,9 @@ class Assignment(Node):
 
     def compiler(self, context):
         pass
+
+    def __repr__(self):
+        return "Assignment(%s, %r)" % (self._varname, repr(self._expression))
 
 class Or(Node):
 
@@ -71,6 +89,9 @@ class Or(Node):
         self._lhs.compile(context)
         self._rhs.compile(context)
         context.emit(Bytecode.OR)
+
+    def __repr__(self):
+        return "Or(%r, %r)" % (repr(self._lhs), repr(self._rhs))
 
 class And(Node):
     def __init__(self, lhs, rhs):
@@ -153,6 +174,9 @@ class AddOp(Node):
         self._rhs.compile(context)
         context.emit(Bytecode.ADD)
 
+    def __repr__(self):
+        return "AddOp(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+
 class SubtractOp(Node):
     def __init__(self, lhs, rhs):
         self._lhs = lhs
@@ -162,6 +186,9 @@ class SubtractOp(Node):
         self._lhs.compile(context)
         self._rhs.compile(context)
         context.emit(Bytecode.SUB)
+
+    def __repr__(self):
+        return "SubtractOp(%r, %r)" % (repr(self._lhs), repr(self._rhs))
 
 class MulOp(Node):
     def __init__(self, lhs, rhs):
@@ -173,6 +200,9 @@ class MulOp(Node):
         self._rhs.compile(context)
         context.emit(Bytecode.MUL)
 
+    def __repr__(self):
+        return "MulOp(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+
 class DivOp(Node):
     def __init__(self, lhs, rhs):
         self._lhs = lhs
@@ -182,6 +212,9 @@ class DivOp(Node):
         self._lhs.compile(context)
         self._rhs.compile(context)
         context.emit(Bytecode.DIV)
+
+    def __repr__(self):
+        return "DivOp(%r, %r)" % (repr(self._lhs), repr(self._rhs))
 
 class UnaryNot(Node):
     def __init__(self, expression):
