@@ -1,6 +1,6 @@
 from rpython.rlib.parsing.tree import Symbol
 from wlvlang.compiler.context import MethodCompilerContext
-from wlvlang.compiler.ast import Bytecode
+from wlvlang.interpreter.bytecode import Bytecode
 
 class Node:
     def __eq__(self, other):
@@ -75,7 +75,7 @@ class Assignment(Node):
         self._varname = variable_name
         self._expression = expression
 
-    def compiler(self, context):
+    def compile(self, context):
         local = context.register_local(self._varname)
         self._expression.compile(context)
         context.emit(Bytecode.STORE, local)
@@ -318,6 +318,8 @@ class FunctionStatement(Node):
 
         self._block.compile(new_function_context)
         context.add_inner_context(new_function_context)
+        method = new_function_context.generate_method()
+        context.emit(Bytecode.LOAD_CONST, context.register_literal(method))
 
     def __repr__(self):
         return "FunctionStatement(%r, %r)" % (self._paramlist, self._block)
@@ -347,6 +349,17 @@ class ReturnStatement(Node):
 
     def __repr__(self):
         return "ReturnStatement(%r)" % self._statement
+
+class IdentifierExpression(Node):
+    def __init__(self, identifier):
+        self._identifier = identifier
+
+    def compile(self, context):
+        local = context.register_local(self._identifier)
+        context.emit(Bytecode.LOAD, local)
+
+    def __repr__(self):
+        return "IdentifierExpression(%r)" % self._identifier
 
 class Transformer(object):
 
@@ -479,7 +492,7 @@ class Transformer(object):
         return StringConstant(node.children[0].additional_info)
 
     def visit_identifier(self, node):
-        return node.children[0].additional_info
+        return IdentifierExpression(node.children[0].additional_info)
 
     def visit_fnstatement(self, node):
         paramlist = []
@@ -516,7 +529,8 @@ class Transformer(object):
             else:
                 args.append(self.visit_stmt(stmt))
 
-        args.append(self.visit_stmt(node.children[0].children[1].children[0]))
+        if len(node.children[0].children) > 1:
+            args.append(self.visit_stmt(node.children[0].children[1].children[0]))
         return args
 
     def visit_returnstmt(self, node):

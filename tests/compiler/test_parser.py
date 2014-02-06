@@ -61,11 +61,12 @@ def test_function_statement():
     }""") == ast.Block([ast.FunctionStatement([], ast.Block([ast.IntegerConstant(100)]))])
 
 def test_function_call_statement():
+    print repr(parse("a()"))
     assert parse("a()") == ast.Block([ast.FunctionCall('a', [])])
     print repr(parse("""a()
                         b(10, a, 0) """))
     assert parse("""a()
-                    b(10, a, 0) """) == ast.Block([ast.FunctionCall('a', []), ast.FunctionCall('b', [ast.IntegerConstant(10), 'a', ast.IntegerConstant(0)])])
+                    b(10, a, 0) """) == ast.Block([ast.FunctionCall('a', []), ast.FunctionCall('b', [ast.IntegerConstant(10), ast.IdentifierExpression('a'), ast.IntegerConstant(0)])])
 
 def test_return_statement():
     assert parse("""fn() {

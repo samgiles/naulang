@@ -19,7 +19,7 @@ class MethodCompilerContext(object):
         return self._universe
 
     def generate_method(self):
-        pass
+        return None
 
     def set_outer(self, outer_context):
         self._outer = outer_context
@@ -50,12 +50,13 @@ class MethodCompilerContext(object):
         return self._outer.has_local()
 
 
-    def register_literals(self, constant_value):
+    def register_literal(self, constant_value):
         """ Register a constant value """
         self._literals.append(constant_value)
         return len(self._literals)
 
     def emit(self, bytecode, argument=None):
-        self._bytecode.append(bytecode)
+        self.bytecode.append(bytecode)
+
         if argument != None:
-            self._bytecode.append(bytecode)
+            self.bytecode.append(chr(argument))
