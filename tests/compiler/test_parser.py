@@ -31,3 +31,8 @@ def test_binary_expression():
     assert parse("100 >= 100") == ast.Block([ast.GreaterThanOrEqual(ast.IntegerConstant(100), ast.IntegerConstant(100))])
     assert parse("100 <= 100") == ast.Block([ast.LessThanOrEqual(ast.IntegerConstant(100), ast.IntegerConstant(100))])
 
+def test_if_statement():
+    assert(parse("""if (true) {
+        100
+        200
+    }""") == ast.Block([ast.IfStatement(ast.BooleanConstant(True), ast.Block([ast.IntegerConstant(100), ast.IntegerConstant(200)]))]))
