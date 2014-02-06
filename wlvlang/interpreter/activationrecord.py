@@ -85,3 +85,9 @@ class ActivationRecord(object):
     def peek(self):
         """ Peek at the object on top of the stack. """
         return self._stack[self._stack_pointer - 1]
+
+    def get_literal_at(self, index):
+        pass
+
+    def get_local_at(self, index):
+        pass
