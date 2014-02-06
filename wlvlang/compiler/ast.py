@@ -454,10 +454,10 @@ class Transformer(object):
 
 
     def visit_paramlist(self, node):
-        pass
-
-
-
+        paramlist = []
+        for identifier in node.children:
+            paramlist.append(identifier.children[0].children[0].additional_info)
+        return paramlist
 
     def visit_stmt(self, node):
 
