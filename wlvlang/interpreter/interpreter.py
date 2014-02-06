@@ -93,6 +93,3 @@ class Interpreter(object):
                 pass
             else:
                 raise TypeError("Bytecode is not implemented: " + str(bytecode))
-
-            if pc == current_pc:
-                pc = pc + 1
