@@ -1,15 +1,25 @@
 class Bytecode(object):
-
-    HALT       = 0
-    SEND       = 1
-    BRANCH     = 2
-    ADD     = 3
-    SUB     = 4
-    MUL     = 5
-    DIV     = 6
-    MOD     = 7
-    PUSH    = 8
-    POP     = 9
+    HALT = 0
+    LOAD_CONST = 1
+    STORE = 2
+    OR = 3
+    AND = 4
+    EQUAL = 5
+    NOT_EQUAL = 6
+    LESS_THAN = 7
+    LESS_THAN_EQ = 8
+    GREATER_THAN = 9
+    ADD = 10
+    SUB = 11
+    MUL = 12
+    DIV = 13
+    NOT = 14
+    NEG = 15
+    JUMP_IF_FALSE = 16
+    JUMP_BACK = 17
+    PRINT = 18
+    INVOKE = 19
+    RETURN = 20
 
 
 def _sorted_bytecode_names(cls):
