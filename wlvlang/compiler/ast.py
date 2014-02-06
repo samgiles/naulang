@@ -103,6 +103,9 @@ class And(Node):
         self._rhs.compile(context)
         context.emit(Bytecode.AND)
 
+    def __repr__(self):
+        return "And(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+
 class Equals(Node):
 
     def __init__(self, lhs, rhs):
@@ -114,6 +117,9 @@ class Equals(Node):
         self._rhs.compile(context)
         context.emit(Bytecode.EQUAL)
 
+    def __repr__(self):
+        return "Equals(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+
 class NotEquals(Node):
     def __init__(self, lhs, rhs):
         self._lhs = lhs
@@ -123,6 +129,9 @@ class NotEquals(Node):
         self._lhs.compile(context)
         self._rhs.compile(context)
         context.emit(Bytecode.NOT_EQUAL)
+
+    def __repr__(self):
+        return "NotEquals(%r, %r)" % (repr(self._lhs), repr(self._rhs))
 
 class LessThan(Node):
     def __init__(self, lhs, rhs):
@@ -134,6 +143,9 @@ class LessThan(Node):
         self._rhs.compile(context)
         context.emit(Bytecode.LESS_THAN)
 
+    def __repr__(self):
+        return "LessThan(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+
 class LessThanOrEqual(Node):
     def __init__(self, lhs, rhs):
         self._lhs = lhs
@@ -143,6 +155,8 @@ class LessThanOrEqual(Node):
         self._lhs.compile(context)
         self._rhs.compile(context)
         context.emit(Bytecode.LESS_THAN_EQ)
+    def __repr__(self):
+        return "LessThanOrEqual(%r, %r)" % (repr(self._lhs), repr(self._rhs))
 
 class GreaterThan(Node):
     def __init__(self, lhs, rhs):
@@ -154,6 +168,9 @@ class GreaterThan(Node):
         self._rhs.compile(context)
         context.emit(Bytecode.GREATER_THAN)
 
+    def __repr__(self):
+        return "GreaterThan(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+
 class GreaterThanOrEqual(Node):
     def __init__(self, lhs, rhs):
         self._lhs = lhs
@@ -163,6 +180,8 @@ class GreaterThanOrEqual(Node):
         self._lhs.compile(context)
         self._rhs.compile(context)
         context.emit(Bytecode.LESS_THAN_EQ)
+    def __repr__(self):
+        return "GreaterThanOrEqual(%r, %r)" % (repr(self._lhs), repr(self._rhs))
 
 class AddOp(Node):
     def __init__(self, lhs, rhs):
@@ -218,23 +237,29 @@ class DivOp(Node):
 
 class UnaryNot(Node):
     def __init__(self, expression):
-        self._expression =expression
+        self._expression = expression
 
     def compile(self, context):
         self._expression.compile(context)
         context.emit(Bytecode.NOT)
 
+    def __repr__(self):
+        return "UnaryNot(%r)" % (repr(self._expression))
+
 class UnaryNegate(Node):
     def __init__(self, expression):
-        self._expression =expression
+        self._expression = expression
 
     def compile(self, context):
         self._expression.compile(context)
         context.emit(Bytecode.NEG)
 
+    def __repr__(self):
+        return "UnaryNegate(%r)" % (repr(self._expression))
+
 class WhileStatement(Node):
 
-    def __init__(self, condition, block):
+    def __init__(self, condition=condition, block=block):
         self._condition = condition
         self._statements = block
 
@@ -247,8 +272,11 @@ class WhileStatement(Node):
         context.emit(Bytecode.JUMP_BACK, pos)
         context.data[jmp_back_to] = chr(len(context.data))
 
+    def __repr__(self):
+        return "WhileStatement(condition=%r, block=%r)" % (repr(self._condition), repr(self._block))
+
 class IfStatement(Node):
-    def __init__(self, condition, block):
+    def __init__(self, condition=condition, block=block):
         self._condition = condition
         self._statements = block
 
@@ -259,6 +287,9 @@ class IfStatement(Node):
         self._statements.compile(context)
         context.data[position] = chr(len(context.data))
 
+    def __repr__(self):
+        return "IfStatement(condition=%r, block=%r)" % (repr(self._condition), repr(self._block))
+
 class PrintStatement(Node):
     def __init__(self, expression):
         self._expression = expression
@@ -266,6 +297,9 @@ class PrintStatement(Node):
     def compile(self, context):
         self._expression.compile(context)
         context.emit(Bytecode.PRINT)
+
+    def __repr__(self):
+        return "PrintStatement(%r)" % (repr(self._condition))
 
 class Transformer(object):
 
