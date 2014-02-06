@@ -325,6 +325,16 @@ class FunctionCall(Node):
     def __repr__(self):
         return "FunctionCall(%r, %r)" % (self._identifier, self._arglist)
 
+class ReturnStatement(Node):
+    def __init__(self, statement):
+        self._statement = statement
+
+    def compile(self, context):
+        pass
+
+    def __repr__(self):
+        return "ReturnStatement(%r)" % self._statement
+
 class Transformer(object):
 
     def _get_statements(self, kleene):
@@ -496,6 +506,9 @@ class Transformer(object):
         args.append(self.visit_stmt(node.children[0].children[1].children[0]))
         return args
 
+    def visit_returnstmt(self, node):
+        return ReturnStatement(self.visit_stmt(node.children[1]))
+
     def visit_stmt(self, node):
 
         if len(node.children) == 3 and node.children[1].additional_info == "=":
@@ -510,6 +523,9 @@ class Transformer(object):
 
         if node.children[0].additional_info == 'fn':
             return self.visit_fnstatement(node)
+
+        if node.children[0].additional_info == 'return':
+            return self.visit_returnstmt(node)
 
         if node.children[0].additional_info == 'while':
             return WhileStatement(self.visit_stmt(node.children[2]), self._get_statements(node.children[5]))

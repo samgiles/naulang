@@ -17,6 +17,7 @@ stmt: "if" "(" stmt ")" "{" stmt* "}"
 	| "fn" "(" [paramlist]? ")" "{" stmt* "}"
 	| identifier "=" stmt
 	| identifier "(" [arglist]? ")"
+	| "return" stmt
     | bool
     ;
 
