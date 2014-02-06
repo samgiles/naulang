@@ -270,7 +270,7 @@ class WhileStatement(Node):
     def compile(self, context):
         pos = len(context.data)
         self._condition.compile(context)
-        context.emit(Bytecode.JUMP_IF_FALSE)
+        context.emit(Bytecode.JUMP_IF_FALSE, 0)
         jmp_back_to = len(context.data) - 1
         self._statements.compile(context)
         context.emit(Bytecode.JUMP_BACK, pos)
