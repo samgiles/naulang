@@ -42,3 +42,6 @@ def test_while_statement():
         100
         200
     }""") == ast.Block([ast.WhileStatement(ast.BooleanConstant(True), ast.Block([ast.IntegerConstant(100), ast.IntegerConstant(200)]))]))
+
+def test_print_statement():
+    assert(parse("""print true""") == ast.Block([ast.PrintStatement(ast.BooleanConstant(True))]))
