@@ -2,6 +2,7 @@ import py
 from rpython.rlib.parsing.ebnfparse import parse_ebnf, make_parse_function
 from rpython.rlib.parsing.parsing import ParseError
 from wlvlang.compiler import compilerdir
+from wlvlang.compiler.ast import Transformer
 
 grammar = py.path.local(compilerdir).join('grammar.ebnf').read("rt")
 try:
