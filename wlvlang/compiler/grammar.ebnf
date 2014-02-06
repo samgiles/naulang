@@ -15,8 +15,11 @@ stmt: identifier "=" stmt
     | "if" "(" stmt ")" "{" stmt* "}"
     | "while" "(" stmt ")" "{" stmt* "}"
     | "print" stmt
+	| "fn" "(" [paramlist] ")" "{" stmt* "}"
     | bool
     ;
+
+paramlist: (identifier ",")* (identifier [","]);
 
 identifier: IDENTIFIER;
 
