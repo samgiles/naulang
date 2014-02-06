@@ -4,6 +4,7 @@ from wlvlang.compiler.sourceparser import parse
 from wlvlang.compiler import ast
 
 def test_parse_constant_integer():
+    assert parse("0") == ast.Block([ast.IntegerConstant(0)])
     assert parse("100") == ast.Block([ast.IntegerConstant(100)])
     assert parse("-100") == ast.Block([ast.UnaryNegate(ast.IntegerConstant(100))])
 
