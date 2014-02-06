@@ -17,7 +17,7 @@ class Block(Node):
             statement.compile(context)
 
     def __repr__(self):
-        return "Block(%r)" % (repr(self._statements))
+        return "Block(%r)" % (self._statements)
 
 
 class Statement(Node):
@@ -28,7 +28,7 @@ class Statement(Node):
         self._expression.compile(context)
 
     def __repr__(self):
-        return "Statement(%r)" % (repr(self._expression))
+        return "Statement(%r)" % (self._expression)
 
 class BooleanConstant(Node):
 
@@ -77,7 +77,7 @@ class Assignment(Node):
         pass
 
     def __repr__(self):
-        return "Assignment(%s, %r)" % (self._varname, repr(self._expression))
+        return "Assignment(%r, %r)" % (self._varname, self._expression)
 
 class Or(Node):
 
@@ -91,7 +91,7 @@ class Or(Node):
         context.emit(Bytecode.OR)
 
     def __repr__(self):
-        return "Or(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+        return "Or(%r, %r)" % (self._lhs, self._rhs)
 
 class And(Node):
     def __init__(self, lhs, rhs):
@@ -104,7 +104,7 @@ class And(Node):
         context.emit(Bytecode.AND)
 
     def __repr__(self):
-        return "And(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+        return "And(%r, %r)" % (self._lhs, self._rhs)
 
 class Equals(Node):
 
@@ -118,7 +118,7 @@ class Equals(Node):
         context.emit(Bytecode.EQUAL)
 
     def __repr__(self):
-        return "Equals(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+        return "Equals(%r, %r)" % (self._lhs, self._rhs)
 
 class NotEquals(Node):
     def __init__(self, lhs, rhs):
@@ -131,7 +131,7 @@ class NotEquals(Node):
         context.emit(Bytecode.NOT_EQUAL)
 
     def __repr__(self):
-        return "NotEquals(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+        return "NotEquals(%r, %r)" % (self._lhs, self._rhs)
 
 class LessThan(Node):
     def __init__(self, lhs, rhs):
@@ -144,7 +144,7 @@ class LessThan(Node):
         context.emit(Bytecode.LESS_THAN)
 
     def __repr__(self):
-        return "LessThan(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+        return "LessThan(%r, %r)" % ((self._lhs), (self._rhs))
 
 class LessThanOrEqual(Node):
     def __init__(self, lhs, rhs):
@@ -156,7 +156,7 @@ class LessThanOrEqual(Node):
         self._rhs.compile(context)
         context.emit(Bytecode.LESS_THAN_EQ)
     def __repr__(self):
-        return "LessThanOrEqual(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+        return "LessThanOrEqual(%r, %r)" % ((self._lhs), (self._rhs))
 
 class GreaterThan(Node):
     def __init__(self, lhs, rhs):
@@ -169,7 +169,7 @@ class GreaterThan(Node):
         context.emit(Bytecode.GREATER_THAN)
 
     def __repr__(self):
-        return "GreaterThan(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+        return "GreaterThan(%r, %r)" % ((self._lhs), (self._rhs))
 
 class GreaterThanOrEqual(Node):
     def __init__(self, lhs, rhs):
@@ -181,7 +181,7 @@ class GreaterThanOrEqual(Node):
         self._rhs.compile(context)
         context.emit(Bytecode.LESS_THAN_EQ)
     def __repr__(self):
-        return "GreaterThanOrEqual(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+        return "GreaterThanOrEqual(%r, %r)" % ((self._lhs), (self._rhs))
 
 class AddOp(Node):
     def __init__(self, lhs, rhs):
@@ -194,7 +194,7 @@ class AddOp(Node):
         context.emit(Bytecode.ADD)
 
     def __repr__(self):
-        return "AddOp(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+        return "AddOp(%r, %r)" % ((self._lhs), (self._rhs))
 
 class SubtractOp(Node):
     def __init__(self, lhs, rhs):
@@ -207,7 +207,7 @@ class SubtractOp(Node):
         context.emit(Bytecode.SUB)
 
     def __repr__(self):
-        return "SubtractOp(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+        return "SubtractOp(%r, %r)" % ((self._lhs), (self._rhs))
 
 class MulOp(Node):
     def __init__(self, lhs, rhs):
@@ -220,7 +220,7 @@ class MulOp(Node):
         context.emit(Bytecode.MUL)
 
     def __repr__(self):
-        return "MulOp(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+        return "MulOp(%r, %r)" % ((self._lhs), (self._rhs))
 
 class DivOp(Node):
     def __init__(self, lhs, rhs):
@@ -233,7 +233,7 @@ class DivOp(Node):
         context.emit(Bytecode.DIV)
 
     def __repr__(self):
-        return "DivOp(%r, %r)" % (repr(self._lhs), repr(self._rhs))
+        return "DivOp(%r, %r)" % ((self._lhs), (self._rhs))
 
 class UnaryNot(Node):
     def __init__(self, expression):
@@ -244,7 +244,7 @@ class UnaryNot(Node):
         context.emit(Bytecode.NOT)
 
     def __repr__(self):
-        return "UnaryNot(%r)" % (repr(self._expression))
+        return "UnaryNot(%r)" % ((self._expression))
 
 class UnaryNegate(Node):
     def __init__(self, expression):
@@ -255,7 +255,7 @@ class UnaryNegate(Node):
         context.emit(Bytecode.NEG)
 
     def __repr__(self):
-        return "UnaryNegate(%r)" % (repr(self._expression))
+        return "UnaryNegate(%r)" % ((self._expression))
 
 class WhileStatement(Node):
 
@@ -273,7 +273,7 @@ class WhileStatement(Node):
         context.data[jmp_back_to] = chr(len(context.data))
 
     def __repr__(self):
-        return "WhileStatement(condition=%r, block=%r)" % (repr(self._condition), repr(self._block))
+        return "WhileStatement(condition=%r, block=%r)" % ((self._condition), (self._block))
 
 class IfStatement(Node):
     def __init__(self, condition, block):
@@ -288,7 +288,7 @@ class IfStatement(Node):
         context.data[position] = chr(len(context.data))
 
     def __repr__(self):
-        return "IfStatement(condition=%r, block=%r)" % (repr(self._condition), repr(self._block))
+        return "IfStatement(condition=%r, block=%r)" % ((self._condition), (self._block))
 
 class PrintStatement(Node):
     def __init__(self, expression):
@@ -299,7 +299,7 @@ class PrintStatement(Node):
         context.emit(Bytecode.PRINT)
 
     def __repr__(self):
-        return "PrintStatement(%r)" % (repr(self._condition))
+        return "PrintStatement(%r)" % ((self._condition))
 
 class Transformer(object):
 
@@ -311,7 +311,7 @@ class Transformer(object):
             kleene = kleene.children[1]
 
         statements.append(self.visit_stmt(kleene.children[0]))
-        return statements
+        return Block(statements)
 
     def visit_program(self, node):
         statements = self._get_statements(node.children[0])
@@ -415,18 +415,18 @@ class Transformer(object):
 
 
     def visit_booleanliteral(self, node):
-        if node.additional_info == "true":
+        if node.children[0].additional_info == "true":
             return BooleanConstant(True)
 
         return BooleanConstant(False)
 
     def visit_numericliteral(self, node):
-        if node.symbol == "FLOATLITERAL":
+        if node.children[0].symbol == "FLOATLITERAL":
             pass # TODO
 
-        if node.symbol == "INTEGERLITERAL":
+        if node.children[0].symbol == "INTEGERLITERAL":
             # TODO: Convert string to bigint accordingly
-            return IntegerConstant(int(node.additional_info))
+            return IntegerConstant(int(node.children[0].additional_info))
 
     def visit_stringliteral(self, node):
         return StringConstant(node.children[0].additional_info)
@@ -435,7 +435,7 @@ class Transformer(object):
 
         if len(node.children) == 3 and node.children[1].additional_info == "=":
             # Normal assignment
-            return Assignment(node.children[0].symbol, self.visit_bool(node.children[2]))
+            return Assignment(node.children[0].children[0].additional_info, self.visit_bool(node.children[2]))
 
         if node.children[0].additional_info == 'while':
             return WhileStatement(self.visit_bool(node.children[2]), self._get_statements(node.children[5]))
