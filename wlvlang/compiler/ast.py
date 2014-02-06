@@ -1,5 +1,6 @@
 from rpython.rlib.parsing.tree import Symbol
 from wlvlang.compiler.context import MethodCompilerContext
+from wlvlang.compiler.ast import Bytecode
 
 class Node:
     def __eq__(self, other):
@@ -269,7 +270,7 @@ class WhileStatement(Node):
     def compile(self, context):
         pos = len(context.data)
         self._condition.compile(context)
-        context.emit(bytecode.JUMP_IF_FALSE)
+        context.emit(Bytecode.JUMP_IF_FALSE)
         jmp_back_to = len(context.data) - 1
         self._statements.compile(context)
         context.emit(Bytecode.JUMP_BACK, pos)
