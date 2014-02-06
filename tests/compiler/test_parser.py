@@ -5,7 +5,7 @@ from wlvlang.compiler import ast
 
 def test_parse_constant_integer():
     assert parse("100") == ast.Block([ast.IntegerConstant(100)])
-    assert parse("-100") == ast.Block([ast.IntegerConstant(-100)])
+    assert parse("-100") == ast.Block([ast.UnaryNegate(ast.IntegerConstant(100))])
 
 @pytest.mark.xfail
 def test_parse_constant_float():
