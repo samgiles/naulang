@@ -1,3 +1,4 @@
+from wlvlang.vmobjects.method import Method
 class MethodCompilerContext(object):
 
     def __init__(self, vm_universe, outer=None):
@@ -19,7 +20,7 @@ class MethodCompilerContext(object):
         return self._universe
 
     def generate_method(self):
-        return None
+        return Method(self._literals, self._locals, self.bytecode)
 
     def set_outer(self, outer_context):
         self._outer = outer_context
