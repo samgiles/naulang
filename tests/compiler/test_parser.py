@@ -49,3 +49,12 @@ def test_print_statement():
 def test_boolean_literal():
     assert(parse("true") == ast.Block([ast.BooleanConstant(True)]))
     assert(parse("false") == ast.Block([ast.BooleanConstant(False)]))
+
+def test_function_statement():
+    assert parse("""fn(a, b) {
+            100
+        }""") == ast.Block([ast.FunctionStatement(['a', 'b'], ast.Block([ast.IntegerConstant(100)]))])
+
+    assert parse("""fn() {
+        100
+    }""") == ast.Block([ast.FunctionStatement([], ast.Block([ast.IntegerConstant(100)]))])
