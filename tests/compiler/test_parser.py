@@ -59,3 +59,11 @@ def test_function_statement():
     assert parse("""fn() {
         100
     }""") == ast.Block([ast.FunctionStatement([], ast.Block([ast.IntegerConstant(100)]))])
+
+def test_function_call_statement():
+    assert parse("a()") == ast.Block([ast.FunctionCall('a', [])])
+    print repr(parse("""a()
+                        b(10, a, 0) """))
+    assert parse("""a()
+                    b(10, a, 0) """) == ast.Block([ast.FunctionCall('a', []), ast.FunctionCall('b', [ast.IntegerConstant(10), 'a', ast.IntegerConstant(0)])])
+

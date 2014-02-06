@@ -11,15 +11,18 @@ DOUBLESTRING    : "\"([^\"\\]|\\.)*\"";
 program: stmt* [EOF]
        ;
 
-stmt: identifier "=" stmt
-    | "if" "(" stmt ")" "{" stmt* "}"
+stmt: "if" "(" stmt ")" "{" stmt* "}"
     | "while" "(" stmt ")" "{" stmt* "}"
     | "print" stmt
 	| "fn" "(" [paramlist]? ")" "{" stmt* "}"
+	| identifier "=" stmt
+	| identifier "(" [arglist]? ")"
     | bool
     ;
 
 paramlist: (identifier ",")* (identifier [","]?);
+
+arglist: (stmt ",")* (stmt [","]?);
 
 identifier: IDENTIFIER;
 

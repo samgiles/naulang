@@ -460,6 +460,7 @@ class Transformer(object):
 
     def visit_fnstatement(self, node):
         paramlist = []
+
         if node.children[2].children[0].symbol == "paramlist":
             paramlist = self.visit_paramlist(node.children[2].children[0])
             block = self._get_statements(node.children[3].children[2])
@@ -492,8 +493,8 @@ class Transformer(object):
             else:
                 args.append(self.visit_stmt(stmt))
 
+        args.append(self.visit_stmt(node.children[0].children[1].children[0]))
         return args
-
 
     def visit_stmt(self, node):
 
@@ -518,4 +519,3 @@ class Transformer(object):
 
         if node.children[0].additional_info == 'print':
             return PrintStatement(self.visit_stmt(node.children[1]))
-
