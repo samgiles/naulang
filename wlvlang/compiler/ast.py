@@ -334,10 +334,10 @@ class Transformer(object):
             return self.visit_relation(node.children[0])
 
         if node.children[1].additional_info == "==":
-            return Equals(self.visit_relation(node.children[0]), self.visit_expr(node.children[2]))
+            return Equals(self.visit_relation(node.children[0]), self.visit_equality(node.children[2]))
 
         if node.children[1].additional_info == "!=":
-            return NotEquals(self.visit_relation(node.children[0]), self.visit_expr(node.children[2]))
+            return NotEquals(self.visit_relation(node.children[0]), self.visit_equality(node.children[2]))
 
         raise TypeError("Failed to parse an equality expression")
 
@@ -411,7 +411,7 @@ class Transformer(object):
         if node.children[0].symbol == "identifier":
             return self.visit_identifier(node.children[0])
 
-        raise TypeError("Failed to parse an atom")
+        raise TypeError("Failed to parse an atom: %r" % node)
 
 
     def visit_booleanliteral(self, node):
