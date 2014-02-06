@@ -80,6 +80,10 @@ def _lteq(invokable, activation_record, interpreter):
 
     activation_record.push(Boolean(result))
 
+def _print(invokable, activation_record, interpreter):
+    top = activation_record.pop()
+    print top.get_value()
+
 def init_integer_prims(universe):
     primitives = {
         "*": _mul,
@@ -91,7 +95,8 @@ def init_integer_prims(universe):
         "<": _lt,
         ">": _gt,
         "<=": _lteq,
-        ">=": _gteq
+        ">=": _gteq,
+        "print": _print
     }
 
     universe.integerClass.add_primitives(primitives)
