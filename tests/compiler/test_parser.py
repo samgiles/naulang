@@ -1,15 +1,11 @@
 import pytest
 
-from wlvlang.compiler.new_parser import parse
+from wlvlang.compiler.sourceparser import parse
+from wlvlang.compiler import ast
 
-@pytest.mark.xfail
 def test_parse_constant_integer():
-
-    assert parse("100") == ast.Main(ast.Block(ast.ConstantInteger(100)))
-    assert parse("-100") == ast.Main(ast.Block(ast.ConstantInteger(-100)))
-    assert parse("0x64") == ast.Main(ast.Block(ast.ConstantInteger(100)))
-    assert parse("0o144") == ast.Main(ast.Block(ast.ConstantInteger(100)))
-    assert parse("0b1100100") == ast.Main(ast.Block(ast.ConstantInteger(100)))
+    assert parse("100") == ast.Block(ast.IntegerConstant(100))
+    assert parse("-100") == ast.Block(ast.IntegerConstant(-100))
 
 @pytest.mark.xfail
 def test_parse_constant_float():
