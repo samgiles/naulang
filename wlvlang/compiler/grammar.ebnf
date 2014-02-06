@@ -15,6 +15,7 @@ stmt: identifier "=" bool
     | "if" "(" bool ")" "{" stmt* "}"
     | "while" "(" bool ")" "{" stmt* "}"
     | "print" bool
+    | bool
     ;
 
 identifier: IDENTIFIER;
