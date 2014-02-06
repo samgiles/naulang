@@ -437,6 +437,9 @@ class Transformer(object):
             # Normal assignment
             return Assignment(node.children[0].children[0].additional_info, self.visit_bool(node.children[2]))
 
+        if len(node.children) == 1:
+            return self.visit_bool(node.children[0])
+
         if node.children[0].additional_info == 'while':
             return WhileStatement(self.visit_bool(node.children[2]), self._get_statements(node.children[5]))
 
