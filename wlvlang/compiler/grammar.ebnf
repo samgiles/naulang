@@ -11,10 +11,10 @@ DOUBLESTRING    : "\"([^\"\\]|\\.)*\"";
 program: stmt* [EOF]
        ;
 
-stmt: identifier "=" bool
-    | "if" "(" bool ")" "{" stmt* "}"
-    | "while" "(" bool ")" "{" stmt* "}"
-    | "print" bool
+stmt: identifier "=" stmt
+    | "if" "(" stmt ")" "{" stmt* "}"
+    | "while" "(" stmt ")" "{" stmt* "}"
+    | "print" stmt
     | bool
     ;
 

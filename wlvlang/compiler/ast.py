@@ -435,17 +435,17 @@ class Transformer(object):
 
         if len(node.children) == 3 and node.children[1].additional_info == "=":
             # Normal assignment
-            return Assignment(node.children[0].children[0].additional_info, self.visit_bool(node.children[2]))
+            return Assignment(node.children[0].children[0].additional_info, self.visit_stmt(node.children[2]))
 
         if len(node.children) == 1:
             return self.visit_bool(node.children[0])
 
         if node.children[0].additional_info == 'while':
-            return WhileStatement(self.visit_bool(node.children[2]), self._get_statements(node.children[5]))
+            return WhileStatement(self.visit_stmt(node.children[2]), self._get_statements(node.children[5]))
 
         if node.children[0].additional_info == 'if':
-            return IfStatement(self.visit_bool(node.children[2]), self._get_statements(node.children[5]))
+            return IfStatement(self.visit_stmt(node.children[2]), self._get_statements(node.children[5]))
 
         if node.children[0].additional_info == 'print':
-            return PrintStatement(self.visit_bool(node.children[1]))
+            return PrintStatement(self.visit_stmt(node.children[1]))
 
