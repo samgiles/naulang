@@ -1,4 +1,5 @@
 from rpython.rlib.parsing.tree import Symbol
+from wlvlang.compiler.context import MethodCompilerContext
 
 class Node:
     def __eq__(self, other):
@@ -38,9 +39,8 @@ class BooleanConstant(Node):
         self._value = value
 
     def compile(self, context):
-        from wlvlang.vmobjects.boolean import Boolean
-        boolean = Boolean(self._value)
-        context.emit(Bytecode.LOAD_CONST, context.register_constant(boolean))
+        boolean = context.universe().new_boolean(self._value)
+        context.emit(Bytecode.LOAD_CONST, context.register_literal(boolean))
 
     def __repr__(self):
         return "BooleanConstant(%r)" % (self._value)
@@ -62,9 +62,8 @@ class IntegerConstant(Node):
         self._value = value
 
     def compile(self, context):
-        from wlvlang.vmobjects.integer import Integer
-        integer = Integer(self._value)
-        context.emit(Bytecode.LOAD_CONST, context.register_constant(integer))
+        integer = context.universe().new_integer(self._value)
+        context.emit(Bytecode.LOAD_CONST, context.register_literal(integer))
 
     def __repr__(self):
         return "IntegerConstant(%d)" % (self._value)
@@ -76,7 +75,9 @@ class Assignment(Node):
         self._expression = expression
 
     def compiler(self, context):
-        pass
+        local = context.register_local(self._varname)
+        self._expression.compile(context)
+        context.emit(Bytecode.STORE, local)
 
     def __repr__(self):
         return "Assignment(%r, %r)" % (self._varname, self._expression)
@@ -242,8 +243,8 @@ class UnaryNot(Node):
         self._expression = expression
 
     def compile(self, context):
-        self._expression.compile(context)
         context.emit(Bytecode.NOT)
+        self._expression.compile(context)
 
     def __repr__(self):
         return "UnaryNot(%r)" % ((self._expression))
@@ -309,7 +310,13 @@ class FunctionStatement(Node):
         self._block = block
 
     def compile(self, context):
-        pass
+
+        new_function_context = MethodCompilerContext(context.universe(), outer=context)
+        for param in self._paramlist:
+            new_function_context.register_local(param)
+
+        self._block.compile(new_function_context)
+        context.add_inner_context(new_function_context)
 
     def __repr__(self):
         return "FunctionStatement(%r, %r)" % (self._paramlist, self._block)
@@ -320,7 +327,11 @@ class FunctionCall(Node):
         self._arglist = arglist
 
     def compile(self, context):
-        pass
+        local = context.register_local(self._identifier)
+        for argument in self._arglist:
+            argument.compile(context)
+
+        context.emit(Bytecode.INVOKE, local)
 
     def __repr__(self):
         return "FunctionCall(%r, %r)" % (self._identifier, self._arglist)
@@ -330,7 +341,8 @@ class ReturnStatement(Node):
         self._statement = statement
 
     def compile(self, context):
-        pass
+        self._statement.compile(context)
+        context.emit(Bytecode.RETURN)
 
     def __repr__(self):
         return "ReturnStatement(%r)" % self._statement
