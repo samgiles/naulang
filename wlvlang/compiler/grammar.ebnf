@@ -19,7 +19,7 @@ stmt: identifier "=" stmt
     | bool
     ;
 
-paramlist: (identifier ",")* (identifier [","]);
+paramlist: (identifier ",")* (identifier [","]?);
 
 identifier: IDENTIFIER;
 
