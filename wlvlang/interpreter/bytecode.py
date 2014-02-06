@@ -10,6 +10,7 @@ class Bytecode(object):
     LESS_THAN = chr(7)
     LESS_THAN_EQ = chr(8)
     GREATER_THAN = chr(9)
+    GREATER_THAN_EQ = chr(22)
     ADD = chr(10)
     SUB = chr(11)
     MUL = chr(12)
