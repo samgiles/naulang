@@ -301,6 +301,17 @@ class PrintStatement(Node):
     def __repr__(self):
         return "PrintStatement(%r)" % ((self._condition))
 
+class FunctionStatement(Node):
+    def __init__(self, paramlist, block):
+        self._paramlist = paramlist
+        self._block = block
+
+    def compile(self, context):
+        pass
+
+    def __repr__(self):
+        return "FunctionStatement(%r, %r)" % (self._paramlist, self._block)
+
 class Transformer(object):
 
     def _get_statements(self, kleene):
@@ -431,6 +442,23 @@ class Transformer(object):
     def visit_stringliteral(self, node):
         return StringConstant(node.children[0].additional_info)
 
+    def visit_fnstatement(self, node):
+        paramlist = []
+        if node.children[2].children[0].symbol == "paramlist":
+            paramlist = self.visit_paramlist(node.children[2].children[0])
+            block = self._get_statements(node.children[3].children[2])
+        else:
+            block = self._get_statements(node.children[2].children[2])
+
+        return FunctionStatement(paramlist, block)
+
+
+    def visit_paramlist(self, node):
+        pass
+
+
+
+
     def visit_stmt(self, node):
 
         if len(node.children) == 3 and node.children[1].additional_info == "=":
@@ -440,6 +468,9 @@ class Transformer(object):
         if len(node.children) == 1:
             return self.visit_bool(node.children[0])
 
+        if node.children[0].additional_info == 'fn':
+            return self.visit_fnstatement(node)
+
         if node.children[0].additional_info == 'while':
             return WhileStatement(self.visit_stmt(node.children[2]), self._get_statements(node.children[5]))
 
@@ -448,4 +479,3 @@ class Transformer(object):
 
         if node.children[0].additional_info == 'print':
             return PrintStatement(self.visit_stmt(node.children[1]))
-
