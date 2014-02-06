@@ -1,3 +1,5 @@
+from rpython.rlib.parsing.tree import Symbol
+
 class Node:
     def __eq__(self, other):
         return (self.__class__ == other.__class__ and self.__dict__ == other.__dict__)
@@ -312,6 +314,17 @@ class FunctionStatement(Node):
     def __repr__(self):
         return "FunctionStatement(%r, %r)" % (self._paramlist, self._block)
 
+class FunctionCall(Node):
+    def __init__(self, identifier, arglist):
+        self._identifier = identifier
+        self._arglist = arglist
+
+    def compile(self, context):
+        pass
+
+    def __repr__(self):
+        return "FunctionCall(%r, %r)" % (self._identifier, self._arglist)
+
 class Transformer(object):
 
     def _get_statements(self, kleene):
@@ -442,6 +455,9 @@ class Transformer(object):
     def visit_stringliteral(self, node):
         return StringConstant(node.children[0].additional_info)
 
+    def visit_identifier(self, node):
+        return node.children[0].additional_info
+
     def visit_fnstatement(self, node):
         paramlist = []
         if node.children[2].children[0].symbol == "paramlist":
@@ -452,12 +468,32 @@ class Transformer(object):
 
         return FunctionStatement(paramlist, block)
 
-
     def visit_paramlist(self, node):
         paramlist = []
         for identifier in node.children:
             paramlist.append(identifier.children[0].children[0].additional_info)
         return paramlist
+
+    def visit_functioncall(self, node):
+        identifier = node.children[0].children[0].additional_info
+        if len(node.children) == 3:
+            return FunctionCall(identifier, [])
+
+        return FunctionCall(identifier, self.visit_arglist(node.children[2]))
+
+    def visit_arglist(self, node):
+        args = []
+        for stmt in node.children[0].children[0].children:
+            if isinstance(stmt, Symbol):
+                continue
+
+            if stmt.symbol != 'stmt':
+                args.append(self.visit_stmt(stmt.children[0]))
+            else:
+                args.append(self.visit_stmt(stmt))
+
+        return args
+
 
     def visit_stmt(self, node):
 
@@ -467,6 +503,9 @@ class Transformer(object):
 
         if len(node.children) == 1:
             return self.visit_bool(node.children[0])
+
+        if node.children[0].symbol == 'identifier':
+            return self.visit_functioncall(node)
 
         if node.children[0].additional_info == 'fn':
             return self.visit_fnstatement(node)
@@ -479,3 +518,4 @@ class Transformer(object):
 
         if node.children[0].additional_info == 'print':
             return PrintStatement(self.visit_stmt(node.children[1]))
+
