@@ -259,7 +259,7 @@ class UnaryNegate(Node):
 
 class WhileStatement(Node):
 
-    def __init__(self, condition=condition, block=block):
+    def __init__(self, condition, block):
         self._condition = condition
         self._statements = block
 
@@ -276,7 +276,7 @@ class WhileStatement(Node):
         return "WhileStatement(condition=%r, block=%r)" % (repr(self._condition), repr(self._block))
 
 class IfStatement(Node):
-    def __init__(self, condition=condition, block=block):
+    def __init__(self, condition, block):
         self._condition = condition
         self._statements = block
 
