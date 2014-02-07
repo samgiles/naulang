@@ -32,10 +32,6 @@ def test_ast_assignment():
     assert ast.Assignment('a', DummyNode(100)) == ast.Assignment('a', DummyNode(100))
     assert ast.Assignment('a', DummyNode(10)) != ast.Assignment('a', DummyNode(100))
 
-def test_ast_statement():
-    assert ast.Statement(DummyNode(True)) == ast.Statement(DummyNode(True))
-    assert ast.Statement(DummyNode(False)) != ast.Statement(DummyNode(True))
-
 def test_ast_or():
     assert ast.Or(DummyNode(True), DummyNode(True)) == ast.Or(DummyNode(True), DummyNode(True))
     assert ast.Or(DummyNode(False), DummyNode(True)) != ast.Or(DummyNode(True), DummyNode(True))
