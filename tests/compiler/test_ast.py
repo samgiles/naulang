@@ -47,3 +47,7 @@ def test_ast_and():
 def test_ast_equals():
     assert ast.Equals(DummyNode(True), DummyNode(True)) == ast.Equals(DummyNode(True), DummyNode(True))
     assert ast.Equals(DummyNode(False), DummyNode(True)) != ast.Equals(DummyNode(True), DummyNode(True))
+
+def test_ast_notequals():
+    assert ast.NotEquals(DummyNode(True), DummyNode(True)) == ast.NotEquals(DummyNode(True), DummyNode(True))
+    assert ast.NotEquals(DummyNode(False), DummyNode(True)) != ast.NotEquals(DummyNode(True), DummyNode(True))
