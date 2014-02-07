@@ -98,3 +98,10 @@ def test_ast_lessthanorequal_compiler():
     node.compile(ctx)
 
     assert ctx.bytecode == [chr(91), chr(90), Bytecode.LESS_THAN_EQ]
+
+def test_ast_greaterthanorequal_compiler():
+    ctx = create_interpreter_context()
+    node = ast.GreaterThanOrEqual(DummyCompilationUnit(91), DummyCompilationUnit(90))
+    node.compile(ctx)
+
+    assert ctx.bytecode == [chr(91), chr(90), Bytecode.GREATER_THAN_EQ]

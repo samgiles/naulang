@@ -193,7 +193,7 @@ class GreaterThanOrEqual(Node):
     def compile(self, context):
         self._lhs.compile(context)
         self._rhs.compile(context)
-        context.emit(Bytecode.LESS_THAN_EQ)
+        context.emit(Bytecode.GREATER_THAN_EQ)
     def __repr__(self):
         return "GreaterThanOrEqual(%r, %r)" % ((self._lhs), (self._rhs))
 
