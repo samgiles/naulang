@@ -19,7 +19,6 @@ class DummyNode(ast.Node):
         return "DummyNode(%r)" % self.value
 
 
-
 def test_ast_integer_constant():
     assert ast.IntegerConstant(10) == ast.IntegerConstant(10)
     assert ast.IntegerConstant(1231) != ast.IntegerConstant(123231)
@@ -33,9 +32,10 @@ def test_ast_assignment():
     assert ast.Assignment('a', DummyNode(100)) == ast.Assignment('a', DummyNode(100))
     assert ast.Assignment('a', DummyNode(10)) != ast.Assignment('a', DummyNode(100))
 
-
 def test_ast_statement():
     assert ast.Statement(DummyNode(True)) == ast.Statement(DummyNode(True))
     assert ast.Statement(DummyNode(False)) != ast.Statement(DummyNode(True))
 
-
+def test_ast_or():
+    assert ast.Or(DummyNode(True), DummyNode(True)) == ast.Or(DummyNode(True), DummyNode(True))
+    assert ast.Or(DummyNode(False), DummyNode(True)) != ast.Or(DummyNode(True), DummyNode(True))
