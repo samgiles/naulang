@@ -72,6 +72,10 @@ class ActivationRecord(object):
         assert index < len(self._stack)
         return  self._stack[index]
 
+    def set_element_at(self, index, value):
+        assert index < len(self._stack) and index >= 0
+        self._stack[index] = value
+
     def is_root_record(self):
         return self.get_previous_record() == None
 
@@ -94,3 +98,6 @@ class ActivationRecord(object):
 
     def get_local_at(self, index):
         return self.get_element_at(index + self._local_offset)
+
+    def set_local_at(self, index, value):
+        return self.set_element_at(index + self._local_offset, value)
