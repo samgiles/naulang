@@ -16,6 +16,10 @@ class Integer(Object):
     def get_value(self):
         return self._value
 
+    def get_class(self, universe):
+        # Not keen on this coupling
+        return universe.integerClass
+
     def __str__(self):
         return str(self.get_value())
 
@@ -24,7 +28,3 @@ class Integer(Object):
 
     def __eq__(self, other):
         return isinstance(other, Integer) and self._value == other._value
-
-    def get_class(self, universe):
-        # Not keen on this coupling
-        return universe.integerClass
