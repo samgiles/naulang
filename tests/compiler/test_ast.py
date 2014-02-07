@@ -96,3 +96,6 @@ def test_ast_whilestatement():
     assert ast.WhileStatement(DummyNode(True), ast.Block([DummyNode(True)])) == ast.WhileStatement(DummyNode(True), ast.Block([DummyNode(True)]))
     assert ast.WhileStatement(DummyNode(False), ast.Block([DummyNode(True)])) != ast.WhileStatement(DummyNode(True), ast.Block([DummyNode(True)]))
 
+def test_ast_ifstatement():
+    assert ast.IfStatement(DummyNode(True), ast.Block([DummyNode(True)])) == ast.IfStatement(DummyNode(True), ast.Block([DummyNode(True)]))
+    assert ast.IfStatement(DummyNode(False), ast.Block([DummyNode(True)])) != ast.IfStatement(DummyNode(True), ast.Block([DummyNode(True)]))

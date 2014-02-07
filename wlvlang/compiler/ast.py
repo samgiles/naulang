@@ -297,9 +297,9 @@ class IfStatement(Node):
     def compile(self, context):
         self._condition.compile(context)
         context.emit(Bytecode.JUMP_IF_FALSE, 0)
-        position = len(context.data) - 1
+        position = len(context.bytecode) - 1
         self._statements.compile(context)
-        context.data[position] = chr(len(context.data))
+        context.bytecode[position] = chr(len(context.bytecode))
 
     def __repr__(self):
         return "IfStatement(condition=%r, block=%r)" % ((self._condition), (self._block))
