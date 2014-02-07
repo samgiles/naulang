@@ -18,41 +18,20 @@ class DummyNode(ast.Node):
     def __repr__(self):
         return "DummyNode(%r)" % self.value
 
-def create_interpreter_context():
-    universe = VM_Universe()
-    ctx = MethodCompilerContext(universe)
-    return ctx
 
 
 def test_ast_integer_constant():
     assert ast.IntegerConstant(10) == ast.IntegerConstant(10)
     assert ast.IntegerConstant(1231) != ast.IntegerConstant(123231)
 
-def test_ast_integer_compile():
-    ctx = create_interpreter_context()
-    node = ast.IntegerConstant(100)
-    node.compile(ctx)
-
-    # Expect the constant to be stored in the literals area at position 0 (as this was a new context)
-    assert ctx._literals[0] == Integer(100)
-
-    # Expect the byte code to be [Bytecode.LOAD_CONST, 0]
-    assert ctx.bytecode == [Bytecode.LOAD_CONST, chr(0)]
 
 def test_ast_boolean_constant():
     assert ast.BooleanConstant(True) == ast.BooleanConstant(True)
     assert ast.BooleanConstant(False) == ast.BooleanConstant(False)
 
-def test_ast_boolean_constant_compiler():
-    ctx = create_interpreter_context()
-    node = ast.BooleanConstant(True)
-    node.compile(ctx)
-
-    # Expect the constant to be stored in the literals area at position 0 (as this was a new context)
-    assert ctx._literals[0] == Boolean(True)
-
-    # Expect the byte code to be [Bytecode.LOAD_CONST, 0]
-    assert ctx.bytecode == [Bytecode.LOAD_CONST, chr(0)]
+def test_ast_assignment():
+    assert ast.Assignment('a', ast.IntegerConstant(100)) == ast.Assignment('a', ast.IntegerConstant(100))
+    assert ast.Assignment('a', ast.IntegerConstant(10)) != ast.Assignment('a', ast.IntegerConstant(100))
 
 
 def test_ast_statement():
