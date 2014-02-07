@@ -45,26 +45,3 @@ def test_ast_assignment_compiler():
 
     # Expect the bytecode to be [Bytecode.LOAD_CONST, 0, Bytecode.STORE, 0]
     assert ctx.bytecode == [Bytecode.LOAD_CONST, chr(0), Bytecode.STORE, chr(0)]
-
-def test_compile_function():
-    universe = VM_Universe()
-    interpreter = Interpreter(universe)
-
-    root_context = MethodCompilerContext(universe)
-    ast = parse("""a = 10 * 10
-                print a""")
-
-    ast.compile(root_context)
-    root_context.bytecode.append(Bytecode.HALT)
-    method = root_context.generate_method()
-    arec = ActivationRecord(
-        root_context._locals + root_context._literals,
-        len(root_context._locals),
-        len(root_context._literals),
-        10,
-        None,
-        access_link=None)
-
-    interpreter.interpret(method, arec)
-    assert False
-
