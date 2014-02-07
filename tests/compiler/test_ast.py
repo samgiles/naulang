@@ -30,8 +30,8 @@ def test_ast_boolean_constant():
     assert ast.BooleanConstant(False) == ast.BooleanConstant(False)
 
 def test_ast_assignment():
-    assert ast.Assignment('a', ast.IntegerConstant(100)) == ast.Assignment('a', ast.IntegerConstant(100))
-    assert ast.Assignment('a', ast.IntegerConstant(10)) != ast.Assignment('a', ast.IntegerConstant(100))
+    assert ast.Assignment('a', DummyNode(100)) == ast.Assignment('a', DummyNode(100))
+    assert ast.Assignment('a', DummyNode(10)) != ast.Assignment('a', DummyNode(100))
 
 
 def test_ast_statement():
