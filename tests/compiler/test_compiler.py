@@ -140,3 +140,10 @@ def test_ast_divop_compiler():
     node.compile(ctx)
 
     assert ctx.bytecode == [chr(91), chr(90), Bytecode.DIV]
+
+def test_ast_unarynot_compiler():
+    ctx = create_interpreter_context()
+    node = ast.UnaryNot(DummyCompilationUnit(90))
+    node.compile(ctx)
+
+    assert ctx.bytecode == [chr(90), Bytecode.NOT]

@@ -254,8 +254,8 @@ class UnaryNot(Node):
         self._expression = expression
 
     def compile(self, context):
-        context.emit(Bytecode.NOT)
         self._expression.compile(context)
+        context.emit(Bytecode.NOT)
 
     def __repr__(self):
         return "UnaryNot(%r)" % ((self._expression))

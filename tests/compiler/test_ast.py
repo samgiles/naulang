@@ -84,4 +84,6 @@ def test_ast_divop():
     assert ast.DivOp(DummyNode(True), DummyNode(True)) == ast.DivOp(DummyNode(True), DummyNode(True))
     assert ast.DivOp(DummyNode(False), DummyNode(True)) != ast.DivOp(DummyNode(True), DummyNode(True))
 
-
+def test_ast_unarynot():
+    assert ast.UnaryNot(DummyNode(True)) == ast.UnaryNot(DummyNode(True))
+    assert ast.UnaryNot(DummyNode(False)) != ast.UnaryNot(DummyNode(True))
