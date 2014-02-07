@@ -64,4 +64,9 @@ def test_ast_or_compiler():
     # Expect bytecode: [91, 90, Bytecode.OR]
     assert ctx.bytecode == [chr(91), chr(90), Bytecode.OR]
 
+def test_ast_and_compiler():
+    ctx = create_interpreter_context()
+    node = ast.And(DummyCompilationUnit(91), DummyCompilationUnit(90))
+    node.compile(ctx)
 
+    assert ctx.bytecode == [chr(91), chr(90), Bytecode.AND]
