@@ -13,3 +13,6 @@ class Boolean(Object):
 
     def __str__(self):
         return "true" if self._value else "false"
+
+    def __eq__(self, other):
+        return isinstance(other, Boolean) and other._value == self._value
