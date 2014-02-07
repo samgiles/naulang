@@ -285,9 +285,13 @@ class SubtractOp(Node):
         context.emit(Bytecode.SUB)
 
     def accept(self, astvisitor):
-        astvisitor.visit_subtractop(self)
-        self._lhs.accept(astvisitor)
-        self._rhs.accept(astvisitor)
+        self_value = astvisitor.visit_subtractop(self)
+        if self_value != self:
+            return self_value
+
+        self._lhs = self._lhs.accept(astvisitor)
+        self._rhs = self._rhs.accept(astvisitor)
+        return self_value
 
     def __repr__(self):
         return "SubtractOp(%r, %r)" % ((self._lhs), (self._rhs))
