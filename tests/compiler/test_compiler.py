@@ -8,6 +8,16 @@ from wlvlang.vmobjects.boolean import Boolean
 from wlvlang.vmobjects.integer import Integer
 
 
+class DummyCompilationUnit(ast.Node):
+    def __init__(self, code_to_emit):
+        self.code_to_emit = chr(code_to_emit)
+
+    def compile(self, context):
+        context.emit(self.code_to_emit)
+
+    def __repr__(self):
+        return "DummyCompilationUnit(%r)" % self.code_to_emit
+
 def create_interpreter_context():
     universe = VM_Universe()
     ctx = MethodCompilerContext(universe)
@@ -45,3 +55,13 @@ def test_ast_assignment_compiler():
 
     # Expect the bytecode to be [Bytecode.LOAD_CONST, 0, Bytecode.STORE, 0]
     assert ctx.bytecode == [Bytecode.LOAD_CONST, chr(0), Bytecode.STORE, chr(0)]
+
+def test_ast_or_compiler():
+    ctx = create_interpreter_context()
+    node = ast.Or(DummyCompilationUnit(91), DummyCompilationUnit(90))
+    node.compile(ctx)
+
+    # Expect bytecode: [91, 90, Bytecode.OR]
+    assert ctx.bytecode == [chr(91), chr(90), Bytecode.OR]
+
+
