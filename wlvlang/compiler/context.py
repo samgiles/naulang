@@ -54,7 +54,7 @@ class MethodCompilerContext(object):
     def register_literal(self, constant_value):
         """ Register a constant value """
         self._literals.append(constant_value)
-        return len(self._literals)
+        return len(self._literals) - 1
 
     def emit(self, bytecode, argument=None):
         self.bytecode.append(bytecode)

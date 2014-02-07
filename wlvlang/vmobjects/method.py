@@ -9,5 +9,4 @@ class Method(Object):
 
     def get_bytecode(self, index):
         assert 0 <= index and index < len(self._bytecodes)
-        return ord(self._bytecodes[index])
-
+        return self._bytecodes[index]

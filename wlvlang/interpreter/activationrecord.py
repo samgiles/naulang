@@ -14,12 +14,10 @@ class ActivationRecord(object):
         |------------------|
         | Access Link      |
         |------------------|
-        | Parameters       |
-        |------------------|
-        | Return Vals      |
-        |------------------|
         | Local Data       |
         |------------------|
+        | Literal Data     |
+        --------------------
         | Temporaries      |
         --------------------
 
@@ -45,17 +43,22 @@ class ActivationRecord(object):
 
     _immutable_fields_ = ["_stack"]
 
-    def __init__(self, locals_count, temp_size, previous_record, access_link=None):
+    def __init__(self, locals, local_size, literal_size, temp_size, previous_record, access_link=None):
         """ The locals_count should include the parameters """
-
-        self._stack = [None] * (locals_count + temp_size + 2)
+        stack_size = (len(locals) + 2)
+        self._stack = [None] * (stack_size + temp_size)
         self._stack_pointer = 0
         self.push(previous_record)
         self.push(access_link)
+        for l in locals:
+            self.push(l)
+
+        self._local_offset = 2
+        self._literal_offset = 2 + local_size
 
     def get_previous_record(self):
         """ Get the previous activation record.
-            See Activation Recrord layout for
+            See Activation Record layout for
             explanation as to why the index is always 0
         """
         return self._stack[0];
@@ -87,7 +90,7 @@ class ActivationRecord(object):
         return self._stack[self._stack_pointer - 1]
 
     def get_literal_at(self, index):
-        pass
+        return self.get_element_at(index + self._literal_offset)
 
     def get_local_at(self, index):
-        pass
+        return self.get_element_at(index + self._local_offset)

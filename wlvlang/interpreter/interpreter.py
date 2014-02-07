@@ -1,11 +1,15 @@
 from wlvlang.interpreter.bytecode import Bytecode
+import pdb
 
 class Interpreter(object):
 
 
+    def __init__(self, universe):
+        self.universe = universe
+
     def _send(self, arec, signature):
-        invokable = arec.peek().get_class().lookup_invokable(signature)
-        invokable.invoke(arec, self)
+        invokable = arec.peek().get_class(self.universe).lookup_invokable(signature)
+        invokable(None, arec, self)
 
     def interpret(self, method, activation_record):
         """ Interpreter Main Loop """
