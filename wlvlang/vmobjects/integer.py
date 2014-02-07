@@ -22,6 +22,9 @@ class Integer(Object):
     def __repr__(self):
         return "vmobjects.Integer: %s" % self.__str__()
 
+    def __eq__(self, other):
+        return isinstance(other, Integer) and self._value == other._value
+
     def get_class(self, universe):
         # Not keen on this coupling
         return universe.integerClass
