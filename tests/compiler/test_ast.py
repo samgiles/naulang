@@ -55,3 +55,7 @@ def test_ast_notequals():
 def test_ast_lessthan():
     assert ast.LessThan(DummyNode(True), DummyNode(True)) == ast.LessThan(DummyNode(True), DummyNode(True))
     assert ast.LessThan(DummyNode(False), DummyNode(True)) != ast.LessThan(DummyNode(True), DummyNode(True))
+
+def test_ast_lessthanorequal():
+    assert ast.LessThanOrEqual(DummyNode(True), DummyNode(True)) == ast.LessThanOrEqual(DummyNode(True), DummyNode(True))
+    assert ast.LessThanOrEqual(DummyNode(False), DummyNode(True)) != ast.LessThanOrEqual(DummyNode(True), DummyNode(True))
