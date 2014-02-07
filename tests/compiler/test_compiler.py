@@ -70,3 +70,10 @@ def test_ast_and_compiler():
     node.compile(ctx)
 
     assert ctx.bytecode == [chr(91), chr(90), Bytecode.AND]
+
+def test_ast_equals_compiler():
+    ctx = create_interpreter_context()
+    node = ast.Equals(DummyCompilationUnit(91), DummyCompilationUnit(90))
+    node.compile(ctx)
+
+    assert ctx.bytecode == [chr(91), chr(90), Bytecode.EQUAL]
