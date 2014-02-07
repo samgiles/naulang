@@ -126,3 +126,10 @@ def test_ast_subtractop_compiler():
     node.compile(ctx)
 
     assert ctx.bytecode == [chr(91), chr(90), Bytecode.SUB]
+
+def test_ast_mulop_compiler():
+    ctx = create_interpreter_context()
+    node = ast.MulOp(DummyCompilationUnit(91), DummyCompilationUnit(90))
+    node.compile(ctx)
+
+    assert ctx.bytecode == [chr(91), chr(90), Bytecode.MUL]

@@ -71,3 +71,11 @@ def test_ast_greaterthan():
 def test_ast_addop():
     assert ast.AddOp(DummyNode(True), DummyNode(True)) == ast.AddOp(DummyNode(True), DummyNode(True))
     assert ast.AddOp(DummyNode(False), DummyNode(True)) != ast.AddOp(DummyNode(True), DummyNode(True))
+
+def test_ast_subtractop():
+    assert ast.SubtractOp(DummyNode(True), DummyNode(True)) == ast.SubtractOp(DummyNode(True), DummyNode(True))
+    assert ast.SubtractOp(DummyNode(False), DummyNode(True)) != ast.SubtractOp(DummyNode(True), DummyNode(True))
+
+def test_ast_mulop():
+    assert ast.MulOp(DummyNode(True), DummyNode(True)) == ast.MulOp(DummyNode(True), DummyNode(True))
+    assert ast.MulOp(DummyNode(False), DummyNode(True)) != ast.MulOp(DummyNode(True), DummyNode(True))
