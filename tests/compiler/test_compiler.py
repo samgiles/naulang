@@ -147,3 +147,10 @@ def test_ast_unarynot_compiler():
     node.compile(ctx)
 
     assert ctx.bytecode == [chr(90), Bytecode.NOT]
+
+def test_ast_unarynegate_compiler():
+    ctx = create_interpreter_context()
+    node = ast.UnaryNegate(DummyCompilationUnit(90))
+    node.compile(ctx)
+
+    assert ctx.bytecode == [chr(90), Bytecode.NEG]
