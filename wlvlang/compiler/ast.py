@@ -492,7 +492,7 @@ class Transformer(object):
 
     def visit_numericliteral(self, node):
         if node.children[0].symbol == "FLOATLITERAL":
-            pass # TODO
+            return FloatConstant(float(node.children[0].additional_info))
 
         if node.children[0].symbol == "INTEGERLITERAL":
             # TODO: Convert string to bigint accordingly
