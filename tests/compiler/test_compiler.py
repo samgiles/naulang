@@ -174,3 +174,11 @@ def test_ast_ifstatement_compiler():
     node.compile(ctx)
 
     assert ctx.bytecode == [chr(100), chr(90), Bytecode.JUMP_IF_FALSE, chr(5), chr(91)]
+
+def test_ast_printstatement():
+    ctx = create_interpreter_context()
+
+    node = ast.PrintStatement(DummyCompilationUnit(90))
+    node.compile(ctx)
+
+    assert ctx.bytecode == [chr(90), Bytecode.PRINT]
