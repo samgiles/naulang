@@ -39,3 +39,7 @@ def test_ast_statement():
 def test_ast_or():
     assert ast.Or(DummyNode(True), DummyNode(True)) == ast.Or(DummyNode(True), DummyNode(True))
     assert ast.Or(DummyNode(False), DummyNode(True)) != ast.Or(DummyNode(True), DummyNode(True))
+
+def test_ast_and():
+    assert ast.And(DummyNode(True), DummyNode(True)) == ast.And(DummyNode(True), DummyNode(True))
+    assert ast.And(DummyNode(False), DummyNode(True)) != ast.And(DummyNode(True), DummyNode(True))
