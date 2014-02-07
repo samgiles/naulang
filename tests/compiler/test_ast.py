@@ -67,3 +67,7 @@ def test_ast_greaterthanorequal():
 def test_ast_greaterthan():
     assert ast.GreaterThan(DummyNode(True), DummyNode(True)) == ast.GreaterThan(DummyNode(True), DummyNode(True))
     assert ast.GreaterThan(DummyNode(False), DummyNode(True)) != ast.GreaterThan(DummyNode(True), DummyNode(True))
+
+def test_ast_addop():
+    assert ast.AddOp(DummyNode(True), DummyNode(True)) == ast.AddOp(DummyNode(True), DummyNode(True))
+    assert ast.AddOp(DummyNode(False), DummyNode(True)) != ast.AddOp(DummyNode(True), DummyNode(True))
