@@ -79,3 +79,9 @@ def test_ast_subtractop():
 def test_ast_mulop():
     assert ast.MulOp(DummyNode(True), DummyNode(True)) == ast.MulOp(DummyNode(True), DummyNode(True))
     assert ast.MulOp(DummyNode(False), DummyNode(True)) != ast.MulOp(DummyNode(True), DummyNode(True))
+
+def test_ast_divop():
+    assert ast.DivOp(DummyNode(True), DummyNode(True)) == ast.DivOp(DummyNode(True), DummyNode(True))
+    assert ast.DivOp(DummyNode(False), DummyNode(True)) != ast.DivOp(DummyNode(True), DummyNode(True))
+
+

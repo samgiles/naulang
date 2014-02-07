@@ -133,3 +133,10 @@ def test_ast_mulop_compiler():
     node.compile(ctx)
 
     assert ctx.bytecode == [chr(91), chr(90), Bytecode.MUL]
+
+def test_ast_divop_compiler():
+    ctx = create_interpreter_context()
+    node = ast.DivOp(DummyCompilationUnit(91), DummyCompilationUnit(90))
+    node.compile(ctx)
+
+    assert ctx.bytecode == [chr(91), chr(90), Bytecode.DIV]
