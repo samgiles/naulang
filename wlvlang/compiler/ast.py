@@ -12,6 +12,9 @@ class Node:
     def compiler(self, context):
         pass
 
+    def accept(self, astvisitor):
+        pass
+
 class Block(Node):
     def __init__(self, statements):
         self._statements = statements
@@ -20,19 +23,13 @@ class Block(Node):
         for statement in self._statements:
             statement.compile(context)
 
+    def accept(self, astvisitor):
+        astvisitor.visit_block(self)
+        for statement in self._statements:
+            statement.accept(astvisitor)
+
     def __repr__(self):
         return "Block(%r)" % (self._statements)
-
-
-class Statement(Node):
-    def __init__(self, expression):
-        self._expression = expression
-
-    def compiler(self, context):
-        self._expression.compile(context)
-
-    def __repr__(self):
-        return "Statement(%r)" % (self._expression)
 
 class BooleanConstant(Node):
 
@@ -42,6 +39,9 @@ class BooleanConstant(Node):
     def compile(self, context):
         boolean = context.universe().new_boolean(self._value)
         context.emit(Bytecode.LOAD_CONST, context.register_literal(boolean))
+
+    def accept(self, astvisitor):
+        astvisitor.visit_booleanconstant(self)
 
     def __repr__(self):
         return "BooleanConstant(%r)" % (self._value)
@@ -53,6 +53,9 @@ class StringConstant(Node):
 
     def compile(self, context):
         pass
+
+    def accept(self, astvisitor):
+        astvisitor.visit_stringconstant(self)
 
     def __repr__(self):
         return "StringConstant(%s)" % (self._value)
@@ -66,6 +69,9 @@ class IntegerConstant(Node):
         integer = context.universe().new_integer(self._value)
         context.emit(Bytecode.LOAD_CONST, context.register_literal(integer))
 
+    def accept(self, astvisitor):
+        astvisitor.visit_integerconstant(self)
+
     def __repr__(self):
         return "IntegerConstant(%d)" % (self._value)
 
@@ -75,6 +81,9 @@ class FloatConstant(Node):
 
     def compile(self, context):
         pass
+
+    def accept(self, astvisitor):
+        astvisitor.visit_floatconstant(self)
 
     def __repr__(self):
         return "FloatConstant(%r)" % self._value
@@ -90,6 +99,10 @@ class Assignment(Node):
         self._expression.compile(context)
         context.emit(Bytecode.STORE, local)
 
+    def accept(self, astvisitor):
+        astvisitor.visit_assignment(self)
+        self._expression.accept(astvisitor)
+
     def __repr__(self):
         return "Assignment(%r, %r)" % (self._varname, self._expression)
 
@@ -104,6 +117,11 @@ class Or(Node):
         self._rhs.compile(context)
         context.emit(Bytecode.OR)
 
+    def accept(self, astvisitor):
+        astvisitor.visit_or(self)
+        self._lhs.accept(astvisitor)
+        self._rhs.accept(astvisitor)
+
     def __repr__(self):
         return "Or(%r, %r)" % (self._lhs, self._rhs)
 
@@ -116,6 +134,11 @@ class And(Node):
         self._lhs.compile(context)
         self._rhs.compile(context)
         context.emit(Bytecode.AND)
+
+    def accept(self, astvisitor):
+        astvisitor.visit_and(self)
+        self._lhs.accept(astvisitor)
+        self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "And(%r, %r)" % (self._lhs, self._rhs)
@@ -131,6 +154,11 @@ class Equals(Node):
         self._rhs.compile(context)
         context.emit(Bytecode.EQUAL)
 
+    def accept(self, astvisitor):
+        astvisitor.visit_equals(self)
+        self._lhs.accept(astvisitor)
+        self._rhs.accept(astvisitor)
+
     def __repr__(self):
         return "Equals(%r, %r)" % (self._lhs, self._rhs)
 
@@ -143,6 +171,11 @@ class NotEquals(Node):
         self._lhs.compile(context)
         self._rhs.compile(context)
         context.emit(Bytecode.NOT_EQUAL)
+
+    def accept(self, astvisitor):
+        astvisitor.visit_notequals(self)
+        self._lhs.accept(astvisitor)
+        self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "NotEquals(%r, %r)" % (self._lhs, self._rhs)
@@ -157,6 +190,11 @@ class LessThan(Node):
         self._rhs.compile(context)
         context.emit(Bytecode.LESS_THAN)
 
+    def accept(self, astvisitor):
+        astvisitor.visit_lessthan(self)
+        self._lhs.accept(astvisitor)
+        self._rhs.accept(astvisitor)
+
     def __repr__(self):
         return "LessThan(%r, %r)" % ((self._lhs), (self._rhs))
 
@@ -169,6 +207,12 @@ class LessThanOrEqual(Node):
         self._lhs.compile(context)
         self._rhs.compile(context)
         context.emit(Bytecode.LESS_THAN_EQ)
+
+    def accept(self, astvisitor):
+        astvisitor.visit_lessthanorequal(self)
+        self._lhs.accept(astvisitor)
+        self._rhs.accept(astvisitor)
+
     def __repr__(self):
         return "LessThanOrEqual(%r, %r)" % ((self._lhs), (self._rhs))
 
@@ -182,6 +226,11 @@ class GreaterThan(Node):
         self._rhs.compile(context)
         context.emit(Bytecode.GREATER_THAN)
 
+    def accept(self, astvisitor):
+        astvisitor.visit_greaterthan(self)
+        self._lhs.accept(astvisitor)
+        self._rhs.accept(astvisitor)
+
     def __repr__(self):
         return "GreaterThan(%r, %r)" % ((self._lhs), (self._rhs))
 
@@ -194,6 +243,12 @@ class GreaterThanOrEqual(Node):
         self._lhs.compile(context)
         self._rhs.compile(context)
         context.emit(Bytecode.GREATER_THAN_EQ)
+
+    def accept(self, astvisitor):
+        astvisitor.visit_greaterthanorequal(self)
+        self._lhs.accept(astvisitor)
+        self._rhs.accept(astvisitor)
+
     def __repr__(self):
         return "GreaterThanOrEqual(%r, %r)" % ((self._lhs), (self._rhs))
 
@@ -206,6 +261,11 @@ class AddOp(Node):
         self._lhs.compile(context)
         self._rhs.compile(context)
         context.emit(Bytecode.ADD)
+
+    def accept(self, astvisitor):
+        astvisitor.visit_addop(self)
+        self._lhs.accept(astvisitor)
+        self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "AddOp(%r, %r)" % ((self._lhs), (self._rhs))
@@ -220,6 +280,11 @@ class SubtractOp(Node):
         self._rhs.compile(context)
         context.emit(Bytecode.SUB)
 
+    def accept(self, astvisitor):
+        astvisitor.visit_subtractop(self)
+        self._lhs.accept(astvisitor)
+        self._rhs.accept(astvisitor)
+
     def __repr__(self):
         return "SubtractOp(%r, %r)" % ((self._lhs), (self._rhs))
 
@@ -232,6 +297,11 @@ class MulOp(Node):
         self._lhs.compile(context)
         self._rhs.compile(context)
         context.emit(Bytecode.MUL)
+
+    def accept(self, astvisitor):
+        astvisitor.visit_subtractop(self)
+        self._lhs.accept(astvisitor)
+        self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "MulOp(%r, %r)" % ((self._lhs), (self._rhs))
@@ -246,6 +316,11 @@ class DivOp(Node):
         self._rhs.compile(context)
         context.emit(Bytecode.DIV)
 
+    def accept(self, astvisitor):
+        astvisitor.visit_divop(self)
+        self._lhs.accept(astvisitor)
+        self._rhs.accept(astvisitor)
+
     def __repr__(self):
         return "DivOp(%r, %r)" % ((self._lhs), (self._rhs))
 
@@ -257,6 +332,10 @@ class UnaryNot(Node):
         self._expression.compile(context)
         context.emit(Bytecode.NOT)
 
+    def accept(self, astvisitor):
+        astvisitor.visit_unarynot(self)
+        self._expression.accept(astvisitor)
+
     def __repr__(self):
         return "UnaryNot(%r)" % ((self._expression))
 
@@ -267,6 +346,10 @@ class UnaryNegate(Node):
     def compile(self, context):
         self._expression.compile(context)
         context.emit(Bytecode.NEG)
+
+    def accept(self, astvisitor):
+        astvisitor.visit_unarynegate(self)
+        self._expression.accept(astvisitor)
 
     def __repr__(self):
         return "UnaryNegate(%r)" % ((self._expression))
@@ -286,6 +369,11 @@ class WhileStatement(Node):
         context.emit(Bytecode.JUMP_BACK, pos)
         context.bytecode[jmp_back_to] = chr(len(context.bytecode))
 
+    def accept(self, astvisitor):
+        astvisitor.visit_whilestatment(self)
+        self._condition.accept(astvisitor)
+        self._block.accept(astvisitor)
+
     def __repr__(self):
         return "WhileStatement(condition=%r, block=%r)" % ((self._condition), (self._block))
 
@@ -301,6 +389,11 @@ class IfStatement(Node):
         self._statements.compile(context)
         context.bytecode[position] = chr(len(context.bytecode))
 
+    def accept(self, astvisitor):
+        astvisitor.visit_ifstatment(self)
+        self._condition.accept(astvisitor)
+        self._block.accept(astvisitor)
+
     def __repr__(self):
         return "IfStatement(condition=%r, block=%r)" % ((self._condition), (self._block))
 
@@ -311,6 +404,10 @@ class PrintStatement(Node):
     def compile(self, context):
         self._expression.compile(context)
         context.emit(Bytecode.PRINT)
+
+    def accept(self, astvisitor):
+        astvisitor.visit_printstatment(self)
+        self._expression.accept(astvisitor)
 
     def __repr__(self):
         return "PrintStatement(%r)" % ((self._condition))
@@ -331,6 +428,10 @@ class FunctionStatement(Node):
         method = new_function_context.generate_method()
         context.emit(Bytecode.LOAD_CONST, context.register_literal(method))
 
+    def accept(self, astvisitor):
+        astvisitor.visit_functionstatement(self)
+        self._block.accept(astvisitor)
+
     def __repr__(self):
         return "FunctionStatement(%r, %r)" % (self._paramlist, self._block)
 
@@ -346,6 +447,13 @@ class FunctionCall(Node):
 
         context.emit(Bytecode.INVOKE, local)
 
+    def accept(self, astvisitor):
+        astvisitor.visit_functioncall(self)
+        for argument in self._arglist:
+            argument.accept(astvisitor)
+
+        self._block.accept(astvisitor)
+
     def __repr__(self):
         return "FunctionCall(%r, %r)" % (self._identifier, self._arglist)
 
@@ -357,6 +465,10 @@ class ReturnStatement(Node):
         self._statement.compile(context)
         context.emit(Bytecode.RETURN)
 
+    def accept(self, astvisitor):
+        astvisitor.visit_returnstatement(self)
+        self._statement.accept(astvisitor)
+
     def __repr__(self):
         return "ReturnStatement(%r)" % self._statement
 
@@ -367,6 +479,9 @@ class IdentifierExpression(Node):
     def compile(self, context):
         local = context.register_local(self._identifier)
         context.emit(Bytecode.LOAD, local)
+
+    def accept(self, astvisitor):
+        astvisitor.visit_identifierexpression(self)
 
     def __repr__(self):
         return "IdentifierExpression(%r)" % self._identifier
@@ -572,3 +687,90 @@ class Transformer(object):
 
         if node.children[0].additional_info == 'print':
             return PrintStatement(self.visit_stmt(node.children[1]))
+
+
+
+class ASTVisitor(object):
+    """ Base class for any AST visitor implementation. """
+
+    def visit_booleanconstant(self, node):
+        return True
+
+    def visit_booleanconstant(self, node):
+        return True
+
+    def visit_stringconstant(self, node):
+        return True
+
+    def visit_integerconstant(self, node):
+        return True
+
+    def visit_floatconstant(self, node):
+        return True
+
+    def visit_assignment(self, node):
+        return True
+
+    def visit_or(self, node):
+        return True
+
+    def visit_and(self, node):
+        return True
+
+    def visit_equals(self, node):
+        return True
+
+    def visit_notequals(self, node):
+        return True
+
+    def visit_lessthan(self, node):
+        return True
+
+    def visit_lessthanorequal(self, node):
+        return True
+
+    def visit_greaterthan(self, node):
+        return True
+
+    def visit_greaterthanorequal(self, node):
+        return True
+
+    def visit_addop(self, node):
+        return True
+
+    def visit_subtractop(self, node):
+        return True
+
+    def visit_mulop(self, node):
+        return True
+
+    def visit_divop(self, node):
+        return True
+
+    def visit_unarynot(self, node):
+        return True
+
+    def visit_unarynegate(self, node):
+        return True
+
+    def visit_whilestatment(self, node):
+        return True
+
+    def visit_ifstatement(self, node):
+        return True
+
+    def visit_printstatement(self, node):
+        return True
+
+    def visit_functionstatement(self, node):
+        return True
+
+    def visit_functioncall(self, node):
+        return True
+
+    def visit_returnstatement(self, node):
+        return True
+
+    def visit_identifier(self, node):
+        return True
+
