@@ -154,3 +154,13 @@ def test_ast_unarynegate_compiler():
     node.compile(ctx)
 
     assert ctx.bytecode == [chr(90), Bytecode.NEG]
+
+def test_ast_whilestatement_compiler():
+    ctx = create_interpreter_context()
+
+    # Add padding to bytecodes to test non-zero based context (this is more realistic)
+    ctx.emit(chr(100))
+    node = ast.WhileStatement(DummyCompilationUnit(90), ast.Block([DummyCompilationUnit(91)]))
+    node.compile(ctx)
+
+    assert ctx.bytecode == [chr(100), chr(90), Bytecode.JUMP_IF_FALSE, chr(7), chr(91), Bytecode.JUMP_BACK, chr(1)]

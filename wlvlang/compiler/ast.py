@@ -278,13 +278,13 @@ class WhileStatement(Node):
         self._statements = block
 
     def compile(self, context):
-        pos = len(context.data)
+        pos = len(context.bytecode)
         self._condition.compile(context)
         context.emit(Bytecode.JUMP_IF_FALSE, 0)
-        jmp_back_to = len(context.data) - 1
+        jmp_back_to = len(context.bytecode) - 1
         self._statements.compile(context)
         context.emit(Bytecode.JUMP_BACK, pos)
-        context.data[jmp_back_to] = chr(len(context.data))
+        context.bytecode[jmp_back_to] = chr(len(context.bytecode))
 
     def __repr__(self):
         return "WhileStatement(condition=%r, block=%r)" % ((self._condition), (self._block))

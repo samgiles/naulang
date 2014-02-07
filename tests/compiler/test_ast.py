@@ -91,3 +91,8 @@ def test_ast_unarynot():
 def test_ast_unarynegate():
     assert ast.UnaryNegate(DummyNode(True)) == ast.UnaryNegate(DummyNode(True))
     assert ast.UnaryNegate(DummyNode(False)) != ast.UnaryNegate(DummyNode(True))
+
+def test_ast_whilestatement():
+    assert ast.WhileStatement(DummyNode(True), ast.Block([DummyNode(True)])) == ast.WhileStatement(DummyNode(True), ast.Block([DummyNode(True)]))
+    assert ast.WhileStatement(DummyNode(False), ast.Block([DummyNode(True)])) != ast.WhileStatement(DummyNode(True), ast.Block([DummyNode(True)]))
+
