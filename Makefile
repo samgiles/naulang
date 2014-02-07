@@ -2,16 +2,10 @@ PYPYPATH=~/code/python/pypy/
 PYTEST=py.test
 PYTESTARGS=
 
-all: test_parser test_interpreter test_vmobjects test_vm
+all: test_compiler test_interpreter test_vmobjects test_vm
 
 createdist:
 	python setup.py sdist
-
-generate_parser:
-	WORKSPACE=$(CURDIR) PYPYPATH=$(PYPYPATH) $(CURDIR)/wlvlang/compiler/generateparser.sh
-
-test_parser: generate_parser
-	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/parser/test_*.py
 
 test_compiler:
 	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/compiler/test_*.py
