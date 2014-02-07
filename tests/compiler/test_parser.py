@@ -8,14 +8,13 @@ def test_parse_constant_integer():
     assert parse("100") == ast.Block([ast.IntegerConstant(100)])
     assert parse("-100") == ast.Block([ast.UnaryNegate(ast.IntegerConstant(100))])
 
-@pytest.mark.xfail
+@pytest.mark.skip
 def test_parse_constant_float():
-    p = Parser()
 
-    assert p.parse("100.0") == ast.Main(ast.Block(ast.ConstantFloat(100.0)))
-    assert p.parse("-100.0") == ast.Main(ast.Block(ast.ConstantFloat(-100.0)))
-    assert p.parse("1.0E2") == ast.Main(ast.Block(ast.ConstantFloat(100.0)))
-    assert p.parse("1.0e2") == ast.Main(ast.Block(ast.ConstantFloat(100.0)))
+    assert parse("100.0") == ast.Block([ast.FloatConstant(100.0)])
+    assert parse("-100.0") == ast.Block([ast.UnaryNegate(ast.FloatConstant(100.0))])
+    assert parse("1.0E2") == ast.Block([ast.FloatConstant(100.0)])
+    assert parse("1.0e2") == ast.Block([ast.FloatConstant(100.0)])
 
 def test_binary_expression():
     assert parse("100+100") == ast.Block([ast.AddOp(ast.IntegerConstant(100), ast.IntegerConstant(100))])
