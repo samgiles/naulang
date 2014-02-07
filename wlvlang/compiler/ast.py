@@ -69,6 +69,16 @@ class IntegerConstant(Node):
     def __repr__(self):
         return "IntegerConstant(%d)" % (self._value)
 
+class FloatConstant(Node):
+    def __init__(self, value):
+        self._value = value
+
+    def compile(self, context):
+        pass
+
+    def __repr__(self):
+        return "FloatConstant(%r)" % self._value
+
 class Assignment(Node):
 
     def __init__(self, variable_name, expression):
