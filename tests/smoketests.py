@@ -65,11 +65,10 @@ if __name__ == '__main__':
     current_dir = os.path.dirname(os.path.realpath(__file__))
     failed = False
     for test_file in test_files:
-        code, sout, serr = run_with_timeout([executable, current_dir + os.sep + test_file], cwd, timeout=10)
+        code, sout, serr = run_with_timeout([executable, (current_dir + os.sep + test_file).replace(cwd, '')], cwd, timeout=10)
         if code != 0:
             failed = True
-            print "File %s failed:\n %s\n---------\n" % (current_dir + os.sep + test_file, serr)
-
+            print "File %s failed:\n stderr:\n %s\n stdout:\n%s\n---------\n" % (current_dir + os.sep + test_file, serr, sout)
     if failed:
         sys.exit(1)
     else:
