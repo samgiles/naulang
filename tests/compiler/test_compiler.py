@@ -201,3 +201,11 @@ def test_ast_functioncall():
     node.compile(ctx)
 
     assert ctx.bytecode == [chr(90), chr(91), Bytecode.INVOKE, chr(0)]
+
+def test_ast_returnstatement():
+    ctx = create_interpreter_context()
+
+    node = ast.ReturnStatement(DummyCompilationUnit(90))
+    node.compile(ctx)
+
+    assert ctx.bytecode == [chr(90), Bytecode.RETURN]
