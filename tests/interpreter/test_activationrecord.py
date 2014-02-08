@@ -7,3 +7,19 @@ def test_is_root_record():
 
     assert(True == subject.is_root_record())
 
+def test_get_literals():
+
+    # Usually locals will always be of type vmobjects.Object
+    # But since this is running under normal python for testing and
+    # not RPython, it's fine to use normal primitives for this test case
+    # The first 4 slots are spaces for hypothetical 'locals'
+    # The final 3 are hypothetical literals
+    locals = [None, None, None, None, 10, 100, 1000]
+    locals_size = 4
+    literals_size = 3
+
+    arec = ActivationRecord(locals, locals_size, literals_size, 0, None)
+
+    assert arec.get_literal_at(0) == 10
+    assert arec.get_literal_at(1) == 100
+    assert arec.get_literal_at(2) == 1000
