@@ -8,9 +8,12 @@ all: test_compiler test_interpreter test_vmobjects test_vm
 compile: wlvlang-no-jit
 
 wlvlang-no-jit:
+	mkdir -p bin/
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch wlvlang/targetstandalone.py
+	mv ./wlvlang-nojit ./bin/
 
 RPySOM-jit:
+	mkdir -p bin/
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch -Ojit src/targetsomstandalone.py
 
 createdist:
