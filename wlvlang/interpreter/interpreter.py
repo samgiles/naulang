@@ -1,5 +1,5 @@
 from wlvlang.interpreter.bytecode import Bytecode
-import pdb
+from rpython.rlib import jit
 
 class Interpreter(object):
 
@@ -11,6 +11,7 @@ class Interpreter(object):
         invokable = arec.peek().get_class(self.universe).lookup_invokable(signature)
         invokable(None, arec, self)
 
+    @jit.look_inside
     def interpreter_step(self, pc, method, activation_record):
         """ Performs a single step of the interpreter.
         Returns
