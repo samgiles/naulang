@@ -182,3 +182,14 @@ def test_ast_printstatement():
     node.compile(ctx)
 
     assert ctx.bytecode == [chr(90), Bytecode.PRINT]
+
+def test_ast_functionstatement():
+    ctx = create_interpreter_context()
+
+    node = ast.FunctionStatement(['a'], ast.Block([DummyCompilationUnit(90)]))
+    node.compile(ctx)
+
+    assert ctx.bytecode == [Bytecode.LOAD_CONST, chr(0)]
+    assert len(ctx._inner_contexts) == 1
+    assert ctx._inner_contexts[0].bytecode == [chr(90)]
+    assert ctx._inner_contexts[0].has_local('a') == True
