@@ -41,8 +41,6 @@ class ActivationRecord(object):
 
     """
 
-    _immutable_fields_ = ["_stack"]
-
     def __init__(self, locals, local_size, literal_size, temp_size, previous_record, access_link=None):
         """ The locals_count should include the parameters """
         stack_size = (len(locals) + 2)

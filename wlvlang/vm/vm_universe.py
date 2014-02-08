@@ -5,6 +5,8 @@ from wlvlang.vmobjects.boolean import Boolean
 
 from wlvlang.vm.symbol_table import SymbolTable
 
+from rpython.rlib import jit
+
 
 class VM_Universe(object):
 
@@ -19,9 +21,11 @@ class VM_Universe(object):
         # Initialise prims
         initialise_primitives(self)
 
+    @jit.elidable
     def new_integer(self, value):
         return Integer(value)
 
+    @jit.elidable
     def new_boolean(self, value):
         return Boolean(value)
 

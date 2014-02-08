@@ -12,9 +12,10 @@ wlvlang-no-jit:
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch wlvlang/targetstandalone.py
 	mv ./wlvlang-nojit ./bin/
 
-RPySOM-jit:
+wlvlang-jit:
 	mkdir -p bin/
-	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch -Ojit src/targetsomstandalone.py
+	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch -Ojit wlvlang/targetstandalone.py
+	mv ./wlvlang-jit ./bin/
 
 createdist:
 	python setup.py sdist
