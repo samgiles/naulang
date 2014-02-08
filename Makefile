@@ -1,26 +1,35 @@
-PYPYPATH=~/code/python/pypy/
-PYTEST=py.test
+PYPYPATH?=~/code/python/pypy/
+PYTEST?=py.test
 PYTESTARGS=
+RPYTHON?=$(PYPYPATH)/rpython/bin/rpython
 
 all: test_compiler test_interpreter test_vmobjects test_vm
+
+compile: wlvlang-no-jit
+
+wlvlang-no-jit:
+	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch wlvlang/targetstandalone.py
+
+RPySOM-jit:
+	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch -Ojit src/targetsomstandalone.py
 
 createdist:
 	python setup.py sdist
 
 test_compiler:
-	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/compiler/test_*.py
+	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/compiler/test_*.py
 
 test_interpreter:
-	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/interpreter/test_*.py
+	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/interpreter/test_*.py
 
 test_vm:
-	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vm/test_*.py
+	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vm/test_*.py
 
 test_vmobjects:
-	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vmobjects/test_*.py
+	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vmobjects/test_*.py
 
 test_full_run:
-	@PYTHONPATH=$(PYPYPATH):. python wlvlang/targetstandalone.py tests/sources/test_simple.wl
+	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. python wlvlang/targetstandalone.py tests/sources/test_simple.wl
 
 clean:
 	rm -rf MANIFEST
