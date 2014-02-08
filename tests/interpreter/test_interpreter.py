@@ -55,4 +55,17 @@ def test_bc_LOAD():
     assert new_pc == 2
     assert arec.pop() == Integer(10)
 
+def test_bc_STORE():
+    """ Expected:
+            Store the local on top of the stack in it's respective
+            position
+    """
+    uv, interpreter = create_universe_and_interpreter()
+    method = create_test_method([], [None], [Bytecode.STORE, chr(0)])
+    arec = create_arec(method, 1)
+    arec.push(uv.new_integer(100))
+    kontinue, new_pc = interpreter.interpreter_step(0, method, arec)
 
+    assert kontinue
+    assert new_pc == 2
+    assert arec.get_local_at(0) == Integer(100)
