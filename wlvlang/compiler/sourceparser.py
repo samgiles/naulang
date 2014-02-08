@@ -17,11 +17,4 @@ transformer = Transformer()
 
 def parse(source):
     """ Parse the source code and produce an AST """
-    result = None
-    try:
-        result =  transformer.visit_program(_parse(source))
-    except ParseError, e:
-        print e.nice_error_message(source=source)
-        raise e
-
-    return result
+    return transformer.visit_program(_parse(source))
