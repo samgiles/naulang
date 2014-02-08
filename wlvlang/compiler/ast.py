@@ -263,13 +263,9 @@ class AddOp(Node):
         context.emit(Bytecode.ADD)
 
     def accept(self, astvisitor):
-        self_value = astvisitor.visit_addop(self)
-        if self_value != self:
-            return self_value
-
-        self._lhs = self._lhs.accept(astvisitor)
-        self._rhs = self._rhs.accept(astvisitor)
-        return self_value
+        astvisitor.visit_addop(self)
+        self._lhs.accept(astvisitor)
+        self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "AddOp(%r, %r)" % ((self._lhs), (self._rhs))
@@ -285,13 +281,9 @@ class SubtractOp(Node):
         context.emit(Bytecode.SUB)
 
     def accept(self, astvisitor):
-        self_value = astvisitor.visit_subtractop(self)
-        if self_value != self:
-            return self_value
-
-        self._lhs = self._lhs.accept(astvisitor)
-        self._rhs = self._rhs.accept(astvisitor)
-        return self_value
+        astvisitor.visit_subtractop(self)
+        self._lhs.accept(astvisitor)
+        self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "SubtractOp(%r, %r)" % ((self._lhs), (self._rhs))
