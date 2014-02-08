@@ -24,3 +24,4 @@ class VM_Universe(object):
 
     def new_boolean(self, value):
         return Boolean(value)
+

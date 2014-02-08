@@ -5,6 +5,7 @@ from rpython.rlib.parsing.parsing import ParseError
 
 from wlvlang.compiler.sourceparser import parse
 from wlvlang.compiler.context import MethodCompilerContext
+from wlvlang.interpreter.bytecode import Bytecode
 
 def compile_source_from_file(path, filename, universe):
     """ Given a source file, return a vmobjects.Method object """
@@ -13,7 +14,8 @@ def compile_source_from_file(path, filename, universe):
         input_file = open_file_as_stream(fullname, "r")
 
         try:
-            ast = parse(input_file.readall())
+            source = input_file.readall()
+            ast = parse(source)
         except ParseError, e:
             os.write(2, e.nice_error_message(filename=fullname, source=source))
             # Raise something less specific here (as we output)
@@ -25,5 +27,6 @@ def compile_source_from_file(path, filename, universe):
 
     compiler_context = MethodCompilerContext(universe)
     ast.compile(compiler_context)
+    compiler_context.emit(Bytecode.HALT)
     method = compiler_context.generate_method()
     return method

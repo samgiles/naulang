@@ -1,6 +1,8 @@
 import sys
+from wlvlang.main import main
 
 def entry_point(argv):
+    main(argv)
     return 0
 
 def target(driver, args):

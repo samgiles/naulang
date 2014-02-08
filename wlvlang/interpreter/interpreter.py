@@ -56,7 +56,7 @@ class Interpreter(object):
             self._send(activation_record, "<=")
             pc += 1
         elif bytecode == Bytecode.GREATER_THAN:
-            self._send(activation_record, "")
+            self._send(activation_record, ">")
             pc += 1
         elif bytecode == Bytecode.ADD:
             self._send(activation_record, "+")
@@ -77,14 +77,14 @@ class Interpreter(object):
             pc += 1
         elif bytecode == Bytecode.JUMP_IF_FALSE:
             pc += 1
-            jmp_to = ord(activation_record.get_bytecode(pc))
+            jmp_to = ord(method.get_bytecode(pc))
             condition = activation_record.pop()
             if condition.get_value() == False:
                 pc = jmp_to
             else:
                 pc += 1
         elif bytecode == Bytecode.JUMP_BACK:
-            jmp_to = ord(activation_record.get_bytecode(pc + 1))
+            jmp_to = ord(method.get_bytecode(pc + 1))
             pc = jmp_to
         elif bytecode == Bytecode.PRINT:
             self._send(activation_record, "print")

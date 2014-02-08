@@ -19,6 +19,9 @@ test_vm:
 test_vmobjects:
 	@PYTHONPATH=$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vmobjects/test_*.py
 
+test_full_run:
+	@PYTHONPATH=$(PYPYPATH):. python wlvlang/targetstandalone.py tests/sources/test_simple.wl
+
 clean:
 	rm -rf MANIFEST
 	rm -rf dist/
