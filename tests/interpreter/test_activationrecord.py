@@ -56,3 +56,10 @@ def test_push_pop_from_stack():
     # Push a value on the stack in order to pop it off
     arec.push(10)
     assert 10 == arec.pop()
+
+def test_peek_at_stack():
+    arec = ActivationRecord([], 0, 0, 10, None)
+    # Push a value on the stack in order to pop it off
+    arec.push(10)
+    assert 10 == arec.peek()
+    assert 10 == arec.peek()
