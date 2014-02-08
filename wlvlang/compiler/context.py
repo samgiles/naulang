@@ -56,8 +56,8 @@ class MethodCompilerContext(object):
         self._literals.append(constant_value)
         return len(self._literals) - 1
 
-    def emit(self, bytecode, argument=None):
+    def emit(self, bytecode, argument=-1):
         self.bytecode.append(bytecode)
 
-        if argument != None:
+        if argument >= 0:
             self.bytecode.append(chr(argument))

@@ -12,9 +12,9 @@ def compile_source_from_file(path, filename, universe):
     fullname = path + os.sep + filename
     try:
         input_file = open_file_as_stream(fullname, "r")
+        source = input_file.readall()
 
         try:
-            source = input_file.readall()
             ast = parse(source)
         except ParseError, e:
             os.write(2, e.nice_error_message(filename=fullname, source=source))
