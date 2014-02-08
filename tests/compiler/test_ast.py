@@ -100,3 +100,6 @@ def test_ast_printstatement():
     assert ast.PrintStatement(DummyNode(10)) == ast.PrintStatement(DummyNode(10))
     assert ast.PrintStatement(DummyNode(11)) != ast.PrintStatement(DummyNode(10))
 
+def test_ast_functionstatement():
+    assert ast.FunctionStatement(['a'], ast.Block([DummyNode(10)])) == ast.FunctionStatement(['a'], ast.Block([DummyNode(10)]))
+    assert ast.FunctionStatement(['b'], ast.Block([DummyNode(10)])) != ast.FunctionStatement(['a'], ast.Block([DummyNode(10)]))
