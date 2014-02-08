@@ -40,3 +40,19 @@ def test_bc_LOAD_CONST():
     assert kontinue
     assert new_pc == 2
     assert arec.pop() == Integer(10)
+
+def test_bc_LOAD():
+    """ Expected:
+            Load a local from the locals area of the ActivationRecord
+            on to the top of the stack
+    """
+    uv, interpreter = create_universe_and_interpreter()
+    method = create_test_method([], [uv.new_integer(10)], [Bytecode.LOAD, chr(0)])
+    arec = create_arec(method, 1)
+    kontinue, new_pc = interpreter.interpreter_step(0, method, arec)
+
+    assert kontinue
+    assert new_pc == 2
+    assert arec.pop() == Integer(10)
+
+
