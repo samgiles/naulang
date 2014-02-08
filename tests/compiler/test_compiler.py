@@ -193,3 +193,11 @@ def test_ast_functionstatement():
     assert len(ctx._inner_contexts) == 1
     assert ctx._inner_contexts[0].bytecode == [chr(90)]
     assert ctx._inner_contexts[0].has_local('a') == True
+
+def test_ast_functioncall():
+    ctx = create_interpreter_context()
+
+    node = ast.FunctionCall('a', [DummyCompilationUnit(90), DummyCompilationUnit(91)])
+    node.compile(ctx)
+
+    assert ctx.bytecode == [chr(90), chr(91), Bytecode.INVOKE, chr(0)]
