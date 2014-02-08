@@ -23,3 +23,16 @@ def test_get_literals():
     assert arec.get_literal_at(0) == 10
     assert arec.get_literal_at(1) == 100
     assert arec.get_literal_at(2) == 1000
+
+def test_get_locals():
+    locals = [10, 100, 1000, 10000, None, None, None]
+    locals_size = 4
+    literals_size = 3
+
+    arec = ActivationRecord(locals, locals_size, literals_size, 0, None)
+
+    assert arec.get_local_at(0) == 10
+    assert arec.get_local_at(1) == 100
+    assert arec.get_local_at(2) == 1000
+    assert arec.get_local_at(3) == 10000
+
