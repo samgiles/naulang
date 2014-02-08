@@ -36,3 +36,10 @@ def test_get_locals():
     assert arec.get_local_at(2) == 1000
     assert arec.get_local_at(3) == 10000
 
+def test_push_advances_stackpointer():
+    arec = ActivationRecord([], 0, 0, 10, None)
+
+    current_stack_pointer = arec._stack_pointer
+    arec.push(10)
+    assert arec._stack_pointer == current_stack_pointer + 1
+
