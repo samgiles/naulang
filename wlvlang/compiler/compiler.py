@@ -2,7 +2,6 @@ import os
 
 from rpython.rlib.streamio import open_file_as_stream
 from rpython.rlib.parsing.parsing import ParseError
-from rlib.string_stream import StringStream
 
 from wlvlang.compiler.sourceparser import parse
 from wlvlang.compiler.context import MethodCompilerContext
