@@ -106,3 +106,5 @@ class Interpreter(object):
 
         while True:
             kontinue, pc = self.interpreter_step(pc, method, activation_record)
+            if not kontinue:
+                return
