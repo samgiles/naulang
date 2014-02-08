@@ -22,7 +22,8 @@ def compile_source_from_file(path, filename, universe):
             raise e
         finally:
             input_file.close()
-    except OSError:
+    except OSError, msg:
+        os.write(2, "%s: %s\n" % (os.strerror(msg.errno), fullname))
         raise IOError()
 
     compiler_context = MethodCompilerContext(universe)
