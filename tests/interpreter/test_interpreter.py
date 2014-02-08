@@ -23,9 +23,9 @@ def test_bc_HALT():
     arec = create_arec(method, 0)
     _, interpreter = create_universe_and_interpreter()
 
-    kontinue, new_pc = interpreter.interpreter_step(0, method, arec)
-    assert kontinue == False
-    assert new_pc == 0
+    interpreter.interpret(method, arec)
+    # TODO: Is this needed? No assertions here, but I guess it's a little useful
+    # to have if this code starts failing
 
 def test_bc_LOAD_CONST():
     """ Expected:
@@ -33,13 +33,11 @@ def test_bc_LOAD_CONST():
             on to the top of the stack
     """
     uv, interpreter = create_universe_and_interpreter()
-    method = create_test_method([uv.new_integer(10)], [None], [Bytecode.LOAD_CONST, chr(0)])
+    method = create_test_method([uv.new_integer(10)], [None], [Bytecode.LOAD_CONST, chr(0), Bytecode.HALT])
     arec = create_arec(method, 1)
 
-    kontinue, new_pc = interpreter.interpreter_step(0, method, arec)
+    interpreter.interpret(method, arec)
 
-    assert kontinue
-    assert new_pc == 2
     assert arec.pop() == Integer(10)
 
 def test_bc_LOAD():
@@ -48,12 +46,9 @@ def test_bc_LOAD():
             on to the top of the stack
     """
     uv, interpreter = create_universe_and_interpreter()
-    method = create_test_method([], [uv.new_integer(10)], [Bytecode.LOAD, chr(0)])
+    method = create_test_method([], [uv.new_integer(10)], [Bytecode.LOAD, chr(0), Bytecode.HALT])
     arec = create_arec(method, 1)
-    kontinue, new_pc = interpreter.interpreter_step(0, method, arec)
-
-    assert kontinue
-    assert new_pc == 2
+    interpreter.interpret(method, arec)
     assert arec.pop() == Integer(10)
 
 def test_bc_STORE():
@@ -62,13 +57,11 @@ def test_bc_STORE():
             position
     """
     uv, interpreter = create_universe_and_interpreter()
-    method = create_test_method([], [None], [Bytecode.STORE, chr(0)])
+    method = create_test_method([], [None], [Bytecode.STORE, chr(0), Bytecode.HALT])
     arec = create_arec(method, 1)
     arec.push(uv.new_integer(100))
-    kontinue, new_pc = interpreter.interpreter_step(0, method, arec)
+    interpreter.interpret(method, arec)
 
-    assert kontinue
-    assert new_pc == 2
     assert arec.get_local_at(0) == Integer(100)
 
 def test_bc_MUL():
@@ -86,8 +79,6 @@ def test_bc_MUL():
     arec = create_arec(method, 2)
     arec.push(uv.new_integer(30))
     arec.push(uv.new_integer(100))
-    kontinue, new_pc = interpreter.interpreter_step(0, method, arec)
+    interpreter.interpret(method, arec)
 
-    assert kontinue
-    assert new_pc == 1
     assert arec.peek() == Integer(3000)
