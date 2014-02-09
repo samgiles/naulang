@@ -1,5 +1,6 @@
+from wlvlang.vmobjects.object import Object
 
-class ActivationRecord(object):
+class ActivationRecord(Object):
     """
         Defines an Activation Record.
 
