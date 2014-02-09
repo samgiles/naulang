@@ -1,4 +1,5 @@
 from wlvlang.interpreter.bytecode import Bytecode
+from wlvlang.interpreter.activationrecord import ActivationRecord
 from rpython.rlib import jit
 from rpython.rlib.jit import JitDriver
 
@@ -98,7 +99,13 @@ class Interpreter(object):
                 self._send(activation_record, "print")
                 pc += 1
             elif bytecode == Bytecode.INVOKE:
-                pass
+                pc += 1
+                local = ord(method.get_bytecode(pc))
+                new_method = activation_record.get_local_at(local)
+                # TODO: Don't create the Arec here doesn't seem clean (method should be invokable?)
+                newarec = ActivationRecord(new_method._locals + new_method._literals, len(new_method._locals), len(new_method._literals), 200, activation_record, access_link=method)
+                self.interpret(new_method, newarec)
+                # TODO: Return values
             elif bytecode == Bytecode.RETURN:
                 pc += 1
             else:
