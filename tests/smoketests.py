@@ -58,6 +58,7 @@ if __name__ == '__main__':
 
     test_files = [
         "sources/test_simple.wl",
+        "sources/test_simple_function_decl.wl",
         "sources/test_simple_function.wl"
     ]
 

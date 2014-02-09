@@ -24,3 +24,6 @@ class Class(Object):
 
     def set_name(self, name):
         self._name = name
+
+    def get_class(self, universe):
+        universe.objectClass
