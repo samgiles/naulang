@@ -3,13 +3,13 @@ from rpython.rlib import jit
 
 class Method(Object):
 
-    _immutable_fields_ = ['_bytecodes', '_literals', '_signature']
+    _immutable_fields_ = ['_bytecodes', '_signature']
 
     def __init__(self, signature, literals, locals, bytecodes):
         self._literals = literals
         self._locals = locals
         self._bytecodes = bytecodes
-        self._signature
+        self._signature = signature
 
     @jit.elidable
     def get_bytecode(self, index):

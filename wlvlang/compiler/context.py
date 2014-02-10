@@ -20,7 +20,7 @@ class MethodCompilerContext(object):
         return self._universe
 
     def generate_method(self):
-        return Method(self._literals, self._signature, self._locals, self.bytecode)
+        return Method(self._signature, self._literals, self._locals, self.bytecode)
 
     def set_outer(self, outer_context):
         self._outer = outer_context

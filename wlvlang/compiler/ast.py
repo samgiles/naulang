@@ -79,9 +79,6 @@ class FloatConstant(Node):
     def __init__(self, value):
         self._value = value
 
-    def compile(self, context):
-        pass
-
     def accept(self, astvisitor):
         astvisitor.visit_floatconstant(self)
 
@@ -93,11 +90,6 @@ class Assignment(Node):
     def __init__(self, variable_name, expression):
         self._varname = variable_name
         self._expression = expression
-
-    def compile(self, context):
-        local = context.register_local(self._varname)
-        self._expression.compile(context)
-        context.emit(Bytecode.STORE, local)
 
     def accept(self, astvisitor):
         if astvisitor.visit_assignment(self):
@@ -112,11 +104,6 @@ class Or(Node):
         self._lhs = lhs
         self._rhs = rhs
 
-    def compile(self, context):
-        self._lhs.compile(context)
-        self._rhs.compile(context)
-        context.emit(Bytecode.OR)
-
     def accept(self, astvisitor):
         if astvisitor.visit_or(self):
             self._lhs.accept(astvisitor)
@@ -129,11 +116,6 @@ class And(Node):
     def __init__(self, lhs, rhs):
         self._lhs = lhs
         self._rhs = rhs
-
-    def compile(self, context):
-        self._lhs.compile(context)
-        self._rhs.compile(context)
-        context.emit(Bytecode.AND)
 
     def accept(self, astvisitor):
         if astvisitor.visit_and(self):
@@ -149,11 +131,6 @@ class Equals(Node):
         self._lhs = lhs
         self._rhs = rhs
 
-    def compile(self, context):
-        self._lhs.compile(context)
-        self._rhs.compile(context)
-        context.emit(Bytecode.EQUAL)
-
     def accept(self, astvisitor):
         if astvisitor.visit_equals(self):
             self._lhs.accept(astvisitor)
@@ -166,11 +143,6 @@ class NotEquals(Node):
     def __init__(self, lhs, rhs):
         self._lhs = lhs
         self._rhs = rhs
-
-    def compile(self, context):
-        self._lhs.compile(context)
-        self._rhs.compile(context)
-        context.emit(Bytecode.NOT_EQUAL)
 
     def accept(self, astvisitor):
         if astvisitor.visit_notequals(self):
@@ -185,11 +157,6 @@ class LessThan(Node):
         self._lhs = lhs
         self._rhs = rhs
 
-    def compile(self, context):
-        self._lhs.compile(context)
-        self._rhs.compile(context)
-        context.emit(Bytecode.LESS_THAN)
-
     def accept(self, astvisitor):
         if astvisitor.visit_lessthan(self):
             self._lhs.accept(astvisitor)
@@ -202,11 +169,6 @@ class LessThanOrEqual(Node):
     def __init__(self, lhs, rhs):
         self._lhs = lhs
         self._rhs = rhs
-
-    def compile(self, context):
-        self._lhs.compile(context)
-        self._rhs.compile(context)
-        context.emit(Bytecode.LESS_THAN_EQ)
 
     def accept(self, astvisitor):
         if astvisitor.visit_lessthanorequal(self):
@@ -221,11 +183,6 @@ class GreaterThan(Node):
         self._lhs = lhs
         self._rhs = rhs
 
-    def compile(self, context):
-        self._lhs.compile(context)
-        self._rhs.compile(context)
-        context.emit(Bytecode.GREATER_THAN)
-
     def accept(self, astvisitor):
         if astvisitor.visit_greaterthan(self):
             self._lhs.accept(astvisitor)
@@ -238,11 +195,6 @@ class GreaterThanOrEqual(Node):
     def __init__(self, lhs, rhs):
         self._lhs = lhs
         self._rhs = rhs
-
-    def compile(self, context):
-        self._lhs.compile(context)
-        self._rhs.compile(context)
-        context.emit(Bytecode.GREATER_THAN_EQ)
 
     def accept(self, astvisitor):
         if astvisitor.visit_greaterthanorequal(self):
@@ -257,11 +209,6 @@ class AddOp(Node):
         self._lhs = lhs
         self._rhs = rhs
 
-    def compile(self, context):
-        self._lhs.compile(context)
-        self._rhs.compile(context)
-        context.emit(Bytecode.ADD)
-
     def accept(self, astvisitor):
         if astvisitor.visit_addop(self):
             self._lhs.accept(astvisitor)
@@ -274,11 +221,6 @@ class SubtractOp(Node):
     def __init__(self, lhs, rhs):
         self._lhs = lhs
         self._rhs = rhs
-
-    def compile(self, context):
-        self._lhs.compile(context)
-        self._rhs.compile(context)
-        context.emit(Bytecode.SUB)
 
     def accept(self, astvisitor):
         if astvisitor.visit_subtractop(self):
@@ -293,11 +235,6 @@ class MulOp(Node):
         self._lhs = lhs
         self._rhs = rhs
 
-    def compile(self, context):
-        self._lhs.compile(context)
-        self._rhs.compile(context)
-        context.emit(Bytecode.MUL)
-
     def accept(self, astvisitor):
         if astvisitor.visit_mulop(self):
             self._lhs.accept(astvisitor)
@@ -311,11 +248,6 @@ class DivOp(Node):
         self._lhs = lhs
         self._rhs = rhs
 
-    def compile(self, context):
-        self._lhs.compile(context)
-        self._rhs.compile(context)
-        context.emit(Bytecode.DIV)
-
     def accept(self, astvisitor):
         if astvisitor.visit_divop(self):
             self._lhs.accept(astvisitor)
@@ -328,10 +260,6 @@ class UnaryNot(Node):
     def __init__(self, expression):
         self._expression = expression
 
-    def compile(self, context):
-        self._expression.compile(context)
-        context.emit(Bytecode.NOT)
-
     def accept(self, astvisitor):
         if astvisitor.visit_unarynot(self):
             self._expression.accept(astvisitor)
@@ -342,10 +270,6 @@ class UnaryNot(Node):
 class UnaryNegate(Node):
     def __init__(self, expression):
         self._expression = expression
-
-    def compile(self, context):
-        self._expression.compile(context)
-        context.emit(Bytecode.NEG)
 
     def accept(self, astvisitor):
         if astvisitor.visit_unarynegate(self):
@@ -360,15 +284,6 @@ class WhileStatement(Node):
         self._condition = condition
         self._block = block
 
-    def compile(self, context):
-        pos = len(context.bytecode)
-        self._condition.compile(context)
-        context.emit(Bytecode.JUMP_IF_FALSE, 0)
-        jmp_back_to = len(context.bytecode) - 1
-        self._block.compile(context)
-        context.emit(Bytecode.JUMP_BACK, pos)
-        context.bytecode[jmp_back_to] = chr(len(context.bytecode))
-
     def accept(self, astvisitor):
         if astvisitor.visit_whilestatement(self):
             self._condition.accept(astvisitor)
@@ -382,13 +297,6 @@ class IfStatement(Node):
         self._condition = condition
         self._block = block
 
-    def compile(self, context):
-        self._condition.compile(context)
-        context.emit(Bytecode.JUMP_IF_FALSE, 0)
-        position = len(context.bytecode) - 1
-        self._block.compile(context)
-        context.bytecode[position] = chr(len(context.bytecode))
-
     def accept(self, astvisitor):
         if astvisitor.visit_ifstatement(self):
             self._condition.accept(astvisitor)
@@ -400,10 +308,6 @@ class IfStatement(Node):
 class PrintStatement(Node):
     def __init__(self, expression):
         self._expression = expression
-
-    def compile(self, context):
-        self._expression.compile(context)
-        context.emit(Bytecode.PRINT)
 
     def accept(self, astvisitor):
         if astvisitor.visit_printstatement(self):
@@ -417,17 +321,6 @@ class FunctionStatement(Node):
         self._paramlist = paramlist
         self._block = block
 
-    def compile(self, context):
-
-        new_function_context = MethodCompilerContext(context.universe(), outer=context)
-        for param in self._paramlist:
-            new_function_context.register_local(param)
-
-        self._block.compile(new_function_context)
-        context.add_inner_context(new_function_context)
-        method = new_function_context.generate_method()
-        context.emit(Bytecode.LOAD_CONST, context.register_literal(method))
-
     def accept(self, astvisitor):
         if astvisitor.visit_functionstatement(self):
             self._block.accept(astvisitor)
@@ -439,13 +332,6 @@ class FunctionCall(Node):
     def __init__(self, identifier, arglist):
         self._identifier = identifier
         self._arglist = arglist
-
-    def compile(self, context):
-        local = context.register_local(self._identifier)
-        for argument in self._arglist:
-            argument.compile(context)
-
-        context.emit(Bytecode.INVOKE, local)
 
     def accept(self, astvisitor):
         if astvisitor.visit_functioncall(self):
@@ -459,10 +345,6 @@ class ReturnStatement(Node):
     def __init__(self, statement):
         self._statement = statement
 
-    def compile(self, context):
-        self._statement.compile(context)
-        context.emit(Bytecode.RETURN)
-
     def accept(self, astvisitor):
         if astvisitor.visit_returnstatement(self):
             self._statement.accept(astvisitor)
@@ -473,10 +355,6 @@ class ReturnStatement(Node):
 class IdentifierExpression(Node):
     def __init__(self, identifier):
         self._identifier = identifier
-
-    def compile(self, context):
-        local = context.register_local(self._identifier)
-        context.emit(Bytecode.LOAD, local)
 
     def accept(self, astvisitor):
         astvisitor.visit_identifierexpression(self)

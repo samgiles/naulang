@@ -16,6 +16,9 @@ class DummyCompilationUnit(ast.Node):
     def compile(self, context):
         context.emit(self.code_to_emit)
 
+    def accept(self, visitor):
+        visitor.visit_dummy(self)
+
     def __repr__(self):
         return "DummyCompilationUnit(%r)" % self.code_to_emit
 
@@ -25,6 +28,11 @@ def create_interpreter_context():
     return ctx
 
 def create_syntax_directed_translator(ctx):
+    def dummy_visit(self, node):
+        self._context.emit(node.code_to_emit)
+        return True
+
+    SyntaxDirectedTranslator.visit_dummy = dummy_visit
     return SyntaxDirectedTranslator(ctx)
 
 def test_ast_integer_compile():
