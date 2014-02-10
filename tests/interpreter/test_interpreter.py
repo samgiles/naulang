@@ -8,7 +8,7 @@ from wlvlang.vmobjects.boolean import Boolean
 
 def create_test_method(literals, locals, bytecode):
     from wlvlang.vmobjects.method import Method
-    return Method(literals, locals, bytecode)
+    return Method(None, literals, locals, bytecode)
 
 def create_arec(method, temp_space, parent=None):
     from wlvlang.interpreter.activationrecord import ActivationRecord
