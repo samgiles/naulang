@@ -692,83 +692,83 @@ class ASTVisitor(object):
     """ Base class for any AST visitor implementation. """
 
     def visit_booleanconstant(self, node):
-        return node
+        return True
 
     def visit_booleanconstant(self, node):
-        return node
+        return True
 
     def visit_stringconstant(self, node):
-        return node
+        return True
 
     def visit_integerconstant(self, node):
-        return node
+        return True
 
     def visit_floatconstant(self, node):
-        return node
+        return True
 
     def visit_assignment(self, node):
-        return node
+        return True
 
     def visit_or(self, node):
-        return node
+        return True
 
     def visit_and(self, node):
-        return node
+        return True
 
     def visit_equals(self, node):
-        return node
+        return True
 
     def visit_notequals(self, node):
-        return node
+        return True
 
     def visit_lessthan(self, node):
-        return node
+        return True
 
     def visit_lessthanorequal(self, node):
-        return node
+        return True
 
     def visit_greaterthan(self, node):
-        return node
+        return True
 
     def visit_greaterthanorequal(self, node):
-        return node
+        return True
 
     def visit_addop(self, node):
-        return node
+        return True
 
     def visit_subtractop(self, node):
-        return node
+        return True
 
     def visit_mulop(self, node):
-        return node
+        return True
 
     def visit_divop(self, node):
-        return node
+        return True
 
     def visit_unarynot(self, node):
-        return node
+        return True
 
     def visit_unarynegate(self, node):
-        return node
+        return True
 
     def visit_whilestatment(self, node):
-        return node
+        return True
 
     def visit_ifstatement(self, node):
-        return node
+        return True
 
     def visit_printstatement(self, node):
-        return node
+        return True
 
     def visit_functionstatement(self, node):
-        return node
+        return True
 
     def visit_functioncall(self, node):
-        return node
+        return True
 
     def visit_returnstatement(self, node):
-        return node
+        return True
 
     def visit_identifier(self, node):
-        return node
+        return True
 
