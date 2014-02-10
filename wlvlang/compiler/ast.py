@@ -421,7 +421,7 @@ class Transformer(object):
             return MulOp(self.visit_unary(node.children[0]), self.visit_term(node.children[1].children[1]))
 
         if operator == "/":
-            return MulOp(self.visit_unary(node.children[0]), self.visit_term(node.children[1].children[1]))
+            return DivOp(self.visit_unary(node.children[0]), self.visit_term(node.children[1].children[1]))
 
         raise TypeError("Failed to parse a multitive expression")
 
