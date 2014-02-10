@@ -35,9 +35,8 @@ join: equality ["and" join]+
 	| equality
     ;
 
-equality: relation ["is" equality]+
-        | relation ["==" equality]+
-		| relation ["!=" equality]+
+equalityoperator: "is" | "==" | "!=";
+equality: relation [equalityoperator equality]+
 		| relation
 		;
 
@@ -47,19 +46,17 @@ relation: expr "<" expr
 		| expr ">=" expr
 		| expr;
 
-expr: term ["-" expr]+
-    | term ["+" expr]+
+additionoperator: "-" | "+";
+expr: term [additionoperator expr]+
 	| term
 	;
 
-term: unary ["/" term]+
-    | unary ["*" term]+
+multiplicativeoperator: "/" | "*";
+term: unary [multiplicativeoperator term]+
 	| unary
 	;
-
-unary: "not" unary
-     | "!" unary
-	 | "-" unary
+unaryoperator: "not" | "!" | "-";
+unary: unaryoperator unary
 	 | factor;
 
 factor: "(" bool ")" | atom;
