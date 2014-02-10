@@ -24,9 +24,9 @@ class Block(Node):
             statement.compile(context)
 
     def accept(self, astvisitor):
-        astvisitor.visit_block(self)
-        for statement in self._statements:
-            statement.accept(astvisitor)
+        if astvisitor.visit_block(self):
+            for statement in self._statements:
+                statement.accept(astvisitor)
 
     def __repr__(self):
         return "Block(%r)" % (self._statements)
@@ -100,8 +100,8 @@ class Assignment(Node):
         context.emit(Bytecode.STORE, local)
 
     def accept(self, astvisitor):
-        self._expression.accept(astvisitor)
-        astvisitor.visit_assignment(self)
+        if astvisitor.visit_assignment(self):
+            self._expression.accept(astvisitor)
 
     def __repr__(self):
         return "Assignment(%r, %r)" % (self._varname, self._expression)
@@ -118,9 +118,9 @@ class Or(Node):
         context.emit(Bytecode.OR)
 
     def accept(self, astvisitor):
-        self._lhs.accept(astvisitor)
-        self._rhs.accept(astvisitor)
-        astvisitor.visit_or(self)
+        if astvisitor.visit_or(self):
+            self._lhs.accept(astvisitor)
+            self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "Or(%r, %r)" % (self._lhs, self._rhs)
@@ -136,9 +136,9 @@ class And(Node):
         context.emit(Bytecode.AND)
 
     def accept(self, astvisitor):
-        self._lhs.accept(astvisitor)
-        self._rhs.accept(astvisitor)
-        astvisitor.visit_and(self)
+        if astvisitor.visit_and(self):
+            self._lhs.accept(astvisitor)
+            self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "And(%r, %r)" % (self._lhs, self._rhs)
@@ -155,9 +155,9 @@ class Equals(Node):
         context.emit(Bytecode.EQUAL)
 
     def accept(self, astvisitor):
-        self._lhs.accept(astvisitor)
-        self._rhs.accept(astvisitor)
-        astvisitor.visit_equals(self)
+        if astvisitor.visit_equals(self):
+            self._lhs.accept(astvisitor)
+            self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "Equals(%r, %r)" % (self._lhs, self._rhs)
@@ -173,9 +173,9 @@ class NotEquals(Node):
         context.emit(Bytecode.NOT_EQUAL)
 
     def accept(self, astvisitor):
-        self._lhs.accept(astvisitor)
-        self._rhs.accept(astvisitor)
-        astvisitor.visit_notequals(self)
+        if astvisitor.visit_notequals(self):
+            self._lhs.accept(astvisitor)
+            self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "NotEquals(%r, %r)" % (self._lhs, self._rhs)
@@ -191,9 +191,9 @@ class LessThan(Node):
         context.emit(Bytecode.LESS_THAN)
 
     def accept(self, astvisitor):
-        self._lhs.accept(astvisitor)
-        self._rhs.accept(astvisitor)
-        astvisitor.visit_lessthan(self)
+        if astvisitor.visit_lessthan(self):
+            self._lhs.accept(astvisitor)
+            self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "LessThan(%r, %r)" % ((self._lhs), (self._rhs))
@@ -209,9 +209,9 @@ class LessThanOrEqual(Node):
         context.emit(Bytecode.LESS_THAN_EQ)
 
     def accept(self, astvisitor):
-        self._lhs.accept(astvisitor)
-        self._rhs.accept(astvisitor)
-        astvisitor.visit_lessthanorequal(self)
+        if astvisitor.visit_lessthanorequal(self):
+            self._lhs.accept(astvisitor)
+            self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "LessThanOrEqual(%r, %r)" % ((self._lhs), (self._rhs))
@@ -227,9 +227,9 @@ class GreaterThan(Node):
         context.emit(Bytecode.GREATER_THAN)
 
     def accept(self, astvisitor):
-        self._lhs.accept(astvisitor)
-        self._rhs.accept(astvisitor)
-        astvisitor.visit_greaterthan(self)
+        if astvisitor.visit_greaterthan(self):
+            self._lhs.accept(astvisitor)
+            self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "GreaterThan(%r, %r)" % ((self._lhs), (self._rhs))
@@ -245,9 +245,9 @@ class GreaterThanOrEqual(Node):
         context.emit(Bytecode.GREATER_THAN_EQ)
 
     def accept(self, astvisitor):
-        self._lhs.accept(astvisitor)
-        self._rhs.accept(astvisitor)
-        astvisitor.visit_greaterthanorequal(self)
+        if astvisitor.visit_greaterthanorequal(self):
+            self._lhs.accept(astvisitor)
+            self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "GreaterThanOrEqual(%r, %r)" % ((self._lhs), (self._rhs))
@@ -263,9 +263,9 @@ class AddOp(Node):
         context.emit(Bytecode.ADD)
 
     def accept(self, astvisitor):
-        self._lhs.accept(astvisitor)
-        self._rhs.accept(astvisitor)
-        astvisitor.visit_addop(self)
+        if astvisitor.visit_addop(self):
+            self._lhs.accept(astvisitor)
+            self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "AddOp(%r, %r)" % ((self._lhs), (self._rhs))
@@ -281,9 +281,9 @@ class SubtractOp(Node):
         context.emit(Bytecode.SUB)
 
     def accept(self, astvisitor):
-        self._lhs.accept(astvisitor)
-        self._rhs.accept(astvisitor)
-        astvisitor.visit_subtractop(self)
+        if astvisitor.visit_subtractop(self):
+            self._lhs.accept(astvisitor)
+            self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "SubtractOp(%r, %r)" % ((self._lhs), (self._rhs))
@@ -299,9 +299,9 @@ class MulOp(Node):
         context.emit(Bytecode.MUL)
 
     def accept(self, astvisitor):
-        self._lhs.accept(astvisitor)
-        self._rhs.accept(astvisitor)
-        astvisitor.visit_subtractop(self)
+        if astvisitor.visit_subtractop(self):
+            self._lhs.accept(astvisitor)
+            self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "MulOp(%r, %r)" % ((self._lhs), (self._rhs))
@@ -317,9 +317,9 @@ class DivOp(Node):
         context.emit(Bytecode.DIV)
 
     def accept(self, astvisitor):
-        self._lhs.accept(astvisitor)
-        self._rhs.accept(astvisitor)
-        astvisitor.visit_divop(self)
+        if astvisitor.visit_divop(self):
+            self._lhs.accept(astvisitor)
+            self._rhs.accept(astvisitor)
 
     def __repr__(self):
         return "DivOp(%r, %r)" % ((self._lhs), (self._rhs))
@@ -333,8 +333,8 @@ class UnaryNot(Node):
         context.emit(Bytecode.NOT)
 
     def accept(self, astvisitor):
-        self._expression.accept(astvisitor)
-        astvisitor.visit_unarynot(self)
+        if astvisitor.visit_unarynot(self):
+            self._expression.accept(astvisitor)
 
     def __repr__(self):
         return "UnaryNot(%r)" % ((self._expression))
@@ -348,8 +348,8 @@ class UnaryNegate(Node):
         context.emit(Bytecode.NEG)
 
     def accept(self, astvisitor):
-        self._expression.accept(astvisitor)
-        astvisitor.visit_unarynegate(self)
+        if astvisitor.visit_unarynegate(self):
+            self._expression.accept(astvisitor)
 
     def __repr__(self):
         return "UnaryNegate(%r)" % ((self._expression))
@@ -370,9 +370,9 @@ class WhileStatement(Node):
         context.bytecode[jmp_back_to] = chr(len(context.bytecode))
 
     def accept(self, astvisitor):
-        astvisitor.visit_whilestatment(self)
-        self._condition.accept(astvisitor)
-        self._block.accept(astvisitor)
+        if astvisitor.visit_whilestatment(self):
+            self._condition.accept(astvisitor)
+            self._block.accept(astvisitor)
 
     def __repr__(self):
         return "WhileStatement(condition=%r, block=%r)" % ((self._condition), (self._block))
@@ -390,9 +390,9 @@ class IfStatement(Node):
         context.bytecode[position] = chr(len(context.bytecode))
 
     def accept(self, astvisitor):
-        self._condition.accept(astvisitor)
-        astvisitor.visit_ifstatment(self)
-        self._block.accept(astvisitor)
+        if astvisitor.visit_ifstatment(self):
+            self._condition.accept(astvisitor)
+            self._block.accept(astvisitor)
 
     def __repr__(self):
         return "IfStatement(condition=%r, block=%r)" % ((self._condition), (self._block))
@@ -406,8 +406,8 @@ class PrintStatement(Node):
         context.emit(Bytecode.PRINT)
 
     def accept(self, astvisitor):
-        self._expression.accept(astvisitor)
-        astvisitor.visit_printstatment(self)
+        if astvisitor.visit_printstatment(self):
+            self._expression.accept(astvisitor)
 
     def __repr__(self):
         return "PrintStatement(%r)" % ((self._condition))
@@ -429,7 +429,8 @@ class FunctionStatement(Node):
         context.emit(Bytecode.LOAD_CONST, context.register_literal(method))
 
     def accept(self, astvisitor):
-        astvisitor.visit_functionstatement(self)
+        if astvisitor.visit_functionstatement(self):
+            self._block.accept(astvisitor)
 
     def __repr__(self):
         return "FunctionStatement(%r, %r)" % (self._paramlist, self._block)
@@ -447,7 +448,9 @@ class FunctionCall(Node):
         context.emit(Bytecode.INVOKE, local)
 
     def accept(self, astvisitor):
-        astvisitor.visit_functioncall(self)
+        if astvisitor.visit_functioncall(self):
+            for arg in self._arglist:
+                arg.accept(astvisitor)
 
     def __repr__(self):
         return "FunctionCall(%r, %r)" % (self._identifier, self._arglist)
@@ -461,8 +464,8 @@ class ReturnStatement(Node):
         context.emit(Bytecode.RETURN)
 
     def accept(self, astvisitor):
-        self._statement.accept(astvisitor)
-        astvisitor.visit_returnstatement(self)
+        if astvisitor.visit_returnstatement(self):
+            self._statement.accept(astvisitor)
 
     def __repr__(self):
         return "ReturnStatement(%r)" % self._statement
