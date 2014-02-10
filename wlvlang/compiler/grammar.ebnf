@@ -27,13 +27,41 @@ arglist: (stmt ",")* (stmt [","]?);
 
 identifier: IDENTIFIER;
 
-bool: join "or" bool | join;
-join: equality "and" join | equality;
-equality: relation "==" equality | relation "!=" equality | relation;
-relation: expr "<" expr | expr ">" expr | expr "<=" expr | expr ">=" expr | expr;
-expr: term "+" expr | term "-" expr | term;
-term: unary "*" term | unary "/" term | unary;
-unary: "not" unary | "!" unary | "-" unary | factor;
+bool: join ["or" bool]+
+    | join
+	;
+
+join: equality ["and" join]+
+	| equality
+    ;
+
+equality: relation ["is" equality]+
+        | relation ["==" equality]+
+		| relation ["!=" equality]+
+		| relation
+		;
+
+relation: expr "<" expr
+        | expr ">" expr
+		| expr "<=" expr
+		| expr ">=" expr
+		| expr;
+
+expr: term ["-" expr]+
+    | term ["+" expr]+
+	| term
+	;
+
+term: unary ["/" term]+
+    | unary ["*" term]+
+	| unary
+	;
+
+unary: "not" unary
+     | "!" unary
+	 | "-" unary
+	 | factor;
+
 factor: "(" bool ")" | atom;
 
 atom: booleanliteral
