@@ -31,6 +31,9 @@ def test_binary_expression():
     assert parse("100 >= 100") == ast.Block([ast.GreaterThanOrEqual(ast.IntegerConstant(100), ast.IntegerConstant(100))])
     assert parse("100 <= 100") == ast.Block([ast.LessThanOrEqual(ast.IntegerConstant(100), ast.IntegerConstant(100))])
 
+def test_compound_expression():
+    assert parse("10 * 6 - 5 + 2 + 1000 / 2") == ast.Block([ast.SubtractOp(ast.MulOp(ast.IntegerConstant(10), ast.IntegerConstant(6)), ast.AddOp(ast.IntegerConstant(5), ast.AddOp(ast.IntegerConstant(2), ast.DivOp(ast.IntegerConstant(1000), ast.IntegerConstant(2)))))])
+
 def test_if_statement():
     assert(parse("""if (true) {
         100
