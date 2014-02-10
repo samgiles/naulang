@@ -299,7 +299,7 @@ class MulOp(Node):
         context.emit(Bytecode.MUL)
 
     def accept(self, astvisitor):
-        if astvisitor.visit_subtractop(self):
+        if astvisitor.visit_mulop(self):
             self._lhs.accept(astvisitor)
             self._rhs.accept(astvisitor)
 
@@ -380,13 +380,13 @@ class WhileStatement(Node):
 class IfStatement(Node):
     def __init__(self, condition, block):
         self._condition = condition
-        self._statements = block
+        self._block = block
 
     def compile(self, context):
         self._condition.compile(context)
         context.emit(Bytecode.JUMP_IF_FALSE, 0)
         position = len(context.bytecode) - 1
-        self._statements.compile(context)
+        self._block.compile(context)
         context.bytecode[position] = chr(len(context.bytecode))
 
     def accept(self, astvisitor):
