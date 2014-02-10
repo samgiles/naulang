@@ -690,6 +690,8 @@ class Transformer(object):
 
 class ASTVisitor(object):
     """ Base class for any AST visitor implementation. """
+    def visit_block(self, node):
+        return True
 
     def visit_booleanconstant(self, node):
         return True
