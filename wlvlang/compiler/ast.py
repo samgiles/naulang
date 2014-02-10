@@ -1,5 +1,4 @@
 from rpython.rlib.parsing.tree import Symbol
-from wlvlang.compiler.context import MethodCompilerContext
 from wlvlang.interpreter.bytecode import Bytecode
 
 class Node:
@@ -9,19 +8,12 @@ class Node:
     def __ne__(self, other):
         return not self == other
 
-    def compiler(self, context):
-        pass
-
     def accept(self, astvisitor):
         pass
 
 class Block(Node):
     def __init__(self, statements):
         self._statements = statements
-
-    def compile(self, context):
-        for statement in self._statements:
-            statement.compile(context)
 
     def accept(self, astvisitor):
         if astvisitor.visit_block(self):
@@ -36,10 +28,6 @@ class BooleanConstant(Node):
     def __init__(self, value):
         self._value = value
 
-    def compile(self, context):
-        boolean = context.universe().new_boolean(self._value)
-        context.emit(Bytecode.LOAD_CONST, context.register_literal(boolean))
-
     def accept(self, astvisitor):
         astvisitor.visit_booleanconstant(self)
 
@@ -51,9 +39,6 @@ class StringConstant(Node):
     def __init__(self, value):
         self._value = value
 
-    def compile(self, context):
-        pass
-
     def accept(self, astvisitor):
         astvisitor.visit_stringconstant(self)
 
@@ -64,10 +49,6 @@ class IntegerConstant(Node):
 
     def __init__(self, value):
         self._value = value
-
-    def compile(self, context):
-        integer = context.universe().new_integer(self._value)
-        context.emit(Bytecode.LOAD_CONST, context.register_literal(integer))
 
     def accept(self, astvisitor):
         astvisitor.visit_integerconstant(self)
