@@ -403,11 +403,14 @@ class Transformer(object):
         if len(node.children) == 1:
             return self.visit_term(node.children[0])
 
-        if node.children[1].additional_info == "+":
-            return AddOp(self.visit_term(node.children[0]), self.visit_expr(node.children[2]))
+        operator = node.children[1].children[0].children[0].additional_info
 
-        if node.children[1].additional_info == "-":
-            return SubtractOp(self.visit_term(node.children[0]), self.visit_expr(node.children[2]))
+        if operator == "+":
+            return AddOp(self.visit_term(node.children[0]), self.visit_expr(node.children[1].children[1]))
+
+        if operator == "-":
+            return SubtractOp(self.visit_term(node.children[0]), self.visit_expr(node.children[1].children[1]))
+
 
         raise TypeError("Failed to parse an additive expression")
 
