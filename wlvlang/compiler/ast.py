@@ -355,6 +355,11 @@ class Transformer(object):
         statements.append(self.visit_stmt(kleene.children[0]))
         return Block(statements)
 
+    def _get_bools(self, kleene):
+        statements = []
+        while len(kleene.children):
+            pass
+
     def visit_program(self, node):
         statements = self._get_statements(node.children[0])
         return statements
@@ -550,9 +555,6 @@ class Transformer(object):
 class ASTVisitor(object):
     """ Base class for any AST visitor implementation. """
     def visit_block(self, node):
-        return True
-
-    def visit_booleanconstant(self, node):
         return True
 
     def visit_booleanconstant(self, node):
