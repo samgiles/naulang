@@ -415,12 +415,15 @@ class Transformer(object):
         if len(node.children) == 1:
             return self.visit_unary(node.children[0])
 
-        if node.children[1].additional_info == "*":
-            return MulOp(self.visit_unary(node.children[0]), self.visit_term(node.children[2]))
-        if node.children[1].additional_info == "/":
-            return DivOp(self.visit_unary(node.children[0]), self.visit_term(node.children[2]))
+        operator = node.children[1].children[0].children[0].additional_info
 
-        raise TypeError("Failed to parse an multitive expression")
+        if operator == "*":
+            return MulOp(self.visit_unary(node.children[0]), self.visit_term(node.children[1].children[1]))
+
+        if operator == "/":
+            return MulOp(self.visit_unary(node.children[0]), self.visit_term(node.children[1].children[1]))
+
+        raise TypeError("Failed to parse a multitive expression")
 
     def visit_unary(self, node):
         if len(node.children) == 1:
