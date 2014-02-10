@@ -370,7 +370,7 @@ class WhileStatement(Node):
         context.bytecode[jmp_back_to] = chr(len(context.bytecode))
 
     def accept(self, astvisitor):
-        if astvisitor.visit_whilestatment(self):
+        if astvisitor.visit_whilestatement(self):
             self._condition.accept(astvisitor)
             self._block.accept(astvisitor)
 
@@ -390,7 +390,7 @@ class IfStatement(Node):
         context.bytecode[position] = chr(len(context.bytecode))
 
     def accept(self, astvisitor):
-        if astvisitor.visit_ifstatment(self):
+        if astvisitor.visit_ifstatement(self):
             self._condition.accept(astvisitor)
             self._block.accept(astvisitor)
 
@@ -406,7 +406,7 @@ class PrintStatement(Node):
         context.emit(Bytecode.PRINT)
 
     def accept(self, astvisitor):
-        if astvisitor.visit_printstatment(self):
+        if astvisitor.visit_printstatement(self):
             self._expression.accept(astvisitor)
 
     def __repr__(self):
@@ -753,7 +753,7 @@ class ASTVisitor(object):
     def visit_unarynegate(self, node):
         return True
 
-    def visit_whilestatment(self, node):
+    def visit_whilestatement(self, node):
         return True
 
     def visit_ifstatement(self, node):
