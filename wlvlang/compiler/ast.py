@@ -1,4 +1,4 @@
-from rpython.rlib.parsing.tree import Symbol
+from rpython.rlib.parsing.tree import Symbol, RPythonVisitor
 
 class Node:
     def __eq__(self, other):
@@ -273,31 +273,34 @@ class WhileStatement(Node):
         return "WhileStatement(condition=%r, block=%r)" % ((self._condition), (self._block))
 
 class IfStatement(Node):
-    def __init__(self, condition, block):
-        self._condition = condition
-        self._block = block
+    def __init__(self, condition, ifclause, elseclause):
+        self.condition = condition
+        self.ifclause = ifclause
+        self.elseclause = elseclause
 
     def accept(self, astvisitor):
         if astvisitor.visit_ifstatement(self):
-            self._condition.accept(astvisitor)
-            self._block.accept(astvisitor)
+            self.condition.accept(astvisitor)
+            self.ifclause.accept(astvisitor)
+            self.elseclause.accept(astvisitor)
 
     def __repr__(self):
-        return "IfStatement(condition=%r, block=%r)" % ((self._condition), (self._block))
+        return "IfStatement(condition=%r, ifclause=%r, elseclause=%r)" % (self.condition, self.ifclause, self.elseclause)
 
 class PrintStatement(Node):
-    def __init__(self, expression):
-        self._expression = expression
+    def __init__(self, statement):
+        self.statement = statement
 
     def accept(self, astvisitor):
         if astvisitor.visit_printstatement(self):
-            self._expression.accept(astvisitor)
+            self.statement.accept(astvisitor)
 
     def __repr__(self):
-        return "PrintStatement(%r)" % ((self._condition))
+        return "PrintStatement(%r)" % self.statement
 
 class FunctionStatement(Node):
-    def __init__(self, paramlist, block):
+    def __init__(self, identifier, paramlist, block):
+        self.identifier = identifier
         self._paramlist = paramlist
         self._block = block
 
@@ -306,7 +309,17 @@ class FunctionStatement(Node):
             self._block.accept(astvisitor)
 
     def __repr__(self):
-        return "FunctionStatement(%r, %r)" % (self._paramlist, self._block)
+        return "FunctionStatement(%r, %r, %r)" % (self.identifier, self._paramlist, self._block)
+
+class FunctionParameters(Node):
+    def __init__(self, params):
+        self.parameters = params
+
+    def accept(self, astvisitor):
+        astvisitor.visit_functionparameters(self)
+
+    def __repr__(self):
+        return "FunctionParameters(%r)" % self.parameters
 
 class FunctionCall(Node):
     def __init__(self, identifier, arglist):
@@ -320,6 +333,18 @@ class FunctionCall(Node):
 
     def __repr__(self):
         return "FunctionCall(%r, %r)" % (self._identifier, self._arglist)
+
+class FunctionArgList(Node):
+    def __init__(self, arglist):
+        self.arguments = arglist
+
+    def accept(self, astvisitor):
+        if astvisitor.visit_arglist(self):
+            for arg in self.arguments:
+                arg.accept(astvisitor)
+
+    def __repr__(self):
+        return "FunctionArgList(%r)" % self.arguments
 
 class ReturnStatement(Node):
     def __init__(self, statement):
@@ -342,20 +367,150 @@ class IdentifierExpression(Node):
     def __repr__(self):
         return "IdentifierExpression(%r)" % self._identifier
 
-class Transformer(object):
+class Transformer(RPythonVisitor):
 
+    def _visit_stmt_kleene(self, kleene):
+        """ Visit a stmt kleene star.  Takes an array as it's only argument """
+        stmts = []
+
+        for stmt in kleene:
+            stmts.append(self.dispatch(stmt))
+
+        return stmts
+
+
+    def visit_program(self, node):
+        return Block(self._visit_stmt_kleene(node.children))
+
+    def visit_stmt(self, node):
+        if len(node.children) == 1:
+            return self.dispatch(node.children[0])
+
+        print repr(node)
+        return IntegerConstant(0)
+
+    def visit_ifstmt(self, node):
+        print repr(node)
+
+        condition = self.dispatch(node.children[1])
+        rest = node.children[2:]
+        ifclause = []
+        elseclause = []
+        inelse = False
+        for stmt in rest:
+            if isinstance(stmt, Symbol):
+                inelse = True
+                continue
+
+            if inelse:
+                elseclause.append(self.dispatch(stmt))
+            else:
+                ifclause.append(self.dispatch(stmt))
+
+
+        return IfStatement(condition, Block(ifclause), Block(elseclause))
+
+    def visit_assignment(self, node):
+        return Assignment(node.children[0].children[0].additional_info, self.dispatch(node.children[1]))
+
+
+    def visit_numericliteral(self, node):
+        if node.children[0].symbol == "INTEGERLITERAL":
+            return IntegerConstant(int(node.children[0].additional_info))
+
+        if node.children[0].symbol == "FLOATLITERAL":
+            return FloatConstant(float(node.children[0].additional_info))
+
+    def visit_whilestmt(self, node):
+        return WhileStatement(self.dispatch(node.children[1]), Block(self._visit_stmt_kleene(node.children[2:])))
+
+    def visit_printstmt(self, node):
+        return PrintStatement(self.dispatch(node.children[0]))
+
+    def visit_returnstmt(self, node):
+        return ReturnStatement(self.dispatch(node.children[0]))
+
+    def visit_functionstmt(self, node):
+        identifier = node.children[0].children[0].additional_info
+        if node.children[1].symbol == 'paramlist':
+            paramlist = self.dispatch(node.children[1])
+            body = self._visit_stmt_kleene(node.children[2:])
+            return FunctionStatement(identifier, paramlist, Block(body))
+
+        body = self._visit_stmt_kleene(node.children[1:])
+        return FunctionStatement(identifier, FunctionParameters([]), Block(body))
+
+    def visit_paramlist(self, node):
+        params = []
+        for p in node.children:
+            params.append(p.children[0].additional_info)
+
+        return FunctionParameters(params)
+
+    def visit_identifier(self, node):
+        return IdentifierExpression(node.children[0].additional_info)
+
+    def visit_functioncall(self, node):
+
+        if len(node.children) == 1:
+            return FunctionCall(self.dispatch(node.children[0]), FunctionArgList([]))
+
+        return FunctionCall(self.dispatch(node.children[0]), self.dispatch(node.children[1]))
+
+    def visit_arglist(self, node):
+        return FunctionArgList(self._visit_stmt_kleene(node.children))
+
+    def visit_bool(self, node):
+        if len(node.children) == 1:
+            return self.dispatch(node.children[0])
+
+        lhs = self.dispatch(node.children[0])
+        rhs = self.dispatch(node.children[1])
+        return Or(lhs, rhs)
+
+    def visit_join(self, node):
+        if len(node.children) == 1:
+            return self.dispatch(node.children[0])
+
+        lhs = self.dispatch(node.children[0])
+        rhs = self.dispatch(node.children[1])
+        return And(lhs, rhs)
+
+    def visit_equality(self, node):
+        if len(node.children) == 1:
+            return self.dispatch(node.children[0])
+
+        operator = node.children[1].additional_info
+        if operator == "==" or operator == "is":
+            return Equals(self.dispatch(node.children[0]), self.dispatch(node.children[2]))
+
+        if operator == "!=":
+            return NotEquals(self.dispatch(node.children[0]), self.dispatch(node.children[2]))
+
+
+    def visit_booleanliteral(self, node):
+
+        if node.children[0].additional_info == "true":
+            return BooleanConstant(True)
+
+        return BooleanConstant(False)
+
+
+
+
+class No(object):
     def _get_statements(self, kleene):
         statements = []
 
-        while len(kleene.children) == 2:
-            statements.append(self.visit_stmt(kleene.children[0]))
-            kleene = kleene.children[1]
+        for stmt in kleene:
+            statements.append(self.visit_stmt(stmt))
 
-        statements.append(self.visit_stmt(kleene.children[0]))
         return Block(statements)
 
     def visit_program(self, node):
-        statements = self._get_statements(node.children[0])
+        print repr(node)
+        statements = self._get_statements(node.children)
+        print repr(statements)
         return statements
 
     def visit_bool(self, node):
@@ -489,11 +644,11 @@ class Transformer(object):
     def visit_fnstatement(self, node):
         paramlist = []
 
-        if node.children[2].children[0].symbol == "paramlist":
-            paramlist = self.visit_paramlist(node.children[2].children[0])
-            block = self._get_statements(node.children[3].children[2])
+        if len(node.children) == 3:
+            paramlist = self.visit_paramlist(node.children[1].children[0])
+            block = self._get_statements(node.children[2])
         else:
-            block = self._get_statements(node.children[2].children[2])
+            block = self._get_statements(node.children[1])
 
         return FunctionStatement(paramlist, block)
 
@@ -530,15 +685,17 @@ class Transformer(object):
 
     def visit_stmt(self, node):
 
+        no
+
         if len(node.children) == 3 and node.children[1].additional_info == "=":
             # Normal assignment
             return Assignment(node.children[0].children[0].additional_info, self.visit_stmt(node.children[2]))
 
+        if node.symbol == 'identifier':
+            return self.visit_identifier(node)
+
         if len(node.children) == 1:
             return self.visit_bool(node.children[0])
-
-        if node.children[0].symbol == 'identifier':
-            return self.visit_functioncall(node)
 
         if node.children[0].additional_info == 'fn':
             return self.visit_fnstatement(node)

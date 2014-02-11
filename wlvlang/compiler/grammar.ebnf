@@ -11,32 +11,49 @@ DOUBLESTRING    : "\"([^\"\\]|\\.)*\"";
 program: stmt* [EOF]
        ;
 
-stmt: "if" "(" stmt ")" "{" stmt* "}"
-    | "while" "(" stmt ")" "{" stmt* "}"
-    | "print" stmt
-	| "fn" "(" [paramlist]? ")" "{" stmt* "}"
-	| identifier "=" stmt
-	| identifier "(" [arglist]? ")"
-	| "return" stmt
+stmt: ifstmt
+    | whilestmt
+    | printstmt
+	| functionstmt
+	| assignment
+	| functioncall
+	| returnstmt
     | bool
     ;
 
-paramlist: (identifier ",")* (identifier [","]?);
+ifstmt: "if" stmt ["{"] stmt* ["}"] "else" ["{"] stmt* ["}"]
+      | "if" stmt ["{"] stmt* ["}"]
+	  ;
 
-arglist: (stmt ",")* (stmt [","]?);
+whilestmt: "while" stmt ["{"] stmt* ["}"]
+		 ;
+
+printstmt: ["print"] stmt;
+
+returnstmt: ["return"] stmt;
+
+functionstmt: ["fn"] identifier ["("] paramlist? [")"] ["{"] stmt* ["}"];
+
+assignment: identifier ["="] stmt;
+
+functioncall: identifier ["("] arglist? [")"];
+
+paramlist: (identifier [","])* (identifier [","]?);
+
+arglist: (stmt [","])* (stmt [","]?);
 
 identifier: IDENTIFIER;
 
-bool: join ["or" bool]+
+bool: join (["or"] bool)+
     | join
 	;
 
-join: equality ["and" join]+
+join: equality (["and"] join)+
 	| equality
     ;
 
 equalityoperator: "is" | "==" | "!=";
-equality: relation [equalityoperator equality]+
+equality: relation (equalityoperator equality)+
 		| relation
 		;
 
@@ -47,19 +64,19 @@ relation: expr "<" expr
 		| expr;
 
 additionoperator: "-" | "+";
-expr: term [additionoperator expr]+
+expr: term (additionoperator expr)+
 	| term
 	;
 
 multiplicativeoperator: "/" | "*";
-term: unary [multiplicativeoperator term]+
+term: unary (multiplicativeoperator term)+
 	| unary
 	;
 unaryoperator: "not" | "!" | "-";
 unary: unaryoperator unary
 	 | factor;
 
-factor: "(" bool ")" | atom;
+factor: "(" <bool> ")" | atom;
 
 atom: booleanliteral
     | numericliteral
