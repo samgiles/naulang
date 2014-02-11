@@ -363,7 +363,7 @@ class Transformer(object):
         if len(node.children) == 1:
             return self.visit_join(node.children[0])
 
-        return Or(self.visit_join(node.children[0]), self.visit_bool(node.children[2]))
+        return Or(self.visit_join(node.children[0]), self.visit_bool(node.children[1].children[1]))
 
     def visit_join(self, node):
         if len(node.children) == 1:
@@ -435,10 +435,12 @@ class Transformer(object):
         if len(node.children) == 1:
             return self.visit_factor(node.children[0])
 
-        if node.children[0].additional_info == "not" or node.children[0].additional_info == "!":
+        operator = node.children[0].children[0].additional_info
+
+        if operator == "not" or operator == "!":
             return UnaryNot(self.visit_unary(node.children[1]))
 
-        if node.children[0].additional_info == "-":
+        if operator == "-":
             return UnaryNegate(self.visit_unary(node.children[1]))
 
         raise TypeError("Failed to parse an unary expression")
