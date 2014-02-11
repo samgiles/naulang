@@ -2,6 +2,7 @@ from wlvlang.vmobjects.object import Object
 from rpython.rlib import jit
 
 class Method(Object):
+    """ Defines a Method in the wlvlang-vm. """
 
     _immutable_fields_ = ['_bytecodes', '_signature']
 
@@ -23,3 +24,10 @@ class Method(Object):
     @jit.elidable
     def get_signature(self):
         return self._signature
+
+    def invoke(self, arguments):
+        pass
+
+    @jit.elidable
+    def get_class(self, universe):
+        return universe.methodClass
