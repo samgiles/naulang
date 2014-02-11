@@ -369,7 +369,7 @@ class Transformer(object):
         if len(node.children) == 1:
             return self.visit_equality(node.children[0])
 
-        return And(self.visit_equality(node.children[0]), self.visit_join(node.children[2]))
+        return And(self.visit_equality(node.children[0]), self.visit_join(node.children[1].children[1]))
 
     def visit_equality(self, node):
         if len(node.children) == 1:
