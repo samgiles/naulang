@@ -1,5 +1,4 @@
 from rpython.rlib.parsing.tree import Symbol
-from wlvlang.interpreter.bytecode import Bytecode
 
 class Node:
     def __eq__(self, other):
