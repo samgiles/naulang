@@ -375,11 +375,14 @@ class Transformer(object):
         if len(node.children) == 1:
             return self.visit_relation(node.children[0])
 
-        if node.children[1].additional_info == "==":
-            return Equals(self.visit_relation(node.children[0]), self.visit_equality(node.children[2]))
+        operator = node.children[1].children[0].children[0].additional_info
 
-        if node.children[1].additional_info == "!=":
-            return NotEquals(self.visit_relation(node.children[0]), self.visit_equality(node.children[2]))
+        if operator == "is" or operator == "==":
+            return Equals(self.visit_relation(node.children[0]), self.visit_equality(node.children[1].children[1]))
+
+        if operator == "!=":
+            return NotEquals(self.visit_relation(node.children[0]), self.visit_equality(node.children[1].children[1]))
+
 
         raise TypeError("Failed to parse an equality expression")
 
