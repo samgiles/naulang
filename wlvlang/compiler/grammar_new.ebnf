@@ -101,4 +101,21 @@ callexpression: memberexpression arguments >callexpressiona<*;
 
 callexpressiona: arguments
                | "." identifier
-			   i
+			   ;
+
+arguments: "(" [")"]
+       	 | "(" >argumentlist< [")"]
+		 ;
+
+argumentlist: assignmentexpression [","] >argumentlist<
+            | assignmentexpression
+			;
+
+lhsexpression: <callexpression>
+			 ;
+
+postfixexpression: lhsexpression "++"
+                 | lhsexpression "--"
+				 | <lhsexpression>
+				 ;
+
