@@ -74,7 +74,7 @@ def statement_print(p):
 
 @pg.production("expression : INTEGER")
 def expression_integer_literal(p):
-    return ast.IntegerConstant(int(p[0]))
+    return ast.IntegerConstant(int(p[0].getstr()))
 
 @pg.production("expression : TRUE")
 @pg.production("expression : FALSE")
