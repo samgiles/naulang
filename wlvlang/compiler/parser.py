@@ -49,23 +49,28 @@ pg = ParserGenerator(tokentypes,
                          ("left", ["IS", "DOUBLE_EQ"]),
                          ("left", ["MUL", "DIV", "MOD"]),
                          ("left", ["PLUS", "MINUS"]),
+                         ("right", ["PRINT"]),
                      ], cache_id="wlvlang-parser-test")
 
-@pg.production("main : expression")
+@pg.production("main : statement_list")
 def main(p):
-    return ast.Block([p[0]])
+    return ast.Block(p[0])
 
 @pg.production("statement_list : statement statement_list")
 def statement_list(p):
-    return p
+    return [stmt for stmt in p if stmt != None]
 
 @pg.production("statement_list : none")
 def statement_list_none(p):
-    return None
+    return p[0]
 
 @pg.production("statement : expression")
 def statement_expression(p):
     return p[0]
+
+@pg.production("statement : PRINT expression")
+def statement_print(p):
+    return ast.PrintStatement(p[1])
 
 @pg.production("expression : INTEGER")
 def expression_integer_literal(p):
@@ -124,9 +129,6 @@ def expression_equality(p):
 def expression_notequals(p):
     return ast.NotEquals(p[0], p[2])
 
-@pg.production("statement : PRINT expression")
-def statement_print(p):
-    return ast.PrintStatement(p[0])
 
 @pg.production("none : ")
 def none(p):
@@ -134,7 +136,7 @@ def none(p):
 
 @pg.error
 def error_handler(token):
-    raise ValueError("Ran into a %s where it was't expected" % token.gettokentype())
+    raise Exception("Ran into a %s where it was't expected" % token.gettokentype())
 
 def create_parser():
     return pg.build()
