@@ -24,6 +24,7 @@ def get_tokens():
         # Comparison Operators
         ("IS", r"is"),
         ("DOUBLE_EQ", r"=="),
+        ("NOT_EQ", r"!="),
         # Punctuation
         ("LPAREN", r"\("),
         ("RPAREN", r"\)"),
@@ -98,6 +99,10 @@ def expression_unary_not(p):
 @pg.production("expression : expression DOUBLE_EQ expression")
 def expression_equality(p):
     return ast.Equals(p[0], p[2])
+
+@pg.production("expression : expression NOT_EQ expression")
+def expression_notequals(p):
+    return ast.NotEquals(p[0], p[2])
 
 @pg.error
 def error_handler(token):
