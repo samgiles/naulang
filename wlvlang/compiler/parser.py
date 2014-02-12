@@ -11,6 +11,7 @@ def get_tokens():
     return [
         # Arithmetic Operators
         ("PLUS", r"\+"),
+        ("MINUS", r"-"),
         # Logical Operators
         ("AND", r"and"),
         ("OR", r"or"),
@@ -30,7 +31,7 @@ tokentypes, _ = zip(*get_tokens())
 pg = ParserGenerator(tokentypes,
                      precedence=[
                          ("left", ["OR", "AND"]),
-                         ("left", ["PLUS"]),
+                         ("left", ["PLUS", "MINUS"]),
                      ], cache_id="wlvlang-parser-test")
 
 @pg.production("main : expression")
@@ -56,6 +57,10 @@ def expression_or(p):
 @pg.production("expression : expression PLUS expression")
 def expression_plus(p):
     return ast.AddOp(p[0], p[2])
+
+@pg.production("expression : expression MINUS expression")
+def expression_minus(p):
+    return ast.SubtractOp(p[0], p[2])
 
 
 @pg.error
