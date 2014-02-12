@@ -10,6 +10,7 @@ lg.ignore('([\s\f\t\n\r\v]+)|#.*$')
 def get_tokens():
     return [
         # Arithmetic Operators
+        ("MUL", r"\*"),
         ("PLUS", r"\+"),
         ("MINUS", r"-"),
         # Logical Operators
@@ -31,6 +32,7 @@ tokentypes, _ = zip(*get_tokens())
 pg = ParserGenerator(tokentypes,
                      precedence=[
                          ("left", ["OR", "AND"]),
+                         ("left", ["MUL"]),
                          ("left", ["PLUS", "MINUS"]),
                      ], cache_id="wlvlang-parser-test")
 
@@ -61,6 +63,10 @@ def expression_plus(p):
 @pg.production("expression : expression MINUS expression")
 def expression_minus(p):
     return ast.SubtractOp(p[0], p[2])
+
+@pg.production("expression : expression MUL expression")
+def expression_multiply(p):
+    return ast.MulOp(p[0], p[2])
 
 
 @pg.error
