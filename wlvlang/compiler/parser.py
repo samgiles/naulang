@@ -55,6 +55,18 @@ pg = ParserGenerator(tokentypes,
 def main(p):
     return ast.Block([p[0]])
 
+@pg.production("statement_list : statement statement_list")
+def statement_list(p):
+    return p
+
+@pg.production("statement_list : none")
+def statement_list_none(p):
+    return None
+
+@pg.production("statement : expression")
+def statement_expression(p):
+    return p[0]
+
 @pg.production("expression : INTEGER")
 def expression_integer_literal(p):
     return ast.IntegerConstant(int(p[0]))
@@ -112,9 +124,13 @@ def expression_equality(p):
 def expression_notequals(p):
     return ast.NotEquals(p[0], p[2])
 
-@pg.production("statement: PRINT expression")
+@pg.production("statement : PRINT expression")
 def statement_print(p):
     return ast.PrintStatement(p[0])
+
+@pg.production("none : ")
+def none(p):
+    return None
 
 @pg.error
 def error_handler(token):
