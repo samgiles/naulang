@@ -12,6 +12,7 @@ def get_tokens():
         # Arithmetic Operators
         ("MUL", r"\*"),
         ("DIV", r"/"),
+        ("MOD", r"%"),
         ("PLUS", r"\+"),
         ("MINUS", r"-"),
         # Logical Operators
@@ -33,7 +34,7 @@ tokentypes, _ = zip(*get_tokens())
 pg = ParserGenerator(tokentypes,
                      precedence=[
                          ("left", ["OR", "AND"]),
-                         ("left", ["MUL", "DIV"]),
+                         ("left", ["MUL", "DIV", "MOD"]),
                          ("left", ["PLUS", "MINUS"]),
                      ], cache_id="wlvlang-parser-test")
 
@@ -73,6 +74,9 @@ def expression_multiply(p):
 def expression_divide(p):
     return ast.DivOp(p[0], p[2])
 
+@pg.production("expression : expression MOD expression")
+def expression_mod(p):
+    return ast.ModOp(p[0], p[2])
 
 @pg.error
 def error_handler(token):
