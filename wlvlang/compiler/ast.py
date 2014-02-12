@@ -236,6 +236,19 @@ class DivOp(Node):
     def __repr__(self):
         return "DivOp(%r, %r)" % ((self._lhs), (self._rhs))
 
+class ModOp(Node):
+    def __init__(self, lhs, rhs):
+        self._lhs = lhs
+        self._rhs = rhs
+
+    def accept(self, astvisitor):
+        if astvisitor.visit_divop(self):
+            self._lhs.accept(astvisitor)
+            self._rhs.accept(astvisitor)
+
+    def __repr__(self):
+        return "ModOp(%r, %r)" % ((self._lhs), (self._rhs))
+
 class UnaryNot(Node):
     def __init__(self, expression):
         self._expression = expression
