@@ -16,20 +16,46 @@ def test_parse_constant_float():
     assert parse("1.0E2") == ast.Block([ast.FloatConstant(100.0)])
     assert parse("1.0e2") == ast.Block([ast.FloatConstant(100.0)])
 
-def test_binary_expression():
+def test_addition_expression():
     assert parse("100+100") == ast.Block([ast.AddOp(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+
+def test_subtraction_expression():
     assert parse("100-100") == ast.Block([ast.SubtractOp(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+
+def test_division_expression():
     assert parse("100/100") == ast.Block([ast.DivOp(ast.IntegerConstant(100), ast.IntegerConstant(100))])
-    # TODO assert parse("100%100") == ast.Block([ast.ModOp(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+
+def test_modulo_expression():
+    assert parse("100%100") == ast.Block([ast.ModOp(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+
+def test_multiply_expression():
     assert parse("100*100") == ast.Block([ast.MulOp(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+
+def test_equality_expression():
     assert parse("100 == 100") == ast.Block([ast.Equals(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+    assert parse("100 is 100") == ast.Block([ast.Equals(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+
+def test_not_equal_expression():
     assert parse("100 != 100") == ast.Block([ast.NotEquals(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+
+def test_logical_and_expression():
     assert parse("100 and 100") == ast.Block([ast.And(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+
+def test_logical_or_expression():
     assert parse("100 or 100") == ast.Block([ast.Or(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+
+def test_less_than_expression():
     assert parse("100 < 100") == ast.Block([ast.LessThan(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+
+def test_greater_than_expression():
     assert parse("100 > 100") == ast.Block([ast.GreaterThan(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+
+def test_greater_than_eq_expression():
     assert parse("100 >= 100") == ast.Block([ast.GreaterThanOrEqual(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+
+def test_less_than_eq_expression():
     assert parse("100 <= 100") == ast.Block([ast.LessThanOrEqual(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+
 
 def test_compound_expression():
     assert parse("10 * 6 - 5 + 2 + 1000 / 2") == ast.Block([ast.SubtractOp(ast.MulOp(ast.IntegerConstant(10), ast.IntegerConstant(6)), ast.AddOp(ast.IntegerConstant(5), ast.AddOp(ast.IntegerConstant(2), ast.DivOp(ast.IntegerConstant(1000), ast.IntegerConstant(2)))))])
