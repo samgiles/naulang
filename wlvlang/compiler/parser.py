@@ -35,7 +35,7 @@ pg = ParserGenerator(tokentypes,
 
 @pg.production("main : expression")
 def main(p):
-    return p[0]
+    return ast.Block([p[0]])
 
 @pg.production("expression : TRUE")
 @pg.production("expression : FALSE")
@@ -56,6 +56,7 @@ def expression_or(p):
 @pg.production("expression : expression PLUS expression")
 def expression_plus(p):
     return ast.AddOp(p[0], p[2])
+
 
 @pg.error
 def error_handler(token):
