@@ -18,8 +18,6 @@ def get_tokens():
         # Logical Operators
         ("AND", r"and"),
         ("OR", r"or"),
-        ("TRUE", r"true"),
-        ("FALSE", r"false"),
         ("NOT", r"not"),
         # Comparison Operators
         ("IS", r"is"),
@@ -28,6 +26,10 @@ def get_tokens():
         # Punctuation
         ("LPAREN", r"\("),
         ("RPAREN", r"\)"),
+        # Literals
+        ("TRUE", r"true"),
+        ("FALSE", r"false"),
+        ("INTEGER", r"-?0|[1-9][0-9]*"),
     ]
 
 tokens = get_tokens()
@@ -50,6 +52,10 @@ pg = ParserGenerator(tokentypes,
 @pg.production("main : expression")
 def main(p):
     return ast.Block([p[0]])
+
+@pg.production("expression: INTEGER")
+def expression_integer_literal(p):
+    return ast.IntegerConstant(int(p[0]))
 
 @pg.production("expression : TRUE")
 @pg.production("expression : FALSE")
