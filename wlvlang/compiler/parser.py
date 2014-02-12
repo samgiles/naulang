@@ -21,6 +21,9 @@ def get_tokens():
         ("TRUE", r"true"),
         ("FALSE", r"false"),
         ("NOT", r"not"),
+        # Comparison Operators
+        ("IS", r"is"),
+        ("DOUBLE_EQ", r"=="),
         # Punctuation
         ("LPAREN", r"\("),
         ("RPAREN", r"\)"),
@@ -38,6 +41,7 @@ tokentypes, _ = zip(*get_tokens())
 pg = ParserGenerator(tokentypes,
                      precedence=[
                          ("left", ["OR", "AND"]),
+                         ("left", ["IS", "DOUBLE_EQ"]),
                          ("left", ["MUL", "DIV", "MOD"]),
                          ("left", ["PLUS", "MINUS"]),
                      ], cache_id="wlvlang-parser-test")
@@ -89,6 +93,11 @@ def expression_parens(p):
 @pg.production("expression : NOT expression")
 def expression_unary_not(p):
     return ast.UnaryNot(p[1])
+
+@pg.production("expression : expression IS expression")
+@pg.production("expression : expression DOUBLE_EQ expression")
+def expression_equality(p):
+    return ast.Equals(p[0], p[2])
 
 @pg.error
 def error_handler(token):
