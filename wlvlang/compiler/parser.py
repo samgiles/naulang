@@ -20,6 +20,7 @@ def get_tokens():
         ("OR", r"or"),
         ("TRUE", r"true"),
         ("FALSE", r"false"),
+        ("NOT", r"not"),
         # Punctuation
         ("LPAREN", r"\("),
         ("RPAREN", r"\)"),
@@ -84,6 +85,10 @@ def expression_mod(p):
 @pg.production("expression : LPAREN expression RPAREN")
 def expression_parens(p):
     return p[0]
+
+@pg.production("expression : NOT expression")
+def expression_unary_not(p):
+    return ast.UnaryNot(p[1])
 
 @pg.error
 def error_handler(token):
