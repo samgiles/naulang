@@ -20,6 +20,9 @@ def get_tokens():
         ("OR", r"or"),
         ("TRUE", r"true"),
         ("FALSE", r"false"),
+        # Punctuation
+        ("LPAREN", r"\("),
+        ("RPAREN", r"\)"),
     ]
 
 tokens = get_tokens()
@@ -77,6 +80,10 @@ def expression_divide(p):
 @pg.production("expression : expression MOD expression")
 def expression_mod(p):
     return ast.ModOp(p[0], p[2])
+
+@pg.production("expression : LPAREN expression RPAREN")
+def expression_parens(p):
+    return p[0]
 
 @pg.error
 def error_handler(token):
