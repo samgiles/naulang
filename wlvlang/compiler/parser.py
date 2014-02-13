@@ -113,13 +113,6 @@ def expression_function(p):
 def statement_function_invocation(p):
     return ast.FunctionCall(p[0].getstr(), p[2])
 
-@pg.production("arg_opt : arg_opt expression COMMA")
-def arg_opt(p):
-    return p[0].append(p[1])
-
-@pg.production("arg_opt : none")
-def arg_opt_none(p):
-    return []
 
 @pg.production("argument_list : arg_opt expression comma_elision")
 def argument_list(p):
@@ -129,13 +122,21 @@ def argument_list(p):
 def arg_list_none(p):
     return []
 
+@pg.production("arg_opt : arg_opt expression COMMA")
+def arg_opt(p):
+    return [expr for expr in p if expr != None]
+
+@pg.production("arg_opt : none")
+def arg_opt_none(p):
+    return []
+
 @pg.production("parameter_list : param_opt IDENTIFIER comma_elision")
 def param_list(p):
-    return p[0].append(p[1])
+    return [ident for ident in p if ident != None]
 
 @pg.production("parameter_list : none")
 def param_list_none(p):
-    return []
+    return p[0]
 
 @pg.production("param_opt : param_opt IDENTIFIER COMMA")
 def param_opt(p):
@@ -215,6 +216,9 @@ def expression_equality(p):
 def expression_notequals(p):
     return ast.NotEquals(p[0], p[2])
 
+@pg.production("expression : IDENTIFIER")
+def expression_identifier(p):
+    return ast.IdentifierExpression(p[0].getstr())
 
 @pg.production("none : ")
 def none(p):
