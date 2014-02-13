@@ -65,18 +65,18 @@ pg = ParserGenerator(tokentypes,
                          ("left", ["OR", "AND"]),
                      ], cache_id="wlvlang-parser-test")
 
-@pg.production("main : statement_list")
+@pg.production("main : statement_block")
 def main(p):
-    return ast.Block(p[0])
+    return p[0]
 
-@pg.production("statement_list : statement_list statement")
+@pg.production("statement_block : statement_block statement")
 def statement_list(p):
     if p[0] is not None:
-        return [stmt for stmt in p[0] if stmt != None].append(p[1])
+        return ast.Block([stmt for stmt in p[0] if stmt != None].append(p[1]))
 
-    return [p[1]]
+    return ast.Block([p[1]])
 
-@pg.production("statement_list : none")
+@pg.production("statement_block : none")
 def statement_list_none(p):
     return None
 
@@ -96,21 +96,21 @@ def statement_return(p):
 def statement_return_none(p):
     return ast.ReturnStatement(p[1])
 
-@pg.production("statement : IF expression LBRACE statement_list RBRACE")
+@pg.production("statement : IF expression LBRACE statement_block RBRACE")
 def statement_if(p):
-    return ast.IfStatement(p[1], ast.Block(p[3]))
+    return ast.IfStatement(p[1], p[3])
 
-@pg.production("statement : WHILE expression LBRACE statement_list RBRACE")
+@pg.production("statement : WHILE expression LBRACE statement_block RBRACE")
 def statement_while(p):
-    return ast.WhileStatement(p[1], ast.Block(p[3]))
+    return ast.WhileStatement(p[1], p[3])
 
 @pg.production("statement : IDENTIFIER EQUAL expression")
 def statement_assignment(p):
     return ast.Assignment(p[0].getstr(), p[2])
 
-@pg.production("expression : FN LPAREN parameter_list RPAREN LBRACE statement_list RBRACE")
+@pg.production("expression : FN LPAREN parameter_list RPAREN LBRACE statement_block RBRACE")
 def expression_function(p):
-    return ast.FunctionExpression(p[2], ast.Block(p[4]))
+    return ast.FunctionExpression(p[2], p[4])
 
 
 @pg.production("expression : IDENTIFIER LPAREN argument_list RPAREN")
