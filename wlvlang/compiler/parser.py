@@ -30,6 +30,7 @@ def get_tokens():
         ("TRUE", r"true"),
         ("FALSE", r"false"),
         ("INTEGER", r"-?0|[1-9][0-9]*"),
+        ("FLOAT", r"(((0|[1-9][0-9]*)(\.[0-9]*)?)|(\.[0-9]+))([eE][\+\-]?[0-9]*)?"),
         # Others
         ("PRINT", r"print"),
     ]
@@ -75,6 +76,10 @@ def statement_print(p):
 @pg.production("expression : INTEGER")
 def expression_integer_literal(p):
     return ast.IntegerConstant(int(p[0].getstr()))
+
+@pg.production("expression : FLOAT")
+def expression_float_literal(p):
+    return ast.FloatConstant(float(p[0].getstr()))
 
 @pg.production("expression : TRUE")
 @pg.production("expression : FALSE")

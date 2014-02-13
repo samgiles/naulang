@@ -2,33 +2,58 @@ from rply import LexerGenerator
 
 lg = LexerGenerator()
 
-lg.add("LET", r"let")
-lg.add("SINGLE_EQ", r"eq")
-lg.add("IF", r"if")
-lg.add("ELSE", r"else")
-lg.add("WHILE", r"while")
-lg.add("RETURN", r"return")
-lg.add("TRUE", r"true")
-lg.add("FALSE", r"false")
-lg.add("INTEGER", r"-?0|[1-9][0-9]*")
-lg.add("FLOAT",r"(((0|[1-9][0-9]*)(\.[0-9]*)?)|(\.[0-9]+))([eE][\+\-]?[0-9]*)?")
-lg.add("SINGLE_STRING", r"'([^'\\]|\\.)*'")
-lg.add("DOUBLE_STRING", r"\"([^\"\\]|\\.)*\"")
-lg.add("SELF", r"self")
-lg.add("LPAREN", r"\(")
-lg.add("RPAREN", r"\)")
-lg.add("IDENTIFIER_NAME", r"[a-zA-Z_$][a-zA-Z_0-9]*")
-lg.add("FN", r"fn")
-lg.add("LBRACE", r"\{")
-lg.add("RBRACE", r"\}")
-lg.add("COMMA", r",")
-lg.add("DOT", r"\.")
-lg.add("PLUS", r"\+")
-lg.add("MINUS", r"-")
-lg.add("MUL", r"\*")
-lg.add("DIV", r"/")
 
-lg.ignore('([ \f\t\n\r\v]*)|(//[^\n]*\n)|(/\*([^\*]|\*[^/])*\*?\*/)')
+lg.ignore('([\s\f\t\n\r\v]+)|(//[^\n]*\n)|(/\*([^\*]|\*[^/])*\*?\*/)')
 
-lexer = lg.build()
+def get_tokens():
+    return [
+        ("LET", r"let"),
+        ("SINGLE_EQ", r"eq"),
+        ("IF", r"if"),
+        ("ELSE", r"else"),
+        ("WHILE", r"while"),
+        ("RETURN", r"return"),
+        ("TRUE", r"true"),
+        ("FALSE", r"false"),
+        ("INTEGER", r"-?0|[1-9][0-9]*"),
+        ("FLOAT",r"(((0|[1-9][0-9]*)(\.[0-9]*)?)|(\.[0-9]+))([eE][\+\-]?[0-9]*)?"),
+        ("SINGLE_STRING", r"'([^'\\]|\\.)*'"),
+        ("DOUBLE_STRING", r"\"([^\"\\]|\\.)*\""),
+        ("SELF", r"self"),
+        ("LPAREN", r"\("),
+        ("RPAREN", r"\)"),
+        ("IDENTIFIER", r"[a-zA-Z_$][a-zA-Z_0-9]*"),
+        ("FN", r"fn"),
+        ("LBRACE", r"\{"),
+        ("RBRACE", r"\}"),
+        ("COMMA", r","),
+        ("DOT", r"\."),
+        ("PLUS", r"\+"),
+        ("MINUS", r"-"),
+        ("MUL", r"\*"),
+        ("DIV", r"/"),
+        ("MOD", r"%"),
+        ("CHAN_IN", r"<\+"),
+        ("CHAN_OUT", r"<-"),
+        ("IS", r"is"),
+        ("DOUBLE_EQ", "=="),
+        ("NOT_EQ", "!="),
+        ("LT", r"<"),
+        ("GT", r">"),
+        ("LTEQ", r"<="),
+        ("GTEQ", r">="),
+        ("BANG", r"!"),
+        ("PRINT", r"print"),
+        ("AND", r"and"),
+        ("OR", r"or"),
+        ("NOT", r"not"),
+        ("IS", r"is"),
+    ]
 
+tokens = get_tokens()
+
+for token in tokens:
+    lg.add(token[0], token[1])
+
+def create_lexer():
+    return lg.build()
