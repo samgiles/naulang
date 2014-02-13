@@ -28,11 +28,13 @@ def get_tokens():
         ("RPAREN", r"\)"),
         ("LBRACE", r"\{"),
         ("RBRACE", r"\}"),
+        ("COMMA", r","),
         # Literals
         ("TRUE", r"true"),
         ("FALSE", r"false"),
         ("INTEGER", r"-?0|[1-9][0-9]*"),
         ("FLOAT", r"(((0|[1-9][0-9]*)(\.[0-9]*)?)|(\.[0-9]+))([eE][\+\-]?[0-9]*)?"),
+        ("IDENTIFIER", r"[a-zA-Z_$][a-zA-Z_0-9]*"),
         # Keywords
         ("IF", r"if"),
         ("PRINT", r"print"),
@@ -79,6 +81,35 @@ def statement_print(p):
 @pg.production("statement : IF expression LBRACE statement_list RBRACE")
 def statement_if(p):
     return ast.IfStatmeent(p[0], ast.Block(p[1]))
+
+@pg.production("expression : IDENTIFIER LPAREN argument_list RPAREN")
+def statement_function_invocation(p):
+    return ast.FunctionCall(p[0].getstr(), p[2])
+
+@pg.production("arg_opt : arg_opt expression COMMA")
+def arg_opt(p):
+    return p[0].append(p[1])
+
+@pg.production("arg_opt : none")
+def arg_opt_none(p):
+    return []
+
+@pg.production("argument_list : arg_opt expression comma_elision")
+def argument_list(p):
+    return p[0].append(p[1])
+
+@pg.production("argument_list : none")
+def arg_list_none(p):
+    return []
+
+@pg.production("argument_list : none")
+def argument_list_none(p):
+    return p[0]
+
+@pg.production("comma_elision : COMMA")
+@pg.production("comma_elision : none")
+def comma_elision(p):
+    return None
 
 @pg.production("expression : INTEGER")
 def expression_integer_literal(p):
