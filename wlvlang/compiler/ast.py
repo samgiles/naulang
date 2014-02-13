@@ -286,19 +286,17 @@ class WhileStatement(Node):
         return "WhileStatement(condition=%r, block=%r)" % ((self._condition), (self._block))
 
 class IfStatement(Node):
-    def __init__(self, condition, ifclause, elseclause):
+    def __init__(self, condition, ifclause):
         self.condition = condition
         self.ifclause = ifclause
-        self.elseclause = elseclause
 
     def accept(self, astvisitor):
         if astvisitor.visit_ifstatement(self):
             self.condition.accept(astvisitor)
             self.ifclause.accept(astvisitor)
-            self.elseclause.accept(astvisitor)
 
     def __repr__(self):
-        return "IfStatement(condition=%r, ifclause=%r, elseclause=%r)" % (self.condition, self.ifclause, self.elseclause)
+        return "IfStatement(condition=%r, ifclause=%r)" % (self.condition, self.ifclause)
 
 class PrintStatement(Node):
     def __init__(self, statement):

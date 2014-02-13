@@ -26,12 +26,15 @@ def get_tokens():
         # Punctuation
         ("LPAREN", r"\("),
         ("RPAREN", r"\)"),
+        ("LBRACE", r"\{"),
+        ("RBRACE", r"\}"),
         # Literals
         ("TRUE", r"true"),
         ("FALSE", r"false"),
         ("INTEGER", r"-?0|[1-9][0-9]*"),
         ("FLOAT", r"(((0|[1-9][0-9]*)(\.[0-9]*)?)|(\.[0-9]+))([eE][\+\-]?[0-9]*)?"),
-        # Others
+        # Keywords
+        ("IF", r"if"),
         ("PRINT", r"print"),
     ]
 
@@ -72,6 +75,10 @@ def statement_expression(p):
 @pg.production("statement : PRINT expression")
 def statement_print(p):
     return ast.PrintStatement(p[1])
+
+@pg.production("statement : IF expression LBRACE statement_list R_BRACE")
+def statement_if(p):
+    return ast.IfStatmeent(p[0], ast.Block(p[1]))
 
 @pg.production("expression : INTEGER")
 def expression_integer_literal(p):
