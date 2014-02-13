@@ -62,7 +62,8 @@ pg = ParserGenerator(tokentypes,
                          ("left", ["MUL", "DIV", "MOD"]),
                          ("left", ["PLUS", "MINUS"]),
                          ("right", ["NEGATE"]),
-                         ("right", ["RETURN", "PRINT"])
+                         ("right", ["RETURN", "PRINT"]),
+                         ("right", ["UMINUS"]),
                      ], cache_id="wlvlang-parser-test")
 
 @pg.production("main : statement_list")
@@ -180,7 +181,7 @@ def expression_plus(p):
 def expression_minus(p):
     return ast.SubtractOp(p[0], p[2])
 
-@pg.production("expression : NEGATE expression", precedence="LOWEST")
+@pg.production("expression : MINUS expression", precedence="UMINUS")
 def expression_negate(p):
     return ast.UnaryNegate(p[1])
 
