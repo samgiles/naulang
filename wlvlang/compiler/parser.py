@@ -5,7 +5,7 @@ from wlvlang.compiler import ast
 
 lg = LexerGenerator()
 
-lg.ignore('([\s\f\t\n\r\v]+)|#.*$')
+lg.ignore(r"([\s\f\t\n\r\v]+)|#.*$")
 
 def get_tokens():
     return [
@@ -15,6 +15,7 @@ def get_tokens():
         ("MOD", r"%"),
         ("PLUS", r"\+"),
         ("MINUS", r"-"),
+        ("NEGATE", r"-"),
         # Logical Operators
         ("AND", r"and"),
         ("OR", r"or"),
@@ -26,19 +27,21 @@ def get_tokens():
         # Punctuation
         ("LPAREN", r"\("),
         ("RPAREN", r"\)"),
-        ("LBRACE", r"\{"),
-        ("RBRACE", r"\}"),
+        ("LBRACE", r"{"),
+        ("RBRACE", r"}"),
         ("COMMA", r","),
         # Literals
         ("TRUE", r"true"),
         ("FALSE", r"false"),
-        ("INTEGER", r"-?0|[1-9][0-9]*"),
+        ("INTEGER", r"-?(0|[1-9][0-9]*)"),
         ("FLOAT", r"(((0|[1-9][0-9]*)(\.[0-9]*)?)|(\.[0-9]+))([eE][\+\-]?[0-9]*)?"),
         ("IDENTIFIER", r"[a-zA-Z_$][a-zA-Z_0-9]*"),
         # Keywords
         ("IF", r"if"),
         ("PRINT", r"print"),
         ("FN", r"fn"),
+        ("WHILE", r"while"),
+        ("RETURN", r"return"),
         # Others
         ("EQUAL", r"="),
     ]
@@ -58,14 +61,15 @@ pg = ParserGenerator(tokentypes,
                          ("left", ["IS", "DOUBLE_EQ"]),
                          ("left", ["MUL", "DIV", "MOD"]),
                          ("left", ["PLUS", "MINUS"]),
-                         ("right", ["PRINT"]),
+                         ("right", ["NEGATE"]),
+                         ("right", ["RETURN", "PRINT"])
                      ], cache_id="wlvlang-parser-test")
 
 @pg.production("main : statement_list")
 def main(p):
     return ast.Block(p[0])
 
-@pg.production("statement_list : statement statement_list")
+@pg.production("statement_list : statement_list statement")
 def statement_list(p):
     return [stmt for stmt in p if stmt != None]
 
@@ -81,13 +85,27 @@ def statement_expression(p):
 def statement_print(p):
     return ast.PrintStatement(p[1])
 
+@pg.production("statement : RETURN expression")
+@pg.production("statement : RETURN none")
+def statement_return(p):
+    return ast.ReturnStatement(p[1])
+
 @pg.production("statement : IF expression LBRACE statement_list RBRACE")
 def statement_if(p):
     return ast.IfStatmeent(p[0], ast.Block(p[1]))
 
+@pg.production("statement : WHILE expression LBRACE statement_list RBRACE")
+def statement_while(p):
+    return ast.WhileStatement(p[1], ast.Block(p[3]))
+
 @pg.production("statement : IDENTIFIER EQUAL expression")
 def statement_assignment(p):
     return ast.Assignment(p[0].getstr(), p[2])
+
+@pg.production("expression : FN LPAREN parameter_list RPAREN LBRACE statement_list RBRACE")
+def expression_function(p):
+    return ast.FunctionExpression(p[2], ast.Block(p[4]))
+
 
 @pg.production("expression : IDENTIFIER LPAREN argument_list RPAREN")
 def statement_function_invocation(p):
@@ -109,8 +127,20 @@ def argument_list(p):
 def arg_list_none(p):
     return []
 
-@pg.production("argument_list : none")
-def argument_list_none(p):
+@pg.production("parameter_list : param_opt IDENTIFIER comma_elision")
+def param_list(p):
+    return p[0].append(p[1])
+
+@pg.production("parameter_list : none")
+def param_list_none(p):
+    return []
+
+@pg.production("param_opt : param_opt IDENTIFIER COMMA")
+def param_opt(p):
+    return p[0].append(p[1])
+
+@pg.production("param_opt : none")
+def param_opt_none(p):
     return p[0]
 
 @pg.production("comma_elision : COMMA")
@@ -150,6 +180,10 @@ def expression_plus(p):
 def expression_minus(p):
     return ast.SubtractOp(p[0], p[2])
 
+@pg.production("expression : NEGATE expression", precedence="LOWEST")
+def expression_negate(p):
+    return ast.UnaryNegate(p[1])
+
 @pg.production("expression : expression MUL expression")
 def expression_multiply(p):
     return ast.MulOp(p[0], p[2])
@@ -186,7 +220,7 @@ def none(p):
 
 @pg.error
 def error_handler(token):
-    raise Exception("Ran into a %s where it was't expected" % token.gettokentype())
+    raise Exception("Ran into a %r where it was't expected" % token.getstr())
 
 def create_parser():
     return pg.build()
