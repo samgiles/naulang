@@ -57,13 +57,13 @@ tokentypes, _ = zip(*get_tokens())
 
 pg = ParserGenerator(tokentypes,
                      precedence=[
-                         ("left", ["OR", "AND"]),
-                         ("left", ["IS", "DOUBLE_EQ"]),
-                         ("left", ["MUL", "DIV", "MOD"]),
-                         ("left", ["PLUS", "MINUS"]),
-                         ("right", ["NEGATE"]),
-                         ("right", ["RETURN", "PRINT"]),
                          ("right", ["UMINUS"]),
+                         ("right", ["RETURN", "PRINT"]),
+                         ("right", ["NEGATE"]),
+                         ("left", ["PLUS", "MINUS"]),
+                         ("left", ["MUL", "DIV", "MOD"]),
+                         ("nonassoc", ["IS", "DOUBLE_EQ"]),
+                         ("left", ["OR", "AND"]),
                      ], cache_id="wlvlang-parser-test")
 
 @pg.production("main : statement_list")
