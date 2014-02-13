@@ -7,6 +7,9 @@ all: test_compiler test_interpreter test_vmobjects test_vm
 
 compile: wlvlang-no-jit
 
+test_parse:
+	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. python wlvlang/test_parser.py
+
 wlvlang-no-jit:
 	mkdir -p bin/
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch wlvlang/targetstandalone.py
