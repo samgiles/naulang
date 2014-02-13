@@ -71,10 +71,7 @@ def main(p):
 
 @pg.production("statement_block : statement_block statement")
 def statement_list(p):
-    if p[0] is not None:
-        return ast.Block([stmt for stmt in p[0] if stmt != None].append(p[1]))
-
-    return ast.Block([p[1]])
+    return ast.Block([stmt for stmt in p if stmt != None])
 
 @pg.production("statement_block : none")
 def statement_list_none(p):
@@ -111,7 +108,6 @@ def statement_assignment(p):
 @pg.production("expression : FN LPAREN parameter_list RPAREN LBRACE statement_block RBRACE")
 def expression_function(p):
     return ast.FunctionExpression(p[2], p[4])
-
 
 @pg.production("expression : IDENTIFIER LPAREN argument_list RPAREN")
 def statement_function_invocation(p):
