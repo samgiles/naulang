@@ -38,6 +38,9 @@ def get_tokens():
         # Keywords
         ("IF", r"if"),
         ("PRINT", r"print"),
+        ("FN", r"fn"),
+        # Others
+        ("EQUAL", r"="),
     ]
 
 tokens = get_tokens()
@@ -81,6 +84,10 @@ def statement_print(p):
 @pg.production("statement : IF expression LBRACE statement_list RBRACE")
 def statement_if(p):
     return ast.IfStatmeent(p[0], ast.Block(p[1]))
+
+@pg.production("statement : IDENTIFIER EQUAL expression")
+def statement_assignment(p):
+    return ast.Assignment(p[0].getstr(), p[2])
 
 @pg.production("expression : IDENTIFIER LPAREN argument_list RPAREN")
 def statement_function_invocation(p):
