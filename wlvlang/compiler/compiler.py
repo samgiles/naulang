@@ -131,7 +131,7 @@ class SyntaxDirectedTranslator(ASTVisitor):
         return False
 
     def visit_printstatement(self, node):
-        node._expression.accept(self)
+        node.statement.accept(self)
         self._context.emit(Bytecode.PRINT)
         return False
 
