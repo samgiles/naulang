@@ -95,7 +95,7 @@ def statement_return_none(p):
 
 @pg.production("statement : IF expression LBRACE statement_list RBRACE")
 def statement_if(p):
-    return ast.IfStatmeent(p[0], ast.Block(p[1]))
+    return ast.IfStatement(p[0], ast.Block(p[1]))
 
 @pg.production("statement : WHILE expression LBRACE statement_list RBRACE")
 def statement_while(p):
