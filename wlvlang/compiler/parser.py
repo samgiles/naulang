@@ -76,7 +76,7 @@ def statement_expression(p):
 def statement_print(p):
     return ast.PrintStatement(p[1])
 
-@pg.production("statement : IF expression LBRACE statement_list R_BRACE")
+@pg.production("statement : IF expression LBRACE statement_list RBRACE")
 def statement_if(p):
     return ast.IfStatmeent(p[0], ast.Block(p[1]))
 
