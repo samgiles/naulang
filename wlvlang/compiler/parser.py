@@ -9,6 +9,12 @@ lg.ignore(r"([\s\f\t\n\r\v]+)|#.*$")
 
 def get_tokens():
     return [
+        # Keywords
+        ("IF", r"if"),
+        ("PRINT", r"print"),
+        ("FN", r"fn"),
+        ("WHILE", r"while"),
+        ("RETURN", r"return"),
         # Arithmetic Operators
         ("MUL", r"\*"),
         ("DIV", r"/"),
@@ -36,12 +42,6 @@ def get_tokens():
         ("FLOAT", r"(((0|[1-9][0-9]*)(\.[0-9]*)+)|(\.[0-9]+))([eE][\+\-]?[0-9]*)?"),
         ("INTEGER", r"-?(0|[1-9][0-9]*)"),
         ("IDENTIFIER", r"[a-zA-Z_$][a-zA-Z_0-9]*"),
-        # Keywords
-        ("IF", r"if"),
-        ("PRINT", r"print"),
-        ("FN", r"fn"),
-        ("WHILE", r"while"),
-        ("RETURN", r"return"),
         # Others
         ("EQUAL", r"="),
     ]
@@ -58,7 +58,6 @@ tokentypes, _ = zip(*get_tokens())
 pg = ParserGenerator(tokentypes,
                      precedence=[
                          ("right", ["UMINUS"]),
-                         ("right", ["RETURN", "PRINT"]),
                          ("right", ["NEGATE"]),
                          ("left", ["PLUS", "MINUS"]),
                          ("left", ["MUL", "DIV", "MOD"]),
@@ -87,8 +86,11 @@ def statement_print(p):
     return ast.PrintStatement(p[1])
 
 @pg.production("statement : RETURN expression")
-@pg.production("statement : RETURN none")
 def statement_return(p):
+    return ast.ReturnStatement(p[1])
+
+@pg.production("statement : RETURN none")
+def statement_return_none(p):
     return ast.ReturnStatement(p[1])
 
 @pg.production("statement : IF expression LBRACE statement_list RBRACE")
