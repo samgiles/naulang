@@ -12,15 +12,15 @@ class Node:
 
 class Block(Node):
     def __init__(self, statements):
-        self._statements = statements
+        self.statements = statements
 
     def accept(self, astvisitor):
         if astvisitor.visit_block(self):
-            for statement in self._statements:
+            for statement in self.statements:
                 statement.accept(astvisitor)
 
     def __repr__(self):
-        return "Block(%r)" % (self._statements)
+        return "Block(%r)" % (self.statements)
 
 class BooleanConstant(Node):
 
