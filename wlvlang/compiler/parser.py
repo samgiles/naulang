@@ -30,6 +30,11 @@ def get_tokens():
         ("IS", r"is"),
         ("DOUBLE_EQ", r"=="),
         ("NOT_EQ", r"!="),
+        # Relational Operators
+        ("LTEQ", r"<="),
+        ("GTEQ", r">="),
+        ("LT", r"<"),
+        ("GT", r"<"),
         # Punctuation
         ("LPAREN", r"\("),
         ("RPAREN", r"\)"),
@@ -61,6 +66,7 @@ pg = ParserGenerator(tokentypes,
                          ("right", ["NEGATE"]),
                          ("left", ["PLUS", "MINUS"]),
                          ("left", ["MUL", "DIV", "MOD"]),
+                         ("nonassoc", ["LT", "GT", "LTEQ", "GTEQ"]),
                          ("nonassoc", ["IS", "DOUBLE_EQ"]),
                          ("left", ["OR", "AND"]),
                      ], cache_id="wlvlang-parser-test")
@@ -177,6 +183,10 @@ def expression_and(p):
 @pg.production("expression : expression OR expression")
 def expression_or(p):
     return ast.Or(p[0], p[2])
+
+@pg.production("expression : expression LT expression")
+def expression_lt(p):
+    return ast.LessThan(p[0], p[2])
 
 @pg.production("expression : expression PLUS expression")
 def expression_plus(p):
