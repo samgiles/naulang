@@ -102,7 +102,7 @@ def test_function_expression_one_arg():
         100
     }""") == ast.Block([ast.FunctionExpression(ast.ParameterList(['a']), ast.Block([ast.IntegerConstant(100)]))])
 
-def test_function_statement_no_args():
+def test_function_expression_no_args():
     assert parse("""fn() {
         100
     }""") == ast.Block([ast.FunctionExpression(ast.ParameterList([]), ast.Block([ast.IntegerConstant(100)]))])
