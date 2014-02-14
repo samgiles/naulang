@@ -108,10 +108,10 @@ def test_function_expression_no_args():
     }""") == ast.Block([ast.FunctionExpression(ast.ParameterList([]), ast.Block([ast.IntegerConstant(100)]))])
 
 def test_function_call_statement():
-    assert parse("a()") == ast.Block([ast.FunctionCall('a', [])])
+    assert parse("a()") == ast.Block([ast.FunctionCall('a', ast.FunctionArgList([]))])
 
 def test_function_call_statement_arguments():
-    assert parse("""b(10, a, 0) """) == ast.Block([ast.FunctionCall('b', [ast.IntegerConstant(10), ast.IdentifierExpression('a'), ast.IntegerConstant(0)])])
+    assert parse("""b(10, a, 0) """) == ast.Block([ast.FunctionCall('b', ast.FunctionArgList([ast.IntegerConstant(10), ast.IdentifierExpression('a'), ast.IntegerConstant(0)]))])
 
 def test_return_statement():
     assert parse("""return 10""") == ast.Block([ast.ReturnStatement(ast.IntegerConstant(10))])

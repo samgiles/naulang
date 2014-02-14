@@ -125,19 +125,25 @@ def statement_function_invocation(p):
 
 @pg.production("argument_list : arg_opt expression comma_elision")
 def argument_list(p):
-    return p[0].append(p[1])
+    if p[0] is None:
+        return ast.FunctionArgList([p[1]])
+
+    return ast.FunctionArgList(p[0].arguments + [p[1]])
 
 @pg.production("argument_list : none")
 def arg_list_none(p):
-    return []
+    return ast.FunctionArgList([])
 
 @pg.production("arg_opt : arg_opt expression COMMA")
 def arg_opt(p):
-    return [expr for expr in p if expr != None]
+    if p[0] is None:
+        return ast.FunctionArgList([p[1]])
+
+    return ast.FunctionArgList(p[0].arguments + [p[1]])
 
 @pg.production("arg_opt : none")
 def arg_opt_none(p):
-    return []
+    return p[0]
 
 @pg.production("parameter_list : param_opt IDENTIFIER comma_elision")
 def param_list(p):
