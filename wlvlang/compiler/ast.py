@@ -309,6 +309,18 @@ class PrintStatement(Node):
     def __repr__(self):
         return "PrintStatement(%r)" % self.statement
 
+class ParameterList(Node):
+    def __init__(self, parameters):
+        self.parameters = parameters
+
+    def accept(self, astvisitor):
+        if astvisitor.visit_paramlist(self):
+            for param in self.parameters:
+                param.accept(astvisitor)
+
+    def __repr__(self):
+        return "ParameterList(%r)" % self.parameters
+
 class FunctionExpression(Node):
     def __init__(self, paramlist, block):
         self.paramlist = paramlist
