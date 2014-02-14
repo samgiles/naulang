@@ -192,6 +192,14 @@ def expression_lt(p):
 def expression_gt(p):
     return ast.GreaterThan(p[0], p[2])
 
+@pg.production("expression : expression LTEQ expression")
+def expression_lteq(p):
+    return ast.LessThanOrEqual(p[0], p[2])
+
+@pg.production("expression : expression GTEQ expression")
+def expression_gteq(p):
+    return ast.GreaterThanOrEqual(p[0], p[2])
+
 @pg.production("expression : expression PLUS expression")
 def expression_plus(p):
     return ast.AddOp(p[0], p[2])
