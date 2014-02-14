@@ -34,7 +34,7 @@ def get_tokens():
         ("LTEQ", r"<="),
         ("GTEQ", r">="),
         ("LT", r"<"),
-        ("GT", r"<"),
+        ("GT", r">"),
         # Punctuation
         ("LPAREN", r"\("),
         ("RPAREN", r"\)"),
@@ -187,6 +187,10 @@ def expression_or(p):
 @pg.production("expression : expression LT expression")
 def expression_lt(p):
     return ast.LessThan(p[0], p[2])
+
+@pg.production("expression : expression GT expression")
+def expression_gt(p):
+    return ast.GreaterThan(p[0], p[2])
 
 @pg.production("expression : expression PLUS expression")
 def expression_plus(p):
