@@ -71,11 +71,14 @@ def main(p):
 
 @pg.production("statement_block : statement_block statement")
 def statement_list(p):
-    return ast.Block([stmt for stmt in p if stmt != None])
+    if p[0] is None:
+        return ast.Block([p[1]])
+
+    return ast.Block(p[0].statements + [p[1]])
 
 @pg.production("statement_block : none")
 def statement_list_none(p):
-    return None
+    return p[0]
 
 @pg.production("statement : expression")
 def statement_expression(p):
