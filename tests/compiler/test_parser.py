@@ -92,10 +92,10 @@ def test_boolean_literal():
     assert(parse("true") == ast.Block([ast.BooleanConstant(True)]))
     assert(parse("false") == ast.Block([ast.BooleanConstant(False)]))
 
-def test_function_statement():
+def test_function_expression():
     assert parse("""fn(a, b) {
             100
-        }""") == ast.Block([ast.FunctionStatement(['a', 'b'], ast.Block([ast.IntegerConstant(100)]))])
+        }""") == ast.Block([ast.FunctionExpression(ast.ParameterList(['a', 'b']), ast.Block([ast.IntegerConstant(100)]))])
 
 def test_function_statement_one_arg():
     assert parse("""fn(a) {

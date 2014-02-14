@@ -116,7 +116,7 @@ def statement_assignment(p):
 
 @pg.production("expression : FN LPAREN parameter_list RPAREN LBRACE statement_block RBRACE")
 def expression_function(p):
-    return ast.FunctionExpression(p[2], p[4])
+    return ast.FunctionExpression(p[2], p[5])
 
 @pg.production("expression : IDENTIFIER LPAREN argument_list RPAREN")
 def statement_function_invocation(p):
@@ -141,7 +141,10 @@ def arg_opt_none(p):
 
 @pg.production("parameter_list : param_opt IDENTIFIER comma_elision")
 def param_list(p):
-    return [ident for ident in p if ident != None]
+    if p[0] is None:
+        return ast.ParameterList([p[1].getstr()])
+
+    return ast.ParameterList(p[0].parameters + [p[1].getstr()])
 
 @pg.production("parameter_list : none")
 def param_list_none(p):
@@ -149,7 +152,10 @@ def param_list_none(p):
 
 @pg.production("param_opt : param_opt IDENTIFIER COMMA")
 def param_opt(p):
-    return p[0].append(p[1])
+    if p[0] is None:
+        return ast.ParameterList([p[1].getstr()])
+
+    return ast.ParameterList(p[0].parameters + [p[1].getstr()])
 
 @pg.production("param_opt : none")
 def param_opt_none(p):
