@@ -123,10 +123,10 @@ class SyntaxDirectedTranslator(ASTVisitor):
         return False
 
     def visit_ifstatement(self, node):
-        node._condition.accept(self)
+        node.condition.accept(self)
         self._context.emit(Bytecode.JUMP_IF_FALSE, 0)
         position = len(self._context.bytecode) - 1
-        node._block.accept(self)
+        node.ifclause.accept(self)
         self._context.bytecode[position] = chr(len(self._context.bytecode))
         return False
 
