@@ -118,3 +118,8 @@ def test_return_statement():
 
 def test_expression_assignment():
     assert parse("""a = 10 * 10""") == ast.Block([ast.Assignment('a', ast.MulOp(ast.IntegerConstant(10), ast.IntegerConstant(10)))])
+
+def test_function_statement_noarg():
+    assert parse("""fn a() {
+        100
+    }""") == ast.Block([ast.FunctionStatement('a', ast.FunctionArgList([]), ast.Block([ast.IntegerConstant(100)]))])

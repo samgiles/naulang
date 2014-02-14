@@ -122,6 +122,10 @@ def expression_function(p):
 def statement_function_invocation(p):
     return ast.FunctionCall(p[0].getstr(), p[2])
 
+@pg.production("expression : FN IDENTIFIER LPAREN argument_list RPAREN LBRACE statement_block RBRACE")
+def statement_function(p):
+    return ast.FunctionStatement(p[1].getstr(), p[3], p[6])
+
 
 @pg.production("argument_list : arg_opt expression comma_elision")
 def argument_list(p):
