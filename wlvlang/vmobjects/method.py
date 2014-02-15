@@ -12,22 +12,18 @@ class Method(Object):
         self._bytecodes = bytecodes
         self._signature = signature
 
-    @jit.elidable
     def get_bytecode(self, index):
         assert 0 <= index and index < len(self._bytecodes)
         return self._bytecodes[index]
 
-    @jit.elidable
     def get_literals(self):
         return self._literals
 
-    @jit.elidable
     def get_signature(self):
         return self._signature
 
     def invoke(self, arguments):
         pass
 
-    @jit.elidable
     def get_class(self, universe):
         return universe.methodClass
