@@ -483,6 +483,9 @@ class ASTVisitor(object):
     def visit_functionstatement(self, node):
         return True
 
+    def visit_functionexpression(self, node):
+        return True
+
     def visit_functioncall(self, node):
         return True
 
