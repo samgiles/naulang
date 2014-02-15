@@ -1,6 +1,7 @@
 from rpython.rlib.parsing.tree import Symbol, RPythonVisitor
+from rply.token import BaseBox
 
-class Node:
+class Node(BaseBox):
     def __eq__(self, other):
         return (self.__class__ == other.__class__ and self.__dict__ == other.__dict__)
 
@@ -11,8 +12,8 @@ class Node:
         pass
 
 class Block(Node):
-    def __init__(self, statements):
-        self.statements = statements
+    def __init__(self, statement_list):
+        self.statements = statement_list
 
     def accept(self, astvisitor):
         if astvisitor.visit_block(self):
@@ -313,6 +314,9 @@ class ParameterList(Node):
     def __init__(self, parameters):
         self.parameters = parameters
 
+    def get_parameters(self):
+        return self.parameters
+
     def accept(self, astvisitor):
         astvisitor.visit_paramlist(self)
 
@@ -360,6 +364,9 @@ class FunctionCall(Node):
 class FunctionArgList(Node):
     def __init__(self, arglist):
         self.arguments = arglist
+
+    def get_arguments(self):
+        return self.arguments
 
     def accept(self, astvisitor):
         if astvisitor.visit_arglist(self):
