@@ -122,4 +122,14 @@ def test_expression_assignment():
 def test_function_statement_noarg():
     assert parse("""fn a() {
         100
-    }""") == ast.Block([ast.FunctionStatement('a', ast.FunctionArgList([]), ast.Block([ast.IntegerConstant(100)]))])
+    }""") == ast.Block([ast.FunctionStatement('a', ast.ParameterList([]), ast.Block([ast.IntegerConstant(100)]))])
+
+def test_function_statement_onearg():
+    assert parse("""fn a(x) {
+        100
+    }""") == ast.Block([ast.FunctionStatement('a', ast.ParameterList(['x']), ast.Block([ast.IntegerConstant(100)]))])
+
+def test_function_statement_args():
+    assert parse("""fn a(x, y, z) {
+        100
+    }""") == ast.Block([ast.FunctionStatement('a', ast.ParameterList(['x', 'y', 'z']), ast.Block([ast.IntegerConstant(100)]))])
