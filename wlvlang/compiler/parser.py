@@ -267,7 +267,7 @@ def none(p):
 
 @pg.error
 def error_handler(token):
-    raise Exception("Ran into a %r where it was't expected" % token.getstr())
+    raise Exception("Ran into a '%s' where it was't expected" % token.getstr())
 
 def create_parser():
     return pg.build()
