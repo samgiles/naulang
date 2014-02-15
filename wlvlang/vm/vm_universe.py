@@ -13,10 +13,14 @@ class VM_Universe(object):
     def __init__(self):
         self._symbol_table = SymbolTable()
         self.integerClass = None
+        self.methodClass = None
+        self.booleanClass = None
         self.initialise_primitives()
 
     def initialise_primitives(self):
         self.integerClass = Class(self)
+        self.methodClass = Class(self)
+        self.booleanClass = Class(self)
 
         # Initialise prims
         initialise_primitives(self)
