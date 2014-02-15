@@ -1,7 +1,6 @@
 import os
 
 from rpython.rlib.streamio import open_file_as_stream
-from rpython.rlib.parsing.parsing import ParseError
 
 from wlvlang.compiler.sourceparser import parse
 from wlvlang.compiler.context import MethodCompilerContext
@@ -176,8 +175,9 @@ def compile_source_from_file(path, filename, universe):
 
         try:
             ast = parse(source)
-        except ParseError, e:
-            os.write(2, e.nice_error_message(filename=fullname, source=source))
+        except Exception, e:
+            # TODO: Better errors
+            os.write(2, "Failed to parse")
             # Raise something less specific here (as we output)
             raise e
         finally:
