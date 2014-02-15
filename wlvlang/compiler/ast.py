@@ -1,4 +1,3 @@
-from rpython.rlib.parsing.tree import Symbol, RPythonVisitor
 from rply.token import BaseBox
 
 class Node(BaseBox):
@@ -13,15 +12,18 @@ class Node(BaseBox):
 
 class Block(Node):
     def __init__(self, statement_list):
-        self.statements = statement_list
+        self._statements = statement_list
+
+    def get_statements(self):
+        return self._statements
 
     def accept(self, astvisitor):
         if astvisitor.visit_block(self):
-            for statement in self.statements:
+            for statement in self._statements:
                 statement.accept(astvisitor)
 
     def __repr__(self):
-        return "Block(%r)" % (self.statements)
+        return "Block(%r)" % (self._statements)
 
 class BooleanConstant(Node):
 
@@ -341,6 +343,9 @@ class FunctionStatement(Node):
         self._paramlist = paramlist
         self._block = block
 
+    def get_parameters(self):
+        return self._paramlist.get_parameters()
+
     def accept(self, astvisitor):
         if astvisitor.visit_functionstatement(self):
             self._block.accept(astvisitor)
@@ -353,9 +358,15 @@ class FunctionCall(Node):
         self._identifier = identifier
         self._arglist = arglist
 
+    def get_arguments(self):
+        return self._arglist.get_arguments()
+
+    def get_identifier(self):
+        return self._identifier
+
     def accept(self, astvisitor):
         if astvisitor.visit_functioncall(self):
-            for arg in self._arglist:
+            for arg in self.get_arguments():
                 arg.accept(astvisitor)
 
     def __repr__(self):

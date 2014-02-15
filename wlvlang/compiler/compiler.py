@@ -138,7 +138,7 @@ class SyntaxDirectedTranslator(ASTVisitor):
     def visit_functionstatement(self, node):
         new_context = MethodCompilerContext(self._context.universe(), outer=self._context)
         self._context.add_inner_context(new_context)
-        for param in node._paramlist:
+        for param in node.get_parameters():
             new_context.register_local(param)
 
         new_visitor = SyntaxDirectedTranslator(new_context)
@@ -150,7 +150,7 @@ class SyntaxDirectedTranslator(ASTVisitor):
     def visit_functioncall(self, node):
         local = self._context.register_local(node._identifier)
 
-        for arg in node._arglist:
+        for arg in node.get_arguments():
             arg.accept(self)
 
         self._context.emit(Bytecode.INVOKE, local)

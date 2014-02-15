@@ -219,7 +219,7 @@ def test_ast_functionstatement():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)
 
-    node = ast.FunctionStatement('a', ['a'], ast.Block([DummyCompilationUnit(90)]))
+    node = ast.FunctionStatement('a', ast.ParameterList(['a']), ast.Block([DummyCompilationUnit(90)]))
     node.accept(t)
 
     assert ctx.bytecode == [Bytecode.LOAD_CONST, chr(0)]
@@ -231,7 +231,7 @@ def test_ast_functioncall():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)
 
-    node = ast.FunctionCall('a', [DummyCompilationUnit(90), DummyCompilationUnit(91)])
+    node = ast.FunctionCall('a', ast.FunctionArgList([DummyCompilationUnit(90), DummyCompilationUnit(91)]))
     node.accept(t)
 
     assert ctx.bytecode == [chr(90), chr(91), Bytecode.INVOKE, chr(0)]

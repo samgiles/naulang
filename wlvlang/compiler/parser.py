@@ -80,7 +80,7 @@ def statement_list(p):
     if p[0] is None:
         return ast.Block([p[1]])
 
-    return ast.Block(p[0].statements + [p[1]])
+    return ast.Block(p[0].get_statements() + [p[1]])
 
 @pg.production("statement_block : none")
 def statement_list_none(p):
@@ -132,7 +132,7 @@ def argument_list(p):
     if p[0] is None:
         return ast.FunctionArgList([p[1]])
 
-    return ast.FunctionArgList(p[0].arguments + [p[1]])
+    return ast.FunctionArgList(p[0].get_arguments() + [p[1]])
 
 @pg.production("argument_list : none")
 def arg_list_none(p):
@@ -143,7 +143,7 @@ def arg_opt(p):
     if p[0] is None:
         return ast.FunctionArgList([p[1]])
 
-    return ast.FunctionArgList(p[0].arguments + [p[1]])
+    return ast.FunctionArgList(p[0].get_arguments() + [p[1]])
 
 @pg.production("arg_opt : none")
 def arg_opt_none(p):
@@ -154,7 +154,7 @@ def param_list(p):
     if p[0] is None:
         return ast.ParameterList([p[1].getstr()])
 
-    return ast.ParameterList(p[0].parameters + [p[1].getstr()])
+    return ast.ParameterList(p[0].get_parameters() + [p[1].getstr()])
 
 @pg.production("parameter_list : none")
 def param_list_none(p):
@@ -165,7 +165,7 @@ def param_opt(p):
     if p[0] is None:
         return ast.ParameterList([p[1].getstr()])
 
-    return ast.ParameterList(p[0].parameters + [p[1].getstr()])
+    return ast.ParameterList(p[0].get_parameters() + [p[1].getstr()])
 
 @pg.production("param_opt : none")
 def param_opt_none(p):
