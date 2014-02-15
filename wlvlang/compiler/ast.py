@@ -492,3 +492,9 @@ class ASTVisitor(object):
     def visit_identifier(self, node):
         return True
 
+    def visit_arglist(self, node):
+        return True
+
+    def visit_paramlist(self, node):
+        return True
+
