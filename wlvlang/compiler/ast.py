@@ -277,16 +277,17 @@ class UnaryNegate(Node):
 class WhileStatement(Node):
 
     def __init__(self, condition, block):
-        self._condition = condition
-        self._block = block
+        assert isinstance(condition, Node)
+        self.condition = condition
+        self.block = block
 
     def accept(self, astvisitor):
         if astvisitor.visit_whilestatement(self):
-            self._condition.accept(astvisitor)
-            self._block.accept(astvisitor)
+            self.condition.accept(astvisitor)
+            self.block.accept(astvisitor)
 
     def __repr__(self):
-        return "WhileStatement(condition=%r, block=%r)" % ((self._condition), (self._block))
+        return "WhileStatement(condition=%r, block=%r)" % ((self._condition), (self.block))
 
 class IfStatement(Node):
     def __init__(self, condition, ifclause):

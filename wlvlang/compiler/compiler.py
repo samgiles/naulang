@@ -113,10 +113,10 @@ class SyntaxDirectedTranslator(ASTVisitor):
 
     def visit_whilestatement(self, node):
         pos = len(self._context.bytecode)
-        node._condition.accept(self)
+        node.condition.accept(self)
         self._context.emit(Bytecode.JUMP_IF_FALSE, 0)
         jmp_forward_to = len(self._context.bytecode) - 1
-        node._block.accept(self)
+        node.block.accept(self)
         self._context.emit(Bytecode.JUMP_BACK, pos)
         self._context.bytecode[jmp_forward_to] = chr(len(self._context.bytecode))
         return False
