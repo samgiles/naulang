@@ -188,6 +188,18 @@ class SyntaxDirectedTranslator(ASTVisitor):
         self._context.emit(Bytecode.LOAD, local)
         return True
 
+    def visit_arrayaccess(self, node):
+        node.identifier.accept(self)
+        node.index.accept(self)
+        self._context.emit(Bytecode.ARRAY_LOAD)
+        return False
+
+    def visit_arrayassignment(self, node):
+        node.array_access.accept(self)
+        node.expression.accept(self)
+        self._context.emit(Bytecode.ARRAY_STORE)
+        return False
+
 
 def compile_source_from_file(path, filename, universe):
     """ Given a source file, return a vmobjects.Method object """

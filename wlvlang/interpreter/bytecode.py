@@ -22,7 +22,21 @@ class Bytecode(object):
     PRINT = chr(18)
     INVOKE = chr(19)
     RETURN = chr(20)
+
+    """
+    ARRAY_LOAD
+    Stack:
+
+        array, index -> value
+    """
     ARRAY_LOAD = chr(23)
+
+    """
+    ARRAY_STORE
+    Stack:
+
+        array, index, value ->
+    """
     ARRAY_STORE = chr(24)
 
 def _sorted_bytecode_names(cls):

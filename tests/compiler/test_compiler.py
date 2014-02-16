@@ -266,13 +266,13 @@ def test_array_access():
     node = ast.ArrayAccess(DummyCompilationUnit(90), DummyCompilationUnit(91))
     node.accept(t)
 
-    assert ctx.bytecode == [chr(91), chr(90), Bytecode.ARRAY_LOAD]
+    assert ctx.bytecode == [chr(90), chr(91), Bytecode.ARRAY_LOAD]
 
 def test_array_access_assignment():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)
 
-    node = ast.ArrayAssignment(ast.ArrayAccess(DummyCompilationUnit(90), DummyCompilationUnit(91)), ast.ArrayAccess(DummyCompilationUnit(93), DummyCompilation(94)))
+    node = ast.ArrayAssignment(ast.ArrayAccess(DummyCompilationUnit(90), DummyCompilationUnit(91)), DummyCompilationUnit(93))
     node.accept(t)
 
-    assert ctx.bytecode == [chr(93), chr(94), chr(91), chr(90), Bytecode.ARRAY_LOAD, Bytecode.ARRAY_STORE]
+    assert ctx.bytecode == [chr(90), chr(91), Bytecode.ARRAY_LOAD, chr(93), Bytecode.ARRAY_STORE]

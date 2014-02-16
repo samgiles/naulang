@@ -418,7 +418,9 @@ class ArrayAccess(Node):
         self.index = index
 
     def accept(self, astvisitor):
-        pass
+        if astvisitor.visit_arrayaccess(self):
+            self.identifier.accept(astvisitor)
+            self.index.accept(astvisitor)
 
     def __repr__(self):
         return "ArrayAccess()"
@@ -430,7 +432,9 @@ class ArrayAssignment(Node):
         self.expression = expression
 
     def accept(self, astvisitor):
-        pass
+        if astvisitor.visit_arrayassignment(self):
+            self.array_access.accept(astvisitor)
+            self.expression.accept(astvisitor)
 
     def __repr__(self):
         pass
