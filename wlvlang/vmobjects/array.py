@@ -8,7 +8,7 @@ class Array(Object):
     def get_value_at(self, index):
         return self._list[index]
 
-    def set_value_at(self, index):
+    def set_value_at(self, index, value):
         self._list[index] = value
 
     def get_class(self, universe):

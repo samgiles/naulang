@@ -2,6 +2,7 @@ from wlvlang.vmobjects.classs import Class
 from wlvlang.vmobjects.primitives.primitives import initialise_primitives
 from wlvlang.vmobjects.integer import Integer
 from wlvlang.vmobjects.boolean import Boolean
+from wlvlang.vmobjects.array import Array
 
 from wlvlang.vm.symbol_table import SymbolTable
 
@@ -35,3 +36,5 @@ class VM_Universe(object):
     def new_boolean(self, value):
         return Boolean(value)
 
+    def new_array(self, initial_size):
+        return Array(initial_size)

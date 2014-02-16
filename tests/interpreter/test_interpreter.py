@@ -82,3 +82,35 @@ def test_bc_MUL():
     interpreter.interpret(method, arec)
 
     assert arec.peek() == Integer(3000)
+
+def test_bc_ARRAY_STORE():
+    """ Expected:
+
+    """
+    uv, interpreter = create_universe_and_interpreter()
+    method = create_test_method([], [], [Bytecode.ARRAY_LOAD, Bytecode.HALT])
+    arec = create_arec(method, 4)
+
+    array = uv.new_array(10)
+    arec.push(array)
+    arec.push(uv.new_integer(0))
+    arec.push(uv.new_integer(100))
+    interpreter.interpret(method, arec)
+
+    assert array.get_value_at(0) == Integer(100)
+
+def test_bc_ARRAY_LOAD():
+    """ Expected:
+    """
+
+    uv, interpreter = create_universe_and_interpreter()
+    method = create_test_method([], [], [Bytecode.ARRAY_STORE, Bytecode.HALT])
+    arec = create_arec(method, 4)
+
+    array = uv.new_array(10)
+    array.set_value_at(0, uv.new_integer(900))
+    arec.push(array)
+    arec.push(uv.new_integer(0))
+    interpreter.interpret(method, arec)
+
+    assert arec.peek() == Integer(900)
