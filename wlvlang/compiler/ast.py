@@ -528,3 +528,8 @@ class ASTVisitor(object):
     def visit_paramlist(self, node):
         return True
 
+    def visit_arrayaccess(self, node):
+        return True
+
+    def visit_arrayassignment(self, node):
+        return True
