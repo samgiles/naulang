@@ -1,4 +1,6 @@
 from wlvlang.vmobjects.object import Object
+from wlvlang.compiler.disassembler import Disassembler
+
 from wlvlang.interpreter.activationrecord import ActivationRecord
 from rpython.rlib import jit
 
@@ -35,3 +37,6 @@ class Method(Object):
 
     def get_class(self, universe):
         return universe.methodClass
+
+    def disassemble(self):
+        return Disassembler().disassemble(self)

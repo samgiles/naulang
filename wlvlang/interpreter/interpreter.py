@@ -103,6 +103,7 @@ class Interpreter(object):
                 local = ord(method.get_bytecode(pc))
                 new_method = activation_record.get_local_at(local)
                 new_method.invoke(activation_record, self, parent=method)
+                pc += 1
             elif bytecode == Bytecode.RETURN:
                 pc += 1
             else:

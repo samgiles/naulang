@@ -1,5 +1,9 @@
 a = fn(x) {
-    return x * 2
+    print x * 2
 }
 
-print a(4)
+a(4)
+a(6)
+a(8)
+a(16)
+a(32)
