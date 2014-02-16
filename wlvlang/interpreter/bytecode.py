@@ -22,6 +22,8 @@ class Bytecode(object):
     PRINT = chr(18)
     INVOKE = chr(19)
     RETURN = chr(20)
+    ARRAY_LOAD = chr(23)
+    ARRAY_STORE = chr(24)
 
 def _sorted_bytecode_names(cls):
     "NOT_RPYTHON"
