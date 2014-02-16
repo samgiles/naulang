@@ -136,3 +136,6 @@ def test_function_statement_args():
 
 def test_array_access():
     assert parse("""a[10]""") == ast.Block([ast.ArrayAccess(ast.IdentifierExpression('a'), ast.IntegerConstant(10))])
+
+def test_array_access_assignment():
+    assert parse("""a[0] = 10""") == ast.Block([ast.ArrayAssignment(ast.ArrayAccess(ast.IdentifierExpression('a'), ast.IntegerConstant(0)), ast.IntegerConstant(10))])
