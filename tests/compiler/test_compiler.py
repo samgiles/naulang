@@ -226,6 +226,7 @@ def test_ast_functionstatement():
     assert len(ctx._inner_contexts) == 1
     assert ctx._inner_contexts[0].bytecode == [chr(90)]
     assert ctx._inner_contexts[0].has_local('a') == True
+    assert ctx._inner_contexts[0].get_parameter_count() == 1
 
 def test_ast_functionexpression():
     ctx = create_interpreter_context()
@@ -238,6 +239,7 @@ def test_ast_functionexpression():
     assert len(ctx._inner_contexts) == 1
     assert ctx._inner_contexts[0].bytecode == [chr(90)]
     assert ctx._inner_contexts[0].has_local('a') == True
+    assert ctx._inner_contexts[0].get_parameter_count() == 1
 
 def test_ast_functioncall():
     ctx = create_interpreter_context()

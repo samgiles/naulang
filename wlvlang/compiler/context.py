@@ -3,10 +3,9 @@ class MethodCompilerContext(object):
 
     def __init__(self, vm_universe, outer=None):
         self._universe = vm_universe
-        self._registered_constants = []
-        self._arguments = []
         self._literals = []
         self._locals = []
+        self._parameter_count = 0
         self.bytecode = []
         self._outer = outer
         self._signature = None
@@ -20,10 +19,16 @@ class MethodCompilerContext(object):
         return self._universe
 
     def generate_method(self):
-        return Method(self._signature, self._literals, self._locals, self.bytecode)
+        return Method(self._signature, self._literals, self._locals, self.bytecode, argument_count=self._parameter_count)
 
     def set_outer(self, outer_context):
         self._outer = outer_context
+
+    def set_parameter_count(self, value):
+        self._parameter_count = value
+
+    def get_parameter_count(self):
+        return self._parameter_count
 
     def register_local(self, identifier):
         """ Register a local variable in this method context

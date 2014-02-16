@@ -1,4 +1,5 @@
 from wlvlang.vmobjects.object import Object
+from wlvlang.interpreter.activationrecord import ActivationRecord
 from rpython.rlib import jit
 
 class Method(Object):
@@ -25,6 +26,11 @@ class Method(Object):
 
     def invoke(self, activation_record, interpreter, parent=None):
         new_arec = ActivationRecord(self._locals + self._literals, len(self._locals), len(self._literals), 200, activation_record, access_link=parent)
+
+        # Push arguments into locals of new arec
+        for i in range(0, self._argument_count):
+            new_arec.set_local_at(i, activation_record.pop())
+
         interpreter.interpret(self, new_arec)
 
     def get_class(self, universe):
