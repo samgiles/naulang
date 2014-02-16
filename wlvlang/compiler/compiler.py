@@ -146,6 +146,7 @@ class SyntaxDirectedTranslator(ASTVisitor):
 
         new_visitor = SyntaxDirectedTranslator(new_context)
         node._block.accept(new_visitor)
+        new_context.emit(Bytecode.HALT)
         method = new_context.generate_method()
         self._context.emit(Bytecode.LOAD_CONST, self._context.register_literal(method))
         return False
@@ -163,6 +164,7 @@ class SyntaxDirectedTranslator(ASTVisitor):
         new_context.set_parameter_count(parameter_count)
         new_visitor = SyntaxDirectedTranslator(new_context)
         node.block.accept(new_visitor)
+        new_context.emit(Bytecode.HALT)
         method = new_context.generate_method()
         self._context.emit(Bytecode.LOAD_CONST, self._context.register_literal(method))
         return False
