@@ -27,12 +27,13 @@ def _sorted_bytecode_names(cls):
     "NOT_RPYTHON"
     """This function is only called a single time, at load time of this module.
     For RPypthon, this means, during translation of the module.
-
-    Simple helper identical to https://github.com/SOM-st/RPySOM/blob/master/src/som/interpreter/bytecodes.py#L87
     """
-    return [key.upper() for value, key in \
-           sorted([(value, key) for key, value in cls.__dict__.items()]) \
-           if isinstance(value, int) and key[0] != "_"
-           ]
+    names = [attr for attr in dir(cls) if not callable(attr) and not attr.startswith("__")]
+    vals = {}
+    for name in names:
+        vals[getattr(cls, name)] =  name
 
-_bytecode_names = _sorted_bytecode_names(Bytecode)
+    return vals
+
+
+bytecode_names = _sorted_bytecode_names(Bytecode)
