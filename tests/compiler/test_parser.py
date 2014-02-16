@@ -133,3 +133,6 @@ def test_function_statement_args():
     assert parse("""fn a(x, y, z) {
         100
     }""") == ast.Block([ast.FunctionStatement('a', ast.ParameterList(['x', 'y', 'z']), ast.Block([ast.IntegerConstant(100)]))])
+
+def test_array_access():
+    assert parse("""a[10]""") == ast.Block([ast.ArrayAccess(ast.IdentifierExpression('a'), ast.IntegerConstant(10))])

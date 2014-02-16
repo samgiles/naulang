@@ -41,6 +41,8 @@ def get_tokens():
         ("LBRACE", r"{"),
         ("RBRACE", r"}"),
         ("COMMA", r","),
+        ("LBRACK", r"\["),
+        ("RBRACK", r"\]"),
         # Literals
         ("TRUE", r"true"),
         ("FALSE", r"false"),
@@ -110,9 +112,21 @@ def statement_if(p):
 def statement_while(p):
     return ast.WhileStatement(p[1], p[3])
 
+@pg.production("expression : array_access")
+def expression_array_access(p):
+    return p[0]
+
+@pg.production("array_access : expression LBRACK expression RBRACK")
+def statement_array_access(p):
+    return ast.ArrayAccess(p[0], p[2])
+
 @pg.production("statement : IDENTIFIER EQUAL expression")
 def statement_assignment(p):
     return ast.Assignment(p[0].getstr(), p[2])
+
+@pg.production("statement : array_access EQUAL expression")
+def statement_array_assignment(p):
+    return ast.ArrayAssignment(p[0], p[2])
 
 @pg.production("expression : FN LPAREN parameter_list RPAREN LBRACE statement_block RBRACE")
 def expression_function(p):

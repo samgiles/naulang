@@ -412,6 +412,29 @@ class IdentifierExpression(Node):
     def __repr__(self):
         return "IdentifierExpression(%r)" % self._identifier
 
+class ArrayAccess(Node):
+    def __init__(self, identifier, index):
+        self.identifier = identifier
+        self.index = index
+
+    def accept(self, astvisitor):
+        pass
+
+    def __repr__(self):
+        return "ArrayAccess()"
+
+class ArrayAssignment(Node):
+
+    def __init__(self, array_access, expression):
+        self.array_access = array_access
+        self.expression = expression
+
+    def accept(self, astvisitor):
+        pass
+
+    def __repr__(self):
+        pass
+
 
 class ASTVisitor(object):
     """ Base class for any AST visitor implementation. """
