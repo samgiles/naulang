@@ -15,12 +15,14 @@ class VM_Universe(object):
         self.integerClass = None
         self.methodClass = None
         self.booleanClass = None
+        self.arrayClass = None
         self.initialise_primitives()
 
     def initialise_primitives(self):
         self.integerClass = Class(self)
         self.methodClass = Class(self)
         self.booleanClass = Class(self)
+        self.arrayClass = Class(self)
 
         # Initialise prims
         initialise_primitives(self)
