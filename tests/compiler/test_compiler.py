@@ -227,6 +227,18 @@ def test_ast_functionstatement():
     assert ctx._inner_contexts[0].bytecode == [chr(90)]
     assert ctx._inner_contexts[0].has_local('a') == True
 
+def test_ast_functionexpression():
+    ctx = create_interpreter_context()
+    t = create_syntax_directed_translator(ctx)
+
+    node = ast.FunctionExpression(ast.ParameterList(['a']), ast.Block([DummyCompilationUnit(90)]))
+    node.accept(t)
+
+    assert ctx.bytecode == [Bytecode.LOAD_CONST, chr(0)]
+    assert len(ctx._inner_contexts) == 1
+    assert ctx._inner_contexts[0].bytecode == [chr(90)]
+    assert ctx._inner_contexts[0].has_local('a') == True
+
 def test_ast_functioncall():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)

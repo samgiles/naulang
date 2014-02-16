@@ -330,6 +330,9 @@ class FunctionExpression(Node):
         self.paramlist = paramlist
         self.block = block
 
+    def get_parameters(self):
+        return self.paramlist.get_parameters()
+
     def accept(self, astvisitor):
         if astvisitor.visit_functionexpression(self):
             self.block.accept(astvisitor)
