@@ -1,5 +1,6 @@
 from wlvlang.interpreter.bytecode import Bytecode
 from wlvlang.interpreter.activationrecord import ActivationRecord
+from wlvlang.vmobjects.array import Array
 from rpython.rlib import jit
 from rpython.rlib.jit import JitDriver
 
@@ -109,12 +110,14 @@ class Interpreter(object):
             elif bytecode == Bytecode.ARRAY_LOAD:
                 index = activation_record.pop()
                 array = activation_record.pop()
+                assert isinstance(array, Array)
                 activation_record.push(array.get_value_at(index.get_value()))
                 pc += 1
             elif bytecode == Bytecode.ARRAY_STORE:
                 value = activation_record.pop()
                 index = activation_record.pop()
                 array = activation_record.pop()
+                assert isinstance(array, Array)
                 array.set_value_at(index.get_value(), value)
                 pc += 1
             else:
