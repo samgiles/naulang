@@ -106,6 +106,17 @@ class Interpreter(object):
                 pc += 1
             elif bytecode == Bytecode.RETURN:
                 pc += 1
+            elif bytecode == Bytecode.ARRAY_LOAD:
+                index = activation_record.pop()
+                array = activation_record.pop()
+                activation_record.push(array.get_value_at(index.get_value()))
+                pc += 1
+            elif bytecode == Bytecode.ARRAY_STORE:
+                value = activation_record.pop()
+                index = activation_record.pop()
+                array = activation_record.pop()
+                array.set_value_at(index.get_value(), value)
+                pc += 1
             else:
                 raise TypeError("Bytecode is not implemented: " + str(bytecode))
 

@@ -15,7 +15,7 @@ class Array(Object):
         return universe.arrayClass
 
     def __str__(self):
-        return str(selt._list)
+        return str(self._list)
 
     def __repr__(self):
         return "vmobject.Array(%r)" % self._list
