@@ -100,3 +100,21 @@ class ActivationRecord(Object):
 
     def set_local_at(self, index, value):
         return self.set_element_at(index + self._local_offset, value)
+
+    def _get_arec_at_level(self, level):
+        i = 1
+        arec = self.get_access_link()
+        while i is not level:
+            arec = arec.get_access_link()
+            i += 1
+
+        return arec
+
+    def get_dynamic_at(self, index, level):
+        arec = self._get_arec_at_level(level)
+        return arec.get_local_at(index)
+
+    def set_dynamic_at(self, index, level, value):
+        i = 1
+        arec = self._get_arec_at_level(level)
+        return arec.set_local_at(index, value)
