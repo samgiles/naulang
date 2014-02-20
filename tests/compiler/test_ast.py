@@ -103,3 +103,7 @@ def test_ast_printstatement():
 def test_ast_functionstatement():
     assert ast.FunctionStatement('a', ['a'], ast.Block([DummyNode(10)])) == ast.FunctionStatement('a', ['a'], ast.Block([DummyNode(10)]))
     assert ast.FunctionStatement('a', ['b'], ast.Block([DummyNode(10)])) != ast.FunctionStatement('a', ['a'], ast.Block([DummyNode(10)]))
+
+def test_ast_scopedassignment():
+    assert ast.ScopedAssignment('a', DummyNode(10)) == ast.ScopedAssignment('a', DummyNode(10))
+    assert ast.ScopedAssignment('b', DummyNode(10)) != ast.ScopedAssignment('a', DummyNode(10))
