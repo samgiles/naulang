@@ -7,6 +7,7 @@ from wlvlang.compiler.context import MethodCompilerContext
 from wlvlang.interpreter.bytecode import Bytecode
 from wlvlang.compiler.ast import ASTVisitor
 
+from wlvlang.compiler.error import CompilerException
 
 class SyntaxDirectedTranslator(ASTVisitor):
 
@@ -25,8 +26,15 @@ class SyntaxDirectedTranslator(ASTVisitor):
 
     def visit_assignment(self, node):
         node._expression.accept(self)
-        local = self._context.register_local(node._varname)
-        self._context.emit(Bytecode.STORE, local)
+
+        if self._context.has_local(node._varname):
+            local = self._context.register_local(node._varname)
+            self._context.emit(Bytecode.STORE, local)
+        else:
+            slot, level = self._context.register_dynamic(node._varname)
+            self._context.emit(Bytecode.STORE_DYNAMIC, slot)
+            self._context.emit(chr(level))
+
         return False
 
     def visit_or(self, node):
@@ -184,8 +192,15 @@ class SyntaxDirectedTranslator(ASTVisitor):
         return False
 
     def visit_identifierexpression(self, node):
-        local = self._context.register_local(node._identifier)
-        self._context.emit(Bytecode.LOAD, local)
+
+        if self._context.has_local(node._identifier):
+            local = self._context.register_local(node._identifier)
+            self._context.emit(Bytecode.LOAD, local)
+        else:
+            slot, level = self._context.register_dynamic(node._identifier)
+            self._context.emit(Bytecode.LOAD_DYNAMIC, slot)
+            self._context.emit(chr(level))
+
         return True
 
     def visit_arrayaccess(self, node):
@@ -200,6 +215,13 @@ class SyntaxDirectedTranslator(ASTVisitor):
         self._context.emit(Bytecode.ARRAY_STORE)
         return False
 
+    def visit_scopedassignment(self, node):
+        local = self._context.register_local(node._varname)
+
+        # TODO: Error checking
+        node._expression.accept(self)
+        self._context.emit(Bytecode.STORE, local)
+        return False
 
 def compile_source_from_file(path, filename, universe):
     """ Given a source file, return a vmobjects.Method object """

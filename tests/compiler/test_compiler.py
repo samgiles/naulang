@@ -62,7 +62,7 @@ def test_ast_boolean_constant_compiler():
 def test_ast_assignment_compiler():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)
-    node = ast.Assignment('a', ast.BooleanConstant(True))
+    node = ast.ScopedAssignment('a', ast.BooleanConstant(True))
     node.accept(t)
 
     # Expect the constant to be stored in the literals area at position 0
@@ -276,3 +276,50 @@ def test_array_access_assignment():
     node.accept(t)
 
     assert ctx.bytecode == [chr(90), chr(91), Bytecode.ARRAY_LOAD, chr(93), Bytecode.ARRAY_STORE]
+
+def test_ast_scoped_assignment():
+    ctx = create_interpreter_context()
+    t = create_syntax_directed_translator(ctx)
+
+    node = ast.Block([
+                ast.ScopedAssignment('x', ast.IntegerConstant(10)),
+                    ast.FunctionExpression(
+                        ast.ParameterList(['a']),
+                        ast.Block([
+                            ast.Assignment('x', ast.IntegerConstant(12)),
+                            ast.PrintStatement(ast.IdentifierExpression('x'))
+                        ])
+                    )
+                ])
+
+    """ AST Equivalent to:
+            let x = 10
+            fn(a) {
+               x = 12
+               print x
+            }
+    """
+
+    node.accept(t)
+    assert ctx._literals[0] == Integer(10)
+
+    # Outer context loads the function expression constant from literals area 0
+    assert ctx.bytecode == [
+            Bytecode.LOAD_CONST, chr(0),  # Push the constant at 0 onto the stack (10)
+            Bytecode.STORE, chr(0),       # Store the top of the stack into locals aread at 0
+            Bytecode.LOAD_CONST, chr(1)   # Push the function expression onto the top of the stack
+        ]
+
+    # Expect the constant to be stored in the literals area at position 0
+    # Of the first inner method context
+    inner_contexts = ctx.get_inner_contexts()
+    assert len(inner_contexts) == 1
+    assert inner_contexts[0]._literals[0] == Integer(12)
+
+    assert inner_contexts[0].bytecode == [
+            Bytecode.LOAD_CONST, chr(0),            # Push 12 onto the stack
+            Bytecode.STORE_DYNAMIC, chr(0), chr(1), # Store 12 into the dynamic variable x
+            Bytecode.LOAD_DYNAMIC, chr(0), chr(1),  # Load dynamic variable x onto the top of the stack
+            Bytecode.PRINT,                         # Call print
+            Bytecode.HALT                           # All functions end in HALT
+        ]

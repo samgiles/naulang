@@ -39,6 +39,10 @@ class Bytecode(object):
     """
     ARRAY_STORE = chr(24)
 
+    STORE_DYNAMIC = chr(25)
+
+    LOAD_DYNAMIC = chr(26)
+
 def _sorted_bytecode_names(cls):
     "NOT_RPYTHON"
     """This function is only called a single time, at load time of this module.
