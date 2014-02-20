@@ -17,6 +17,9 @@ class MethodCompilerContext(object):
     def add_inner_context(self, context):
         self._inner_contexts.append(context)
 
+    def get_inner_contexts(self):
+        return self._inner_contexts
+
     def get_outer_context(self):
         return self._outer
 
