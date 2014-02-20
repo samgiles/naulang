@@ -1,6 +1,8 @@
 from wlvlang.vmobjects.method import Method
 class MethodCompilerContext(object):
 
+    REGISTER_DYNAMIC_FAILED = -1
+
     def __init__(self, vm_universe, outer=None):
         self._universe = vm_universe
         self._literals = []
@@ -30,6 +32,22 @@ class MethodCompilerContext(object):
     def get_parameter_count(self):
         return self._parameter_count
 
+    def register_dynamic(self, identifier):
+        """ Register lookup of a non local scoped variable """
+
+        if self._outer is None:
+            return self.REGISTER_DYNAMIC_FAILED, 0
+
+        outer_context = self._outer
+        level = 1
+        while outer_context is not None:
+            if outer_context.has_local(identifier):
+                return outer_context.register_local(identifier), level
+
+            outer_countext = outer_context._outer
+
+        return self.REGISTER_DYNAMIC_FAILED, 0
+
     def register_local(self, identifier):
         """ Register a local variable in this method context
         and retrieve an offset that will be used in the stack
@@ -44,16 +62,11 @@ class MethodCompilerContext(object):
         self._locals.append(None)
         return num
 
-    # TODO: Issues with access links and scopes will arise here at some point
-
     def has_local(self, identifier):
         if identifier in self._id_to_number:
             return True
 
-        if self._outer == None:
-            return False
-
-        return self._outer.has_local()
+        return False
 
 
     def register_literal(self, constant_value):
