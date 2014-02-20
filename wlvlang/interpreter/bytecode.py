@@ -43,7 +43,7 @@ class Bytecode(object):
 
     LOAD_DYNAMIC = chr(26)
 
-def _sorted_bytecode_names(cls):
+def _bytecode_names(cls):
     "NOT_RPYTHON"
     """This function is only called a single time, at load time of this module.
     For RPypthon, this means, during translation of the module.
@@ -56,4 +56,4 @@ def _sorted_bytecode_names(cls):
     return vals
 
 
-bytecode_names = _sorted_bytecode_names(Bytecode)
+bytecode_names = _bytecode_names(Bytecode)
