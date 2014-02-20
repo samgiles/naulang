@@ -204,7 +204,7 @@ def expression_mod(p):
 
 @pg.production("expression : LPAREN expression RPAREN")
 def expression_parens(p):
-    return p[0]
+    return p[1]
 
 @pg.production("expression : NOT expression")
 def expression_unary_not(p):
