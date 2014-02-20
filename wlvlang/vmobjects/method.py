@@ -4,10 +4,13 @@ from wlvlang.compiler.disassembler import Disassembler
 from wlvlang.interpreter.activationrecord import ActivationRecord
 from rpython.rlib import jit
 
+import copy
+
 class Method(Object):
     """ Defines a Method in the wlvlang-vm. """
 
     _immutable_fields_ = ['_bytecodes', '_signature']
+
 
     def __init__(self, signature, literals, locals, bytecodes, argument_count=0):
         self._literals = literals
@@ -15,6 +18,13 @@ class Method(Object):
         self._bytecodes = bytecodes
         self._signature = signature
         self._argument_count = argument_count
+        self._enclosing_arec = None
+
+    def set_enclosing_arec(self, arec):
+        self._enclosing_arec = arec
+
+    def get_enclosing_arec(self):
+        return self._enclosing_arec
 
     def get_bytecode(self, index):
         assert 0 <= index and index < len(self._bytecodes)
@@ -26,8 +36,11 @@ class Method(Object):
     def get_signature(self):
         return self._signature
 
-    def invoke(self, activation_record, interpreter, parent=None):
-        new_arec = ActivationRecord(self._locals + self._literals, len(self._locals), len(self._literals), 200, activation_record, access_link=parent)
+    def copy(self):
+        return Method(self._signature, self._literals, self._locals, self._bytecodes, argument_count=self._argument_count)
+
+    def invoke(self, activation_record, interpreter):
+        new_arec = ActivationRecord(self._locals + self._literals, len(self._locals), len(self._literals), 200, activation_record, access_link=self.get_enclosing_arec())
 
         # Push arguments into locals of new arec
         for i in range(0, self._argument_count):
@@ -40,3 +53,6 @@ class Method(Object):
 
     def disassemble(self):
         return Disassembler().disassemble(self)
+
+    def __repr__(self):
+        return "<%r> vmobjects.Method(signature=%r, literals=%r, locals=%r, bytecodes=%r, argument_count=%r): closed by: %r" % (id(self), self._signature, self._literals, self._locals, self._bytecodes, self._argument_count, self._enclosing_arec)

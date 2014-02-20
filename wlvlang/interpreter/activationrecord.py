@@ -44,16 +44,29 @@ class ActivationRecord(Object):
 
     def __init__(self, locals, local_size, literal_size, temp_size, previous_record, access_link=None):
         """ The locals_count should include the parameters """
+        from wlvlang.vmobjects.method import Method
         stack_size = (len(locals) + 2)
         self._stack = [None] * (stack_size + temp_size)
         self._stack_pointer = 0
         self.push(previous_record)
         self.push(access_link)
-        for l in locals:
-            self.push(l)
 
         self._local_offset = 2
         self._literal_offset = 2 + local_size
+
+        # This feels like a massive massive hack
+        # Should find another way of setting up the scope
+        # For each method
+        for i, local in enumerate(locals):
+            if isinstance(local, Method):
+                local = local.copy()
+
+                # Since literal methods exist in methods that have been
+                # invoked we set the activation record
+                local.set_enclosing_arec(self)
+
+            self.push(local)
+
 
     def get_previous_record(self):
         """ Get the previous activation record.
@@ -112,7 +125,10 @@ class ActivationRecord(Object):
 
     def get_dynamic_at(self, index, level):
         arec = self._get_arec_at_level(level)
-        return arec.get_local_at(index)
+        if arec:
+            return arec.get_local_at(index)
+
+        return None
 
     def set_dynamic_at(self, index, level, value):
         i = 1

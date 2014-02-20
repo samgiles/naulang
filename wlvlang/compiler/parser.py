@@ -231,8 +231,10 @@ def none(p):
 def error_handler(token):
     raise Exception("Ran into a '%s' where it was't expected" % token.getstr())
 
+PARSER = pg.build()
+
 def create_parser():
-    return pg.build()
+    return PARSER
 
 def create_lexer():
     return get_lexer()

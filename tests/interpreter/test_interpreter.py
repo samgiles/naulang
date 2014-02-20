@@ -7,6 +7,7 @@ from wlvlang.vmobjects.integer import Integer
 from wlvlang.vmobjects.boolean import Boolean
 
 def create_test_method(literals, locals, bytecode):
+    """ create_test_method(literals, locals, bytecode) """
     from wlvlang.vmobjects.method import Method
     return Method(None, literals, locals, bytecode)
 
@@ -112,3 +113,32 @@ def test_bc_ARRAY_LOAD():
     arec.push(array)
     arec.push(uv.new_integer(0))
     interpreter.interpret(method, arec)
+
+def test_bc_LOAD_DYNAMIC():
+    uv, interpreter = create_universe_and_interpreter()
+    outer_integer = Integer(100)
+    method = create_test_method([
+        outer_integer,
+        create_test_method([], [], [
+                Bytecode.LOAD_DYNAMIC, chr(0), chr(1),
+                Bytecode.RETURN,
+                Bytecode.HALT
+            ])
+    ],
+    [None, None],
+    [
+        Bytecode.LOAD_CONST, chr(0),
+        Bytecode.STORE, chr(0),
+        Bytecode.LOAD_CONST, chr(1),
+        Bytecode.STORE, chr(1),
+        Bytecode.INVOKE, chr(1),
+        Bytecode.HALT
+    ])
+
+    arec = create_arec(method, 5)
+
+    interpreter.interpret(method, arec)
+
+    stack_top = arec.peek()
+    print repr(stack_top)
+    assert stack_top == Integer(100)

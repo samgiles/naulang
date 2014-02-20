@@ -103,9 +103,15 @@ class Interpreter(object):
                 pc += 1
                 local = ord(method.get_bytecode(pc))
                 new_method = activation_record.get_local_at(local)
-                new_method.invoke(activation_record, self, parent=method)
+                new_method.invoke(activation_record, self)
                 pc += 1
             elif bytecode == Bytecode.RETURN:
+                caller = activation_record.get_previous_record()
+                if caller is None:
+                    # TODO: Logic for root function exit
+                    return
+
+                caller.push(activation_record.pop())
                 pc += 1
             elif bytecode == Bytecode.ARRAY_LOAD:
                 index = activation_record.pop()
@@ -120,6 +126,20 @@ class Interpreter(object):
                 assert isinstance(array, Array)
                 array.set_value_at(index.get_value(), value)
                 pc += 1
+            elif bytecode == Bytecode.LOAD_DYNAMIC:
+                pc += 1
+                local_slot = ord(method.get_bytecode(pc))
+                pc += 1
+                level = ord(method.get_bytecode(pc))
+                pc += 1
+                activation_record.push(activation_record.get_dynamic_at(local_slot, level))
+            elif bytecode == Bytecode.STORE_DYNAMIC:
+                pc += 1
+                local_slot = ord(method.get_bytecode(pc))
+                pc += 1
+                level = ord(method.get_bytecode(pc))
+                value = activation_record.pop()
+                activation_record.set_dynamic_at(local_slot, level, value)
             else:
                 raise TypeError("Bytecode is not implemented: " + str(bytecode))
 
