@@ -15,6 +15,7 @@ def get_tokens():
         ("FN", r"fn"),
         ("WHILE", r"while"),
         ("RETURN", r"return"),
+        ("LET", r"let"),
         # Arithmetic Operators
         ("MUL", r"\*"),
         ("DIV", r"/"),
@@ -123,6 +124,10 @@ def statement_array_access(p):
 @pg.production("statement : IDENTIFIER EQUAL expression")
 def statement_assignment(p):
     return ast.Assignment(p[0].getstr(), p[2])
+
+@pg.production("statement : LET IDENTIFIER EQUAL expression")
+def statement_scope_assignment(p):
+    return ast.ScopedAssignment(p[1].getstr(), p[3])
 
 @pg.production("statement : array_access EQUAL expression")
 def statement_array_assignment(p):

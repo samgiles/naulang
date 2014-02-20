@@ -439,6 +439,19 @@ class ArrayAssignment(Node):
     def __repr__(self):
         pass
 
+class ScopedAssignment(Node):
+
+    def __init__(self, variable_name, expression):
+        self._varname = variable_name
+        self._expression = expression
+
+    def accept(self, astvisitor):
+        if astvisitor.visit_scopedassignment(self):
+            self._expression.accept(astvisitor)
+
+    def __repr__(self):
+        return "ScopedAssignment(%r, %r)" % (self._varname, self._expression)
+
 
 class ASTVisitor(object):
     """ Base class for any AST visitor implementation. """
@@ -536,4 +549,7 @@ class ASTVisitor(object):
         return True
 
     def visit_arrayassignment(self, node):
+        return True
+
+    def visit_scopedassignment(self, node):
         return True
