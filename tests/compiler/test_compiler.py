@@ -323,3 +323,57 @@ def test_ast_scoped_assignment():
             Bytecode.PRINT,                         # Call print
             Bytecode.HALT                           # All functions end in HALT
         ]
+
+def test_ast_scoped_usage():
+    ctx = create_interpreter_context()
+    t = create_syntax_directed_translator(ctx)
+    node = ast.Block([
+            ast.ScopedAssignment('n', ast.IntegerConstant(10)),
+            ast.ScopedAssignment('a', ast.FunctionExpression(
+                ast.ParameterList(['x']),
+                ast.Block([
+                    ast.PrintStatement(
+                        ast.AddOp(
+                            ast.MulOp(
+                                ast.IdentifierExpression('x'),
+                                ast.IntegerConstant(2)
+                            ),
+                            ast.IdentifierExpression('n')
+                        )
+                    )
+                ])
+            )),
+            ast.FunctionCall(
+                'a',
+                ast.FunctionArgList([ast.IntegerConstant(2)])
+            ),
+            ast.FunctionCall(
+                'a',
+                ast.FunctionArgList([ast.IntegerConstant(4)])
+            )
+        ])
+
+    node.accept(t)
+
+    assert ctx.bytecode == [
+            Bytecode.LOAD_CONST, chr(0),
+            Bytecode.STORE, chr(0),
+            Bytecode.LOAD_CONST, chr(1),
+            Bytecode.STORE, chr(1),
+            Bytecode.LOAD_CONST, chr(2),
+            Bytecode.INVOKE, chr(1),
+            Bytecode.LOAD_CONST, chr(3),
+            Bytecode.INVOKE, chr(1),
+    ]
+
+    inner_contexts = ctx.get_inner_contexts()
+
+    assert inner_contexts[0].bytecode == [
+        Bytecode.LOAD, chr(0),
+        Bytecode.LOAD_CONST, chr(0),
+        Bytecode.MUL,
+        Bytecode.LOAD_DYNAMIC, chr(0), chr(1),
+        Bytecode.ADD,
+        Bytecode.PRINT,
+        Bytecode.HALT
+    ]
