@@ -142,3 +142,60 @@ def test_array_access_assignment():
 
 def test_scope_assignment():
     assert parse("""let a = 10""") == ast.Block([ast.ScopedAssignment('a', ast.IntegerConstant(10))])
+
+def test_function_call_and_definition():
+
+    assert parse("""
+            let n = 10
+            let a = fn(x) {
+                print (x * 2) + n
+            }
+
+            a(2)
+            a(4)
+            a(8)
+            a(16)
+            a(32)
+        """) == ast.Block([
+        ast.ScopedAssignment('n', ast.IntegerConstant(10)),
+        ast.ScopedAssignment('a', ast.FunctionExpression(
+            paramlist=ast.ParameterList(['x']),
+            block=ast.Block([
+                    ast.PrintStatement(
+                        ast.AddOp(
+                            ast.MulOp(
+                                ast.IdentifierExpression('x'),
+                                ast.IntegerConstant(2)
+                            ),
+                            ast.IdentifierExpression('n')
+                        )
+                    )
+                ])
+            )
+        ),
+        ast.FunctionCall('a',
+            ast.FunctionArgList([
+                ast.IntegerConstant(2)
+            ])
+        ),
+        ast.FunctionCall('a',
+            ast.FunctionArgList([
+                ast.IntegerConstant(4)
+            ])
+        ),
+        ast.FunctionCall('a',
+            ast.FunctionArgList([
+                ast.IntegerConstant(8)
+            ])
+        ),
+        ast.FunctionCall('a',
+            ast.FunctionArgList([
+                ast.IntegerConstant(16)
+            ])
+        ),
+        ast.FunctionCall('a',
+            ast.FunctionArgList([
+                ast.IntegerConstant(32)
+            ])
+        )
+    ])
