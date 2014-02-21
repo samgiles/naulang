@@ -10,7 +10,6 @@ def initialise_primitives(universe):
     prims = primitive_functions()
     universe.primitive_functions = [None] * len(prims)
     for name, value in prims.iteritems():
-        print value
         universe.add_primitive_function(
                 value[1], Primitive(name, universe, value[0])
             )
