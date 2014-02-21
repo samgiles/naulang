@@ -4,8 +4,10 @@ from rpython.rlib.streamio import open_file_as_stream
 
 from wlvlang.compiler.sourceparser import parse
 from wlvlang.compiler.context import MethodCompilerContext
-from wlvlang.interpreter.bytecode import Bytecode
+from wlvlang.compiler import ast
 from wlvlang.compiler.ast import ASTVisitor
+
+from wlvlang.interpreter.bytecode import Bytecode
 
 from wlvlang.compiler.error import CompilerException
 
@@ -220,7 +222,8 @@ class SyntaxDirectedTranslator(ASTVisitor):
         return False
 
     def visit_arrayassignment(self, node):
-        node.array_access.identifier.accept(self)
+        assert isinstance(node, ast.ArrayAssignment)
+        node.array_access.get_identifier().accept(self)
         node.array_access.index.accept(self)
         node.expression.accept(self)
         self._context.emit(Bytecode.ARRAY_STORE)

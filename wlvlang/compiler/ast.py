@@ -417,6 +417,12 @@ class ArrayAccess(Node):
         self.identifier = identifier
         self.index = index
 
+    def get_identifier(self):
+        return self.identifier
+
+    def get_index(self):
+        return self.index
+
     def accept(self, astvisitor):
         if astvisitor.visit_arrayaccess(self):
             self.identifier.accept(astvisitor)
@@ -428,8 +434,12 @@ class ArrayAccess(Node):
 class ArrayAssignment(Node):
 
     def __init__(self, array_access, expression):
+        assert isinstance(array_access, ArrayAccess)
         self.array_access = array_access
         self.expression = expression
+
+    def get_array_access(self):
+        return self.array_access
 
     def accept(self, astvisitor):
         if astvisitor.visit_arrayassignment(self):
