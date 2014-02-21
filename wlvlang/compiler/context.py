@@ -9,7 +9,6 @@ class MethodCompilerContext(object):
         self._locals = []
         self._parameter_count = 0
         self.bytecode = []
-        import pdb;pdb.set_trace()
         self._outer = outer
         self._signature = None
         self._id_to_number = {}
