@@ -189,7 +189,7 @@ class SyntaxDirectedTranslator(ASTVisitor):
 
         if node._identifier in _primitive_functions:
             function = _primitive_functions[node._identifier]
-            self._context.emit(Bytecode.INVOKE_GLOBAL, function[0])
+            self._context.emit(Bytecode.INVOKE_GLOBAL, function[1])
         else:
             local = self._context.register_local(node._identifier)
             self._context.emit(Bytecode.INVOKE, local)
