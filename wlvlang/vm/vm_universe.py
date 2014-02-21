@@ -18,6 +18,7 @@ class VM_Universe(object):
         self.methodClass = None
         self.booleanClass = None
         self.arrayClass = None
+        self.primitiveClass = None
         self.initialise_primitives()
 
     def initialise_primitives(self):
@@ -25,6 +26,7 @@ class VM_Universe(object):
         self.methodClass = Class(self)
         self.booleanClass = Class(self)
         self.arrayClass = Class(self)
+        self.primitiveClass = Class(self)
 
         # Initialise prims
         initialise_primitives(self)
