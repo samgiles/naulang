@@ -51,6 +51,7 @@ class MethodCompilerContext(object):
                 return outer_context.register_local(identifier), level
 
             outer_context = outer_context._outer
+            level += 1
 
         return self.REGISTER_DYNAMIC_FAILED, 0
 
