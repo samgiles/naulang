@@ -152,3 +152,28 @@ def test_bc_MUL():
     interpreter.interpret(method, arec)
 
     assert arec.peek() == uv.new_integer(200)
+
+def test_bc_GREATER_THAN_EQ():
+    uv, interpreter = create_universe_and_interpreter()
+    method = create_test_method([], [], [Bytecode.GREATER_THAN_EQ, Bytecode.HALT])
+    arec = create_arec(method, 2)
+    arec.push(uv.new_integer(10))
+    arec.push(uv.new_integer(20))
+    interpreter.interpret(method, arec)
+
+    assert arec.peek() == uv.new_boolean(False)
+
+    arec = create_arec(method, 2)
+    arec.push(uv.new_integer(20))
+    arec.push(uv.new_integer(20))
+    interpreter.interpret(method, arec)
+
+    assert arec.peek() == uv.new_boolean(True)
+
+    arec = create_arec(method, 2)
+    arec.push(uv.new_integer(30))
+    arec.push(uv.new_integer(20))
+    interpreter.interpret(method, arec)
+
+    assert arec.peek() == uv.new_boolean(True)
+

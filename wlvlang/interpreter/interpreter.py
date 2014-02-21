@@ -68,6 +68,9 @@ class Interpreter(object):
             elif bytecode == Bytecode.GREATER_THAN:
                 self._send(activation_record, ">")
                 pc += 1
+            elif bytecode == Bytecode.GREATER_THAN_EQ:
+                self._send(activation_record, ">=")
+                pc += 1
             elif bytecode == Bytecode.ADD:
                 self._send(activation_record, "+")
                 pc += 1
@@ -141,7 +144,7 @@ class Interpreter(object):
                 value = activation_record.pop()
                 activation_record.set_dynamic_at(local_slot, level, value)
             else:
-                raise TypeError("Bytecode is not implemented: " + str(bytecode))
+                raise TypeError("Bytecode is not implemented: %d" % ord(bytecode))
 
 jitdriver = jit.JitDriver(
     greens=['bytecode_index', 'interp', 'method'],
