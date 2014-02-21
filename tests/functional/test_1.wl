@@ -1,6 +1,6 @@
-let n = 50
 
 let f = fn(x) {
+    let n = 50
     return fn(y) {
         return y * x + n
     }

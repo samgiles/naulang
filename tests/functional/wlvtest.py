@@ -80,7 +80,7 @@ if __name__ == '__main__':
             with open(expected_output, "r") as f:
                     expected=f.read()
 
-            if sout is not expected:
+            if sout != expected:
                 failed = True
                 print "Test %s failed:\nexpected:\n%s\nactual:\n%s\n---------\n" % (test_name, expected, sout)
 
