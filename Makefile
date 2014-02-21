@@ -20,7 +20,7 @@ wlvlang-jit:
 wlvlang-python:
 	mkdir -p bin/
 	cat ./wlvlang/wlvlang-python | sed 's,{PYTHON_PATH},$(PYTHONPATH):$(PYPYPATH):.,g' > ./bin/wlvlang-python
-	chmod +x wlvlang/wlvlang-python
+	chmod +x bin/wlvlang-python
 
 createdist:
 	python setup.py sdist
