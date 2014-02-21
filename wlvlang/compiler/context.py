@@ -9,6 +9,7 @@ class MethodCompilerContext(object):
         self._locals = []
         self._parameter_count = 0
         self.bytecode = []
+        import pdb;pdb.set_trace()
         self._outer = outer
         self._signature = None
         self._id_to_number = {}
@@ -50,7 +51,7 @@ class MethodCompilerContext(object):
             if outer_context.has_local(identifier):
                 return outer_context.register_local(identifier), level
 
-            outer_countext = outer_context._outer
+            outer_context = outer_context._outer
 
         return self.REGISTER_DYNAMIC_FAILED, 0
 
