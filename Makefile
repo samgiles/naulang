@@ -7,18 +7,20 @@ all: test_compiler test_interpreter test_vmobjects test_vm
 
 compile: wlvlang-no-jit
 
-test_parse:
-	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. python wlvlang/test_parser.py
-
 wlvlang-no-jit:
 	mkdir -p bin/
-	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch wlvlang/targetstandalone.py
+	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch wlvlang/targetstandalone.py
 	mv ./wlvlang-nojit ./bin/
 
 wlvlang-jit:
 	mkdir -p bin/
-	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch -Ojit wlvlang/targetstandalone.py
+	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch -Ojit wlvlang/targetstandalone.py
 	mv ./wlvlang-jit ./bin/
+
+wlvlang-python:
+	mkdir -p bin/
+	cat ./wlvlang/wlvlang-python | sed 's,{PYTHON_PATH},$(PYTHONPATH):$(PYPYPATH):.,g' > ./bin/wlvlang-python
+	chmod +x wlvlang/wlvlang-python
 
 createdist:
 	python setup.py sdist
@@ -27,7 +29,7 @@ test_compiler:
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/compiler/test_*.py
 
 test_interpreter:
-	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/interpreter/test_*.py
+	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/interpreter/test_*.py
 
 test_vm:
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vm/test_*.py
@@ -36,7 +38,7 @@ test_vmobjects:
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vmobjects/test_*.py
 
 test_full_run:
-	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. python wlvlang/targetstandalone.py tests/sources/test_simple.wl
+	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. python wlvlang/targetstandalone.py tests/sources/test_simple_function.wl
 
 clean:
 	rm -rf MANIFEST
