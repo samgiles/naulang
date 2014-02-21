@@ -20,6 +20,12 @@ class SyntaxDirectedTranslator(ASTVisitor):
     def __init__(self, compiler_context):
         self._context = compiler_context
 
+        # The following two fields are used
+        # to keep track of jumping statements
+        # inside of a loop mainly used for break statements
+        self.in_loop = False
+        self.jump_forward_to = 0
+
     def visit_booleanconstant(self, node):
         boolean = self._context.universe().new_boolean(node._value)
         self._context.emit(Bytecode.LOAD_CONST, self._context.register_literal(boolean))
@@ -132,10 +138,31 @@ class SyntaxDirectedTranslator(ASTVisitor):
         node.condition.accept(self)
         self._context.emit(Bytecode.JUMP_IF_FALSE, 0)
         jmp_forward_to = len(self._context.bytecode) - 1
+        self.in_loop = True
+        self.jump_forward_to = jmp_forward_to
         node.block.accept(self)
+        self.in_loop = False
+
         self._context.emit(Bytecode.JUMP_BACK, pos)
-        self._context.bytecode[jmp_forward_to] = chr(len(self._context.bytecode))
+
+        outer_pc = chr(len(self._context.bytecode))
+        i = jmp_forward_to + 1
+        while i < len(self._context.bytecode) - 2:
+            if self._context.bytecode[i] is Bytecode.JUMP_BACK:
+                self._context.bytecode[i + 1] = outer_pc
+                i = i + 2
+            else:
+                i = i + 1
+
+
+        self._context.bytecode[jmp_forward_to] = outer_pc
         return False
+
+    def visit_breakstatement(self, node):
+        if self.in_loop:
+            self._context.emit(Bytecode.JUMP_BACK, 0)
+        else:
+            raise CompilerException("Break statements should only exist within a loop")
 
     def visit_ifstatement(self, node):
         node.condition.accept(self)

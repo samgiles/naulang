@@ -143,6 +143,9 @@ def test_array_access_assignment():
 def test_scope_assignment():
     assert parse("""let a = 10""") == ast.Block([ast.ScopedAssignment('a', ast.IntegerConstant(10))])
 
+def test_break_statement():
+    assert parse("""break""") == ast.Block([ast.BreakStatement()])
+
 def test_function_call_and_definition():
 
     assert parse("""
