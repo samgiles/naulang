@@ -220,7 +220,8 @@ class SyntaxDirectedTranslator(ASTVisitor):
         return False
 
     def visit_arrayassignment(self, node):
-        node.array_access.accept(self)
+        node.array_access.identifier.accept(self)
+        node.array_access.index.accept(self)
         node.expression.accept(self)
         self._context.emit(Bytecode.ARRAY_STORE)
         return False

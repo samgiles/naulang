@@ -275,7 +275,7 @@ def test_array_access_assignment():
     node = ast.ArrayAssignment(ast.ArrayAccess(DummyCompilationUnit(90), DummyCompilationUnit(91)), DummyCompilationUnit(93))
     node.accept(t)
 
-    assert ctx.bytecode == [chr(90), chr(91), Bytecode.ARRAY_LOAD, chr(93), Bytecode.ARRAY_STORE]
+    assert ctx.bytecode == [chr(90), chr(91), chr(93), Bytecode.ARRAY_STORE]
 
 def test_invoke_global_list():
     ctx = create_interpreter_context()
