@@ -8,19 +8,19 @@ all: test_compiler test_interpreter test_vmobjects test_vm
 compile: bin/wlvlang-python wlvlang-no-jit
 
 wlvlang-no-jit:
-	mkdir -p bin/
+	@mkdir -p bin/
 	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch wlvlang/targetstandalone.py
-	mv ./wlvlang-nojit ./bin/
+	@mv ./wlvlang-nojit ./bin/
 
 wlvlang-jit:
-	mkdir -p bin/
+	@mkdir -p bin/
 	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch -Ojit wlvlang/targetstandalone.py
-	mv ./wlvlang-jit ./bin/
+	@mv ./wlvlang-jit ./bin/
 
 bin/wlvlang-python:
-	mkdir -p bin/
-	cat ./wlvlang/wlvlang-python | sed 's,{PYTHON_PATH},$(PYTHONPATH):$(PYPYPATH):.,g' > ./bin/wlvlang-python
-	chmod +x bin/wlvlang-python
+	@mkdir -p bin/
+	@cat ./wlvlang/wlvlang-python | sed 's,{PYTHON_PATH},$(PYTHONPATH):$(PYPYPATH):.,g' > ./bin/wlvlang-python
+	@chmod +x bin/wlvlang-python
 
 createdist:
 	python setup.py sdist
@@ -29,7 +29,7 @@ test_compiler:
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/compiler/test_*.py
 
 test_interpreter:
-	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/interpreter/test_*.py
+	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/interpreter/test_*.py
 
 test_vm:
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vm/test_*.py
