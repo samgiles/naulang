@@ -19,7 +19,6 @@ def get_tokens():
         ("MOD", r"%"),
         ("PLUS", r"\+"),
         ("MINUS", r"-"),
-        ("NEGATE", r"-"),
         # Logical Operators
         ("AND", r"and"),
         ("OR", r"or"),
