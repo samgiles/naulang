@@ -138,31 +138,10 @@ class SyntaxDirectedTranslator(ASTVisitor):
         node.condition.accept(self)
         self._context.emit(Bytecode.JUMP_IF_FALSE, 0)
         jmp_forward_to = len(self._context.bytecode) - 1
-        self.in_loop = True
-        self.jump_forward_to = jmp_forward_to
         node.block.accept(self)
-        self.in_loop = False
-
         self._context.emit(Bytecode.JUMP_BACK, pos)
-
-        outer_pc = chr(len(self._context.bytecode))
-        i = jmp_forward_to + 1
-        while i < len(self._context.bytecode) - 2:
-            if self._context.bytecode[i] is Bytecode.JUMP_BACK:
-                self._context.bytecode[i + 1] = outer_pc
-                i = i + 2
-            else:
-                i = i + 1
-
-
-        self._context.bytecode[jmp_forward_to] = outer_pc
+        self._context.bytecode[jmp_forward_to] = chr(len(self._context.bytecode))
         return False
-
-    def visit_breakstatement(self, node):
-        if self.in_loop:
-            self._context.emit(Bytecode.JUMP_BACK, 0)
-        else:
-            raise CompilerException("Break statements should only exist within a loop")
 
     def visit_ifstatement(self, node):
         node.condition.accept(self)

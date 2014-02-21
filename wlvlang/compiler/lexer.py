@@ -13,7 +13,6 @@ def get_tokens():
         ("WHILE", r"while"),
         ("RETURN", r"return"),
         ("LET", r"let"),
-        ("BREAK", r"break"),
         # Arithmetic Operators
         ("MUL", r"\*"),
         ("DIV", r"/"),

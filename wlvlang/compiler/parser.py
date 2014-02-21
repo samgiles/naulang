@@ -48,10 +48,6 @@ def statement_return(p):
 def statement_return_none(p):
     return ast.ReturnStatement(p[1])
 
-@pg.production("statement : BREAK")
-def statement_return_none(p):
-    return ast.BreakStatement()
-
 @pg.production("statement : IF expression LBRACE statement_block RBRACE")
 def statement_if(p):
     return ast.IfStatement(p[1], p[3])
