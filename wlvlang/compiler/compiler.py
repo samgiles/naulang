@@ -187,7 +187,7 @@ class SyntaxDirectedTranslator(ASTVisitor):
         for arg in node.get_arguments():
             arg.accept(self)
 
-        if node._identifier in _primtive_functions:
+        if node._identifier in _primitive_functions:
             function = _primitive_functions[node._identifier]
             self._context.emit(Bytecode.INVOKE_GLOBAL, function[0])
         else:
