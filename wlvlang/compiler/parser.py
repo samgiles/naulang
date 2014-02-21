@@ -10,11 +10,11 @@ pg = ParserGenerator(tokentypes,
                      precedence=[
                          ("right", ["UMINUS"]),
                          ("right", ["NEGATE"]),
+                         ("left", ["OR", "AND"]),
+                         ("nonassoc", ["IS", "DOUBLE_EQ"]),
+                         ("nonassoc", ["LT", "GT", "LTEQ", "GTEQ"]),
                          ("left", ["PLUS", "MINUS"]),
                          ("left", ["MUL", "DIV", "MOD"]),
-                         ("nonassoc", ["LT", "GT", "LTEQ", "GTEQ"]),
-                         ("nonassoc", ["IS", "DOUBLE_EQ"]),
-                         ("left", ["OR", "AND"]),
                      ], cache_id="wlvlang-parser-test")
 
 @pg.production("main : statement_block")
