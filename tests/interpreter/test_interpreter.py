@@ -5,6 +5,7 @@ from wlvlang.interpreter.bytecode import Bytecode
 from wlvlang.vm.vm_universe import VM_Universe
 from wlvlang.vmobjects.integer import Integer
 from wlvlang.vmobjects.boolean import Boolean
+from wlvlang.vmobjects.array import Array
 
 def create_test_method(literals, locals, bytecode):
     """ create_test_method(literals, locals, bytecode) """
@@ -177,3 +178,13 @@ def test_bc_GREATER_THAN_EQ():
 
     assert arec.peek() == uv.new_boolean(True)
 
+def test_bc_INVOKE_GLOBAL():
+    uv, interpreter = create_universe_and_interpreter()
+    method = create_test_method([], [], [Bytecode.INVOKE_GLOBAL, chr(0), Bytecode.HALT])
+
+    arec = create_arec(method, 3)
+    arec.push(uv.new_integer(10))
+
+    interpreter.interpret(method, arec)
+
+    assert isinstance(arec.peek(), Array)

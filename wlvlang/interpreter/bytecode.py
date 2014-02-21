@@ -43,6 +43,8 @@ class Bytecode(object):
 
     LOAD_DYNAMIC = chr(26)
 
+    INVOKE_GLOBAL = chr(27)
+
 def _bytecode_names(cls):
     "NOT_RPYTHON"
     """This function is only called a single time, at load time of this module.

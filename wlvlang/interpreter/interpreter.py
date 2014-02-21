@@ -108,6 +108,12 @@ class Interpreter(object):
                 new_method = activation_record.get_local_at(local)
                 new_method.invoke(activation_record, self)
                 pc += 1
+            elif bytecode == Bytecode.INVOKE_GLOBAL:
+                pc += 1
+                global_index = ord(method.get_bytecode(pc))
+                new_method = self.universe.get_primitive_function(global_index)
+                new_method.invoke(activation_record, self)
+                pc += 1
             elif bytecode == Bytecode.RETURN:
                 caller = activation_record.get_previous_record()
                 if caller is None:

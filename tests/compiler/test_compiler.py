@@ -277,6 +277,15 @@ def test_array_access_assignment():
 
     assert ctx.bytecode == [chr(90), chr(91), Bytecode.ARRAY_LOAD, chr(93), Bytecode.ARRAY_STORE]
 
+def test_invoke_global_list():
+    ctx = create_interpreter_context()
+    t = create_syntax_directed_translator(ctx)
+
+    node = ast.FunctionCall(ast.IdentifierExpression('list'), ast.FunctionArgList(ast.IntegerConstant(10)))
+    node.accept(t)
+
+    assert ctx.bytecode == [Bytecode.LOAD_CONST, chr(0), Bytecode.INVOKE_GLOBAL, chr(0)]
+
 def test_ast_scoped_assignment():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)

@@ -12,6 +12,7 @@ from rpython.rlib import jit
 class VM_Universe(object):
 
     def __init__(self):
+        self.primitive_functions = []
         self._symbol_table = SymbolTable()
         self.integerClass = None
         self.methodClass = None
@@ -27,6 +28,13 @@ class VM_Universe(object):
 
         # Initialise prims
         initialise_primitives(self)
+
+    def get_primitive_function(self, index):
+        return self.primitive_functions[index]
+
+    def add_primitive_function(self, index, function):
+        self.primitive_functions[index] = function
+
 
     @jit.elidable
     def new_integer(self, value):

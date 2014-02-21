@@ -9,6 +9,10 @@ from wlvlang.compiler.ast import ASTVisitor
 
 from wlvlang.compiler.error import CompilerException
 
+from wlvlang.vmobjects.primitives.primitives import primitive_functions
+
+_primitive_functions = primitive_functions()
+
 class SyntaxDirectedTranslator(ASTVisitor):
 
     def __init__(self, compiler_context):
@@ -180,12 +184,16 @@ class SyntaxDirectedTranslator(ASTVisitor):
         return False
 
     def visit_functioncall(self, node):
-        local = self._context.register_local(node._identifier)
-
         for arg in node.get_arguments():
             arg.accept(self)
 
-        self._context.emit(Bytecode.INVOKE, local)
+        if node._identifier in _primtive_functions:
+            function = _primitive_functions[node._identifier]
+            self._context.emit(Bytecode.INVOKE_GLOBAL, function[0])
+        else:
+            local = self._context.register_local(node._identifier)
+            self._context.emit(Bytecode.INVOKE, local)
+
         return False
 
     def visit_returnstatement(self, node):
