@@ -40,6 +40,10 @@ def statement_expression(p):
 def statement_break(p):
     return ast.BreakStatement()
 
+@pg.production("statement : CONTINUE")
+def statement_continue(p):
+    return ast.ContinueStatement()
+
 @pg.production("statement : PRINT expression")
 def statement_print(p):
     return ast.PrintStatement(p[1])

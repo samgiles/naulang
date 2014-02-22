@@ -300,6 +300,20 @@ def test_break_statement():
             Bytecode.JUMP_BACK, chr(0)
         ]
 
+def test_continue_statement():
+    ctx = create_interpreter_context()
+    t = create_syntax_directed_translator(ctx)
+
+    node = ast.WhileStatement(DummyCompilationUnit(90), ast.Block([ast.ContinueStatement()]))
+    node.accept(t)
+
+    assert ctx.get_bytecode() == [
+            chr(90),
+            Bytecode.JUMP_IF_FALSE, chr(7),
+            Bytecode.JUMP_BACK, chr(0),
+            Bytecode.JUMP_BACK, chr(0)
+        ]
+
 def test_ast_scoped_assignment():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)

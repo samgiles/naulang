@@ -14,6 +14,7 @@ def get_tokens():
         ("RETURN", r"return"),
         ("LET", r"let"),
         ("BREAK", r"break"),
+        ("CONTINUE", r"continue"),
         # Arithmetic Operators
         ("MUL", r"\*"),
         ("DIV", r"/"),
