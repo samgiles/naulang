@@ -199,3 +199,7 @@ def test_function_call_and_definition():
             ])
         )
     ])
+
+def test_parse_break_statement():
+    assert parse("""break""") == ast.Block([ast.BreakStatement()])
+

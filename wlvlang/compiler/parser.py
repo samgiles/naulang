@@ -36,6 +36,10 @@ def statement_list_none(p):
 def statement_expression(p):
     return p[0]
 
+@pg.production("statement : BREAK")
+def statement_break(p):
+    return ast.BreakStatement()
+
 @pg.production("statement : PRINT expression")
 def statement_print(p):
     return ast.PrintStatement(p[1])

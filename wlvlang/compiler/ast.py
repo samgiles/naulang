@@ -402,6 +402,17 @@ class ReturnStatement(Node):
     def __repr__(self):
         return "ReturnStatement(%r)" % self._statement
 
+class BreakStatement(Node):
+
+    def __init__(self):
+        pass
+
+    def accept(self, astvisitor):
+        astvisitor.visit_breakstatement(self)
+
+    def __repr__(self):
+        return "BreakStatement()"
+
 class IdentifierExpression(Node):
     def __init__(self, identifier):
         self._identifier = identifier
@@ -562,4 +573,7 @@ class ASTVisitor(object):
         return True
 
     def visit_scopedassignment(self, node):
+        return True
+
+    def visit_breakstatement(self, node):
         return True

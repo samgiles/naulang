@@ -133,6 +133,11 @@ class SyntaxDirectedTranslator(ASTVisitor):
         self._context.emit(Bytecode.NEG)
         return False
 
+    def visit_breakstatement(self, node):
+        loop_control = self._context.peek_loop_control()
+        self._context.emit(Bytecode.JUMP_BACK, loop_control[1])
+        return True
+
     def visit_whilestatement(self, node):
 
         # Set up the labels for this while block and push them onto the loop control stack
