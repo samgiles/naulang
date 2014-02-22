@@ -1,5 +1,5 @@
 from rply import ParserGenerator, LexerGenerator
-from rply.errors import LexingError
+from rply.errors import LexingError, ParsingError
 
 from wlvlang.compiler import ast
 from wlvlang.compiler.lexer import get_tokens, get_lexer
@@ -229,7 +229,7 @@ def none(p):
 
 @pg.error
 def error_handler(token):
-    raise Exception("Ran into a '%s' where it was't expected" % token.getstr())
+    raise ParsingError("Ran into a '%s' where it was't expected" % token.getstr(), token.getsourcepos())
 
 PARSER = pg.build()
 

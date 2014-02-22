@@ -1,5 +1,7 @@
 import py
+import os
 
+from rply.errors import ParsingError
 from wlvlang.compiler.parser import create_parser, create_lexer
 
 
@@ -12,5 +14,17 @@ def _parse(source):
 
 def parse(source):
     """ Parse the source code and produce an AST """
-    t = _parse(source)
+    try:
+        t = _parse(source)
+    except ParsingError, e:
+        source_position = e.getsourcepos()
+        lines = source.split("\n")
+        print e.message
+        print lines[source_position.lineno - 1]
+
+        for i in range(source_position.colno - 1):
+            os.write(1, " ")
+
+        os.write(1, "^\n")
+
     return t
