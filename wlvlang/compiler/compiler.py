@@ -134,21 +134,39 @@ class SyntaxDirectedTranslator(ASTVisitor):
         return False
 
     def visit_whilestatement(self, node):
-        pos = len(self._context.bytecode)
+
+        # Set up the labels for this while block and push them onto the loop control stack
+        label_start = self._context.add_label(
+                initial_value=self._context.get_top_position() + 1
+            )
+
+        label_end = self._context.add_label()
+
+        self._context.push_loop_control(label_start, label_end)
+
+        # Evaluate the condition and emit control instructions
         node.condition.accept(self)
-        self._context.emit(Bytecode.JUMP_IF_FALSE, 0)
-        jmp_forward_to = len(self._context.bytecode) - 1
+        self._context.emit(Bytecode.JUMP_IF_FALSE, label_end)
+
+        # Evaluate block
         node.block.accept(self)
-        self._context.emit(Bytecode.JUMP_BACK, pos)
-        self._context.bytecode[jmp_forward_to] = chr(len(self._context.bytecode))
+
+        # Loop block so remove loop control labels from stack
+        self._context.pop_loop_control()
+
+        # Emit a GOTO to actually loop
+        self._context.emit(Bytecode.JUMP_BACK, label_start)
+
+        # Now we know what the value of the end label should be set it.
+        self._context.set_label(label_end, self._context.get_top_position() + 1)
         return False
 
     def visit_ifstatement(self, node):
         node.condition.accept(self)
-        self._context.emit(Bytecode.JUMP_IF_FALSE, 0)
-        position = len(self._context.bytecode) - 1
+        endlabel = self._context.add_label()
+        self._context.emit(Bytecode.JUMP_IF_FALSE, endlabel)
         node.ifclause.accept(self)
-        self._context.bytecode[position] = chr(len(self._context.bytecode))
+        self._context.set_label(endlabel, self._context.get_top_position() + 1)
         return False
 
     def visit_printstatement(self, node):

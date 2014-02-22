@@ -1,4 +1,5 @@
 from wlvlang.vmobjects.method import Method
+from wlvlang.interpreter.bytecode import Bytecode
 class MethodCompilerContext(object):
 
     REGISTER_DYNAMIC_FAILED = -1
@@ -14,6 +15,73 @@ class MethodCompilerContext(object):
         self._id_to_number = {}
         self._inner_contexts = []
 
+        self._labels = []
+
+        # A stack, the top contains a 2-tuple of current labels for the
+        # current loop value 1 being the label for the top of the loop (pre-condition)
+        # value 2 being the label for the block after the loop.
+        self._loop_control = []
+
+    def get_top_position(self):
+        """ Returns:
+            The position of the last operation, 0 if none
+        """
+        return len(self.bytecode) - 1
+
+    def add_label(self, initial_value=-1):
+        """ Returns:
+            A new label.
+            Labels are represented by integers.
+
+            Keyword Arguments:
+            initial_value -- Set an initial value for this label, default is -1 representing an unassigned label
+        """
+        self._labels.append(initial_value)
+        return len(self._labels) - 1
+
+    def set_label(self, label, value):
+        """
+            Updates the value of a label
+
+            Arguments:
+            label -- The label number to update (should be an integer)
+            value -- The value to assign to this label (should be an integer)
+        """
+        self._labels[label] = value
+
+    def get_label_value(self, label):
+        """
+            Returns the value of a label
+
+            Arguments:
+            label -- The label number to retrieve (expects an integer)
+        """
+        return self._labels[label]
+
+    def push_loop_control(self, label_start, label_end):
+        """
+            Pushes the label representing the top of the loop and the tail of the loop to the loop control stack.
+
+            This is useful for implementing statements such as 'break' and 'continue'
+
+            Arguments:
+            label_start -- The Label representing the start of the loop
+            label_end   -- The label representing the end of the loop
+        """
+        self._loop_control.append((label_start, label_end))
+
+    def peek_loop_control(self):
+        """
+            Returns the current loop control 2-tuple
+        """
+        return self._loop_control[len(self._loop_control) - 1]
+
+    def pop_loop_control(self):
+        """
+            Returns the current loop control 2-tuple and removes it from the stack.
+        """
+        return self._loop_control.pop()
+
     def add_inner_context(self, context):
         self._inner_contexts.append(context)
 
@@ -27,7 +95,27 @@ class MethodCompilerContext(object):
         return self._universe
 
     def generate_method(self):
-        return Method(self._signature, self._literals, self._locals, self.bytecode, argument_count=self._parameter_count)
+        # First replace bytecode labels with actual values
+
+        return Method(self._signature, self._literals, self._locals, self.get_bytecode(), argument_count=self._parameter_count)
+
+    def get_bytecode(self):
+        return self._add_labels(self.bytecode)
+
+    def _add_labels(self, bytecode):
+
+        bytecodes = ['\x00'] * len(bytecode)
+        i = 0
+        while i < len(self.bytecode):
+            bytecodes[i] = self.bytecode[i]
+
+            if bytecode[i] == Bytecode.JUMP_BACK or bytecode[i] == Bytecode.JUMP_IF_FALSE:
+                bytecodes[i + 1] = chr(self.get_label_value(ord(bytecode[i + 1])))
+                i += 1
+
+            i += 1
+
+        return bytecodes
 
     def set_outer(self, outer_context):
         self._outer = outer_context
