@@ -26,5 +26,6 @@ def parse(source):
             os.write(1, " ")
 
         os.write(1, "^\n")
+        raise e
 
     return t
