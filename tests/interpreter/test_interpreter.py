@@ -35,7 +35,7 @@ def test_bc_LOAD_CONST():
             on to the top of the stack
     """
     uv, interpreter = create_universe_and_interpreter()
-    method = create_test_method([uv.new_integer(10)], [None], [Bytecode.LOAD_CONST, chr(0), Bytecode.HALT])
+    method = create_test_method([uv.new_integer(10)], [None], [Bytecode.LOAD_CONST, 0, Bytecode.HALT])
     arec = create_arec(method, 1)
 
     interpreter.interpret(method, arec)
@@ -48,7 +48,7 @@ def test_bc_LOAD():
             on to the top of the stack
     """
     uv, interpreter = create_universe_and_interpreter()
-    method = create_test_method([], [uv.new_integer(10)], [Bytecode.LOAD, chr(0), Bytecode.HALT])
+    method = create_test_method([], [uv.new_integer(10)], [Bytecode.LOAD, 0, Bytecode.HALT])
     arec = create_arec(method, 1)
     interpreter.interpret(method, arec)
     assert arec.pop() == Integer(10)
@@ -59,7 +59,7 @@ def test_bc_STORE():
             position
     """
     uv, interpreter = create_universe_and_interpreter()
-    method = create_test_method([], [None], [Bytecode.STORE, chr(0), Bytecode.HALT])
+    method = create_test_method([], [None], [Bytecode.STORE, 0, Bytecode.HALT])
     arec = create_arec(method, 1)
     arec.push(uv.new_integer(100))
     interpreter.interpret(method, arec)
@@ -121,18 +121,18 @@ def test_bc_LOAD_DYNAMIC():
     method = create_test_method([
         outer_integer,
         create_test_method([], [], [
-                Bytecode.LOAD_DYNAMIC, chr(0), chr(1),
+                Bytecode.LOAD_DYNAMIC, 0, 1,
                 Bytecode.RETURN,
                 Bytecode.HALT
             ])
     ],
     [None, None],
     [
-        Bytecode.LOAD_CONST, chr(0),
-        Bytecode.STORE, chr(0),
-        Bytecode.LOAD_CONST, chr(1),
-        Bytecode.STORE, chr(1),
-        Bytecode.INVOKE, chr(1),
+        Bytecode.LOAD_CONST, 0,
+        Bytecode.STORE, 0,
+        Bytecode.LOAD_CONST, 1,
+        Bytecode.STORE, 1,
+        Bytecode.INVOKE, 1,
         Bytecode.HALT
     ])
 
@@ -180,7 +180,7 @@ def test_bc_GREATER_THAN_EQ():
 
 def test_bc_INVOKE_GLOBAL():
     uv, interpreter = create_universe_and_interpreter()
-    method = create_test_method([], [], [Bytecode.INVOKE_GLOBAL, chr(0), Bytecode.HALT])
+    method = create_test_method([], [], [Bytecode.INVOKE_GLOBAL, 0, Bytecode.HALT])
 
     arec = create_arec(method, 3)
     arec.push(uv.new_integer(10))
