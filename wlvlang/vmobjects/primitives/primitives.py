@@ -1,5 +1,6 @@
 from wlvlang.vmobjects.primitives.integer_primitive import init_integer_prims
 from wlvlang.vmobjects.primitives.boolean_primitive import init_boolean_prims
+from wlvlang.vmobjects.primitives.string_primitive import init_string_prims
 
 from wlvlang.vmobjects.primitive import Primitive
 
@@ -8,6 +9,7 @@ import time
 def initialise_primitives(universe):
     init_integer_prims(universe)
     init_boolean_prims(universe)
+    init_string_prims(universe)
 
     prims = primitive_functions()
     universe.primitive_functions = [None] * len(prims)

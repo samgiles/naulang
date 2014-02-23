@@ -162,6 +162,13 @@ def expression_literal_bool(p):
 
     return ast.BooleanConstant(False)
 
+@pg.production("expression : STRING")
+def expression_string(p):
+    string = p[0].getstr()
+    if string.startswith('"') and string.endswith('"'):
+            string = string[1:-1]
+    return ast.StringConstant(string)
+
 @pg.production("expression : expression AND expression")
 def expression_and(p):
     return ast.And(p[0], p[2])

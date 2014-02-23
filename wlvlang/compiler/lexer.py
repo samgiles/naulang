@@ -47,6 +47,7 @@ def get_tokens():
         ("FALSE", r"false"),
         ("FLOAT", r"(((0|[1-9][0-9]*)(\.[0-9]*)+)|(\.[0-9]+))([eE][\+\-]?[0-9]*)?"),
         ("INTEGER", r"-?(0|[1-9][0-9]*)"),
+        ("STRING", r"\"([^\"\\]|\\.)*\""),
         ("IDENTIFIER", r"[a-zA-Z_$][a-zA-Z_0-9]*"),
         # Others
         ("EQUAL", r"="),

@@ -36,6 +36,11 @@ class SyntaxDirectedTranslator(ASTVisitor):
         self._context.emit(Bytecode.LOAD_CONST, self._context.register_literal(integer))
         return True
 
+    def visit_stringconstant(self, node):
+        string = self._context.universe().new_string(node._value)
+        self._context.emit(Bytecode.LOAD_CONST, self._context.register_literal(string))
+        return True
+
     def visit_assignment(self, node):
         node._expression.accept(self)
 
