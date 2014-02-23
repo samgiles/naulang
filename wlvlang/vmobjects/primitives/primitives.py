@@ -3,6 +3,8 @@ from wlvlang.vmobjects.primitives.boolean_primitive import init_boolean_prims
 
 from wlvlang.vmobjects.primitive import Primitive
 
+import time
+
 def initialise_primitives(universe):
     init_integer_prims(universe)
     init_boolean_prims(universe)
@@ -16,8 +18,14 @@ def initialise_primitives(universe):
 
 def primitive_functions():
     return {
-        "list": (_list_primitive, 0)
+        "list": (_list_primitive, 0),
+        "time": (_time_primitive, 1),
     }
+
+def _time_primitive(primitive, activation_record, interpreter):
+    # HACK: Return an integer until floats are implemented
+    activation_record.push(interpreter.universe.new_integer(time.time() * 1000000))
+
 
 def _list_primitive(primitive, activation_record, interpreter):
     """ Creates a new array/list object and pushes onto stack """
