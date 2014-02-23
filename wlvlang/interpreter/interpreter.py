@@ -34,17 +34,17 @@ class Interpreter(object):
                 running = False
             elif bytecode == Bytecode.LOAD_CONST:
                 pc += 1
-                literal = ord(method.get_bytecode(pc))
+                literal = method.get_bytecode(pc)
                 pc += 1
                 activation_record.push(activation_record.get_literal_at(literal))
             elif bytecode == Bytecode.LOAD:
                 pc += 1
-                local = ord(method.get_bytecode(pc))
+                local = method.get_bytecode(pc)
                 pc += 1
                 activation_record.push(activation_record.get_local_at(local))
             elif bytecode == Bytecode.STORE:
                 pc += 1
-                local = ord(method.get_bytecode(pc))
+                local = method.get_bytecode(pc)
                 pc += 1
                 activation_record.set_local_at(local, activation_record.pop())
             elif bytecode == Bytecode.OR:
@@ -87,30 +87,31 @@ class Interpreter(object):
                 self._send(activation_record, "not")
                 pc += 1
             elif bytecode == Bytecode.NEG:
+                self._send(activation_record, "_neg")
                 pc += 1
             elif bytecode == Bytecode.JUMP_IF_FALSE:
                 pc += 1
-                jmp_to = ord(method.get_bytecode(pc))
+                jmp_to = method.get_bytecode(pc)
                 condition = activation_record.pop()
                 if condition.get_value() == False:
                     pc = jmp_to
                 else:
                     pc += 1
             elif bytecode == Bytecode.JUMP_BACK:
-                jmp_to = ord(method.get_bytecode(pc + 1))
+                jmp_to = method.get_bytecode(pc + 1)
                 pc = jmp_to
             elif bytecode == Bytecode.PRINT:
                 self._send(activation_record, "print")
                 pc += 1
             elif bytecode == Bytecode.INVOKE:
                 pc += 1
-                local = ord(method.get_bytecode(pc))
+                local = method.get_bytecode(pc)
                 new_method = activation_record.get_local_at(local)
                 new_method.invoke(activation_record, self)
                 pc += 1
             elif bytecode == Bytecode.INVOKE_GLOBAL:
                 pc += 1
-                global_index = ord(method.get_bytecode(pc))
+                global_index = method.get_bytecode(pc)
                 new_method = self.universe.get_primitive_function(global_index)
                 new_method.invoke(activation_record, self)
                 pc += 1
@@ -137,20 +138,20 @@ class Interpreter(object):
                 pc += 1
             elif bytecode == Bytecode.LOAD_DYNAMIC:
                 pc += 1
-                local_slot = ord(method.get_bytecode(pc))
+                local_slot = method.get_bytecode(pc)
                 pc += 1
-                level = ord(method.get_bytecode(pc))
+                level = method.get_bytecode(pc)
                 pc += 1
                 activation_record.push(activation_record.get_dynamic_at(local_slot, level))
             elif bytecode == Bytecode.STORE_DYNAMIC:
                 pc += 1
-                local_slot = ord(method.get_bytecode(pc))
+                local_slot = method.get_bytecode(pc)
                 pc += 1
-                level = ord(method.get_bytecode(pc))
+                level = method.get_bytecode(pc)
                 value = activation_record.pop()
                 activation_record.set_dynamic_at(local_slot, level, value)
             else:
-                raise TypeError("Bytecode is not implemented: %d" % ord(bytecode))
+                raise TypeError("Bytecode is not implemented: %d" % bytecode)
 
 jitdriver = jit.JitDriver(
     greens=['bytecode_index', 'interp', 'method'],

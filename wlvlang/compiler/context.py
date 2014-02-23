@@ -103,17 +103,27 @@ class MethodCompilerContext(object):
         return self._add_labels(self.bytecode)
 
     def _add_labels(self, bytecode):
-
-        bytecodes = ['\x00'] * len(bytecode)
+        bytecodes = [0] * len(bytecode)
         i = 0
         while i < len(self.bytecode):
             bytecodes[i] = self.bytecode[i]
 
-            if bytecode[i] == Bytecode.JUMP_BACK or bytecode[i] == Bytecode.JUMP_IF_FALSE:
-                bytecodes[i + 1] = chr(self.get_label_value(ord(bytecode[i + 1])))
-                i += 1
+            if  bytecode[i] == Bytecode.LOAD_CONST or bytecode[i] == Bytecode.LOAD or bytecode[i] == Bytecode.STORE_DYNAMIC or bytecode[i] == Bytecode.INVOKE or bytecode[i] == Bytecode.INVOKE_GLOBAL:
 
-            i += 1
+                i += 1
+                bytecodes[i] = self.bytecode[i]
+                i += 1
+            elif bytecode[i] == Bytecode.LOAD_DYNAMIC:
+                i += 1
+                bytecodes[i] = self.bytecode[i]
+                i += 1
+                bytecodes[i] = self.bytecode[i]
+                i = i + 1
+            elif bytecode[i] == Bytecode.JUMP_BACK or bytecode[i] == Bytecode.JUMP_IF_FALSE:
+                bytecodes[i + 1] = self.get_label_value(bytecode[i + 1])
+                i += 2
+            else:
+                i += 1
 
         return bytecodes
 
@@ -163,7 +173,6 @@ class MethodCompilerContext(object):
 
         return False
 
-
     def register_literal(self, constant_value):
         """ Register a constant value """
         self._literals.append(constant_value)
@@ -173,4 +182,4 @@ class MethodCompilerContext(object):
         self.bytecode.append(bytecode)
 
         if argument >= 0:
-            self.bytecode.append(chr(argument))
+            self.bytecode.append(argument)
