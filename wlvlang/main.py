@@ -10,7 +10,8 @@ def main(args):
 
     # TODO: handle arguments from the cmdline
     path = os.getcwd()
-    main_method = compiler.compile_source_from_file(path, args[1], vm_universe)
+    arguments = args[1:]
+    main_method = compiler.compile_source_from_file(path, args[1], vm_universe, arguments)
     interpreter = Interpreter(vm_universe)
 
     # Set up an activation record for the new method *Uses an arbitrarily large stack depth (200) as stack depth calculation has not been considered yet

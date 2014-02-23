@@ -22,15 +22,18 @@ def primitive_functions():
     return {
         "list": (_list_primitive, 0),
         "time": (_time_primitive, 1),
+        "int" : (_int_primitive,  2),
     }
 
 def _time_primitive(primitive, activation_record, interpreter):
     # HACK: Return an integer until floats are implemented
     activation_record.push(interpreter.universe.new_integer(time.time() * 1000000))
 
+def _int_primitive(primitive, activation_record, interpreter):
+    string = activation_record.pop()
+    activation_record.push(interpreter.universe.new_integer(int(string.get_value())))
 
 def _list_primitive(primitive, activation_record, interpreter):
     """ Creates a new array/list object and pushes onto stack """
     size = activation_record.pop()
     activation_record.push(interpreter.universe.new_array((size.get_value())))
-

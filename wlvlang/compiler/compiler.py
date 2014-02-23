@@ -285,7 +285,7 @@ class SyntaxDirectedTranslator(ASTVisitor):
         self._context.emit(Bytecode.STORE, local)
         return False
 
-def compile_source_from_file(path, filename, universe):
+def compile_source_from_file(path, filename, universe, arguments):
     """ Given a source file, return a vmobjects.Method object """
     fullname = path + os.sep + filename
     try:
@@ -306,6 +306,13 @@ def compile_source_from_file(path, filename, universe):
         raise IOError()
 
     compiler_context = MethodCompilerContext(universe)
+    array = universe.new_array(len(arguments))
+
+    i = len(arguments) - 1
+    while i >= 0:
+        array.set_value_at(i, universe.new_string(str(arguments[i])))
+        i -= 1
+
     sdt = SyntaxDirectedTranslator(compiler_context)
     ast.accept(sdt)
     compiler_context.emit(Bytecode.HALT)
