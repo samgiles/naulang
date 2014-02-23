@@ -14,7 +14,11 @@ class Interpreter(object):
         self.universe = universe
 
     def _send(self, arec, signature):
+
+        # Lookup for left value
+        top = arec.pop()
         invokable = arec.peek().get_class(self.universe).lookup_invokable(signature)
+        arec.push(top)
         invokable(None, arec, self)
 
     def pre_execute(self, pc, method, activation_record):
