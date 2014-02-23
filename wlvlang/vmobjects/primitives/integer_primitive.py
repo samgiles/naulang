@@ -48,6 +48,20 @@ def _eq(invokable, activation_record, interpreter):
 
     activation_record.push(Boolean(result))
 
+def _neq(invokable, activation_record, interpreter):
+    right = activation_record.pop()
+    left = activation_record.pop()
+
+    result = left.get_value() != right.get_value()
+
+    activation_record.push(Boolean(result))
+
+def _neg(invokable, activation_record, interpreter):
+    top = activation_record.pop()
+
+    result = -top.get_value()
+    activation_record.push(Integer(result))
+
 def _lt(invokable, activation_record, interpreter):
     right = activation_record.pop()
     left = activation_record.pop()
@@ -96,7 +110,9 @@ def init_integer_prims(universe):
         ">": _gt,
         "<=": _lteq,
         ">=": _gteq,
-        "print": _print
+        "!=": _neq,
+        "print": _print,
+        "_neg": _neg
     }
 
     universe.integerClass.add_primitives(primitives)
