@@ -1,154 +1,94 @@
-n = 12
-fact = list(n+1)
+let fannkuch = fn(n) {
 
-fact[0] = 1
+    let perm = list(n)
+    let perm1 = list(n)
+    let count = list(n)
 
-i = 1
+    let maxflipscount = 0
+    let permcount = 0
+    let checksum = 0
 
-while i < n + 1 {
-    fact[i] = fact[i - 1] * i
-    i = i + 1
-}
-
-chunksz = (fact[n] + nchunks - 1) / NCHUNKS
-chunksz = chunksz + (chunksz % 2)
-
-fannkuch = fn(idxMin) {
-
-    idxMax = idxMin + chunks
-
-    if idxMax < fact[n] {
-        fannkuch(idxMax)
-    } else {
-        idxMax = fact[n]
-    }
-
-    p = list(n)
-    pp = list(n)
-    count = list(n)
-
-    # First permutation
-    i = 0
-    while i < n {
-        p[i] = i
-        i = i + 1
-    }
-
-    i = n - 1
-    idx = idxMin
+    let i = n
 
     while i > 0 {
-        d = idx / fact[i]
-        count[i] = d
-        idx = idx % fact[i]
-
-        copy(pp, p)
-
-        j = 0
-
-        while j <= i {
-
-            if j + d <= i {
-                p[j] = pp[j + d]
-            } else {
-               p[j] = pp[j + d - i - 1]
-            }
-
-            j = j + 1
-        }
-
-        i = i - 1
+       i = i - 1
+       perm[i] = i
+       perm1[i] = i
+       count[i] = i
     }
 
-    maxFlips = 1
-    checkSum = 0
-
-    idx = idxMin
-    sign = true
+    let r = n
 
     while true {
-
-        # Count flips
-        first = p[0]
-
-        if first != 0 {
-            flips = 1
-            if p[first] != 0 {
-                copy(pp, p)
-                p0 = first
-
-                while true {
-                    flips = flips + 1
-                    i = 1
-                    j = p0 - 1
-
-                    while i < j {
-                        tmp = pp[i]
-                        pp[i] = pp[j]
-                        pp[j] = tmp
-                        i = i + 1
-                        j = j - 1
-                    }
-
-                    t = pp[p0]
-                    pp[p0] = p0
-                    p0 = t
-                    if pp[p0] == 0 {
-                        break
-                    }
-                }
-            }
-
-            if maxFlips < flips {
-                maxFlips = flips
-            }
-
-            if sign {
-                checkSum = checkSum + flips
-            } else {
-                checksum = checksum - flips
-            }
+        while r != 1 {
+            count[r - 1] = r
+            r = r - 1
         }
 
-        idx = idx + 1
-
-        if idx == idxMax {
-            break
+        i = 0
+        while i < n {
+            perm[i] = perm1[i]
+            i = i + 1
         }
 
-        if sign {
-            p[0] = p[1]
-            p[1] = first
-        } else {
-            tmp = p[1]
-            p[1] = p[2]
-            p[2] = tmp
+        let flipscount = 0
+        let k = perm[0]
 
-            k = 2
+        while k != 0 {
+            let k2 = (k + 1) / 2
 
-            while true {
-                count[k] = count[k] + 1
-                if count[k] <= k {
-                    break
-                }
-
-                count[k] = 0
-
-                j = 0
-                while j <= k {
-                    p[j] = p[j + 1]
-                    j = j + 1
-                }
-
-                p[k + 1] = first
-                k = k + 1
+            i = 0
+            while i < k2 {
+                let temp = perm[i]
+                perm[i] = perm[k - i]
+                perm[k - i] = temp
+                i = i + 1
             }
+            flipscount = flipscount + 1
+            k = perm[0]
         }
-        sign = not sign
+
+        if flipscount > maxflipscount {
+            maxflipscount = flipscount
+        }
+
+        checksum = checksum + -flipscount
+
+        if (permcount % 2) == 0 {
+            checksum = checksum + (flipscount + flipscount)
+        }
+
+        while true {
+            if r == n {
+                print checksum
+                return maxflipscount
+            }
+
+            let perm0 = perm1[0]
+            i = 0
+
+            while i < r {
+                let j = i + 1
+                perm1[i] = perm1[j]
+                i = j
+            }
+
+            perm1[r] = perm0
+
+            count[r] = count[r] - 1
+
+            if count[r] > 0 {
+                break
+            }
+
+            r = r + 1
+        }
+
+        permcount = permcount + 1
     }
-
-    print maxFlips
-    print checkSum
 }
 
-fannkuch(0)
+
+let n = 7
+let pf = fannkuch(n)
+print pf
