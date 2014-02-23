@@ -53,6 +53,7 @@ class ActivationRecord(Object):
 
         self._local_offset = 2
         self._literal_offset = 2 + local_size
+        self._stack_base = stack_size
 
         # This feels like a massive massive hack
         # Should find another way of setting up the scope
