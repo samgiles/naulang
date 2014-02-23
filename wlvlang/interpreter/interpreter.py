@@ -118,10 +118,10 @@ class Interpreter(object):
                 caller = activation_record.get_previous_record()
                 if caller is None:
                     # TODO: Logic for root function exit
-                    return
+                    running = False
 
                 caller.push(activation_record.pop())
-                pc += 1
+                running = False
             elif bytecode == Bytecode.ARRAY_LOAD:
                 index = activation_record.pop()
                 array = activation_record.pop()
