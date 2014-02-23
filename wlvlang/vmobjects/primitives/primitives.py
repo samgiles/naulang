@@ -31,9 +31,9 @@ def _time_primitive(primitive, activation_record, interpreter):
 
 def _int_primitive(primitive, activation_record, interpreter):
     string = activation_record.pop()
-    activation_record.push(interpreter.universe.new_integer(int(string.get_value())))
+    activation_record.push(interpreter.universe.new_integer(int(string.get_as_string())))
 
 def _list_primitive(primitive, activation_record, interpreter):
     """ Creates a new array/list object and pushes onto stack """
     size = activation_record.pop()
-    activation_record.push(interpreter.universe.new_array((size.get_value())))
+    activation_record.push(interpreter.universe.new_array((size.get_integer_value())))

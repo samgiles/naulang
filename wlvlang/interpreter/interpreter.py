@@ -107,7 +107,7 @@ class Interpreter(object):
                 pc += 1
                 jmp_to = method.get_bytecode(pc)
                 condition = activation_record.pop()
-                if condition.get_value() == False:
+                if condition.get_boolean_value() == False:
                     pc = jmp_to
                 else:
                     pc += 1
@@ -141,14 +141,14 @@ class Interpreter(object):
                 index = activation_record.pop()
                 array = activation_record.pop()
                 assert isinstance(array, Array)
-                activation_record.push(array.get_value_at(index.get_value()))
+                activation_record.push(array.get_value_at(index.get_integer_value()))
                 pc += 1
             elif bytecode == Bytecode.ARRAY_STORE:
                 value = activation_record.pop()
                 index = activation_record.pop()
                 array = activation_record.pop()
                 assert isinstance(array, Array)
-                array.set_value_at(index.get_value(), value)
+                array.set_value_at(index.get_integer_value(), value)
                 pc += 1
             elif bytecode == Bytecode.LOAD_DYNAMIC:
                 pc += 1

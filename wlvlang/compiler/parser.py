@@ -166,7 +166,8 @@ def expression_literal_bool(p):
 def expression_string(p):
     string = p[0].getstr()
     if string.startswith('"') and string.endswith('"'):
-            string = string[1:-1]
+            string = string[:-1]
+            string = string[1:]
     return ast.StringConstant(string)
 
 @pg.production("expression : expression AND expression")

@@ -3,13 +3,13 @@ from wlvlang.vmobjects.object import Object
 class Array(Object):
 
     def __init__(self, initial_size):
-        self._list = [None] * initial_size
+        self._list = [None] * int(initial_size)
 
     def get_value_at(self, index):
-        return self._list[index]
+        return self._list[int(index)]
 
     def set_value_at(self, index, value):
-        self._list[index] = value
+        self._list[int(index)] = value
 
     def get_class(self, universe):
         return universe.arrayClass

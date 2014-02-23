@@ -13,8 +13,12 @@ class Integer(Object):
     # Does jit.elidable and the immutable field work together,
     # Or do I only require one?
     @jit.elidable
-    def get_value(self):
+    def get_integer_value(self):
         return self._value
+
+    @jit.elidable
+    def get_as_string(self):
+        return str(self._value)
 
     def get_class(self, universe):
         # Not keen on this coupling
