@@ -17,6 +17,11 @@ class Interpreter(object):
         invokable = arec.peek().get_class(self.universe).lookup_invokable(signature)
         invokable(None, arec, self)
 
+    def pre_execute(self, pc, method, activation_record):
+        pass
+
+    def post_execute(self, pc, method, activation_record):
+        pass
 
     def interpret(self, method, activation_record):
         """ Interpreter Main Loop """
@@ -29,6 +34,8 @@ class Interpreter(object):
 
             jitdriver.jit_merge_point(bytecode_index=pc, interp=self, method=method, arec=activation_record)
             bytecode = method.get_bytecode(pc)
+
+            self.pre_execute(pc, method, activation_record)
 
             if bytecode == Bytecode.HALT:
                 running = False
@@ -150,8 +157,11 @@ class Interpreter(object):
                 level = method.get_bytecode(pc)
                 value = activation_record.pop()
                 activation_record.set_dynamic_at(local_slot, level, value)
+                pc += 1
             else:
                 raise TypeError("Bytecode is not implemented: %d" % bytecode)
+
+            self.post_execute(pc, method, activation_record)
 
 jitdriver = jit.JitDriver(
     greens=['bytecode_index', 'interp', 'method'],
