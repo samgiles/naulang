@@ -313,6 +313,9 @@ def compile_source_from_file(path, filename, universe, arguments):
         array.set_value_at(i, universe.new_string(str(arguments[i])))
         i -= 1
 
+    arg_local = compiler_context.register_local("args")
+    compiler_context._locals[arg_local] = array
+
     sdt = SyntaxDirectedTranslator(compiler_context)
     ast.accept(sdt)
     compiler_context.emit(Bytecode.HALT)
