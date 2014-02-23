@@ -24,7 +24,7 @@ class Integer(Object):
         return str(self.get_value())
 
     def __repr__(self):
-        return "vmobjects.Integer: %s" % self.__str__()
+        return "int(%s)" % self.__str__()
 
     def __eq__(self, other):
         return isinstance(other, Integer) and self._value == other._value
