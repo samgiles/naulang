@@ -66,7 +66,7 @@ class FloatConstant(Node):
         astvisitor.visit_floatconstant(self)
 
     def __repr__(self):
-        return "FloatConstant(%r)" % self._value
+        return "FloatConstant(%r)" % (self._value)
 
 class Assignment(Node):
 
@@ -287,7 +287,7 @@ class WhileStatement(Node):
             self.block.accept(astvisitor)
 
     def __repr__(self):
-        return "WhileStatement(condition=%r, block=%r)" % ((self._condition), (self.block))
+        return "WhileStatement(condition=%r, block=%r)" % ((self.condition), (self.block))
 
 class IfStatement(Node):
     def __init__(self, condition, ifclause):
@@ -389,7 +389,7 @@ class FunctionArgList(Node):
                 arg.accept(astvisitor)
 
     def __repr__(self):
-        return "FunctionArgList(%r)" % self.arguments
+        return "FunctionArgList(%r)" % (self.arguments)
 
 class ReturnStatement(Node):
     def __init__(self, statement):
@@ -400,7 +400,7 @@ class ReturnStatement(Node):
             self._statement.accept(astvisitor)
 
     def __repr__(self):
-        return "ReturnStatement(%r)" % self._statement
+        return "ReturnStatement(%r)" % (self._statement)
 
 class BreakStatement(Node):
 
@@ -432,7 +432,7 @@ class IdentifierExpression(Node):
         astvisitor.visit_identifierexpression(self)
 
     def __repr__(self):
-        return "IdentifierExpression(%r)" % self._identifier
+        return "IdentifierExpression(%r)" % (self._identifier)
 
 class ArrayAccess(Node):
     def __init__(self, identifier, index):
@@ -469,7 +469,7 @@ class ArrayAssignment(Node):
             self.expression.accept(astvisitor)
 
     def __repr__(self):
-        pass
+        return "ArrayAssignment"
 
 class ScopedAssignment(Node):
 
