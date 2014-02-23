@@ -59,13 +59,13 @@ class Debugger(object):
                 return
 
 
-    def interpret(self, method, activation_record):
-        self._view.load_method_bytecode(method, activation_record)
+    def interpret(self, interpret, method, activation_record):
+        self._view.load_method_bytecode(method, interpret)
 
     def pre_execute(self, interp, pc, method, activation_record):
         stack_info = self.get_stack_info(activation_record)
         self._view.update_stack_value(stack_info)
-        self._view.update_bytecode_position(pc, method, activation_record)
+        self._view.update_bytecode_position(pc, method, interp)
         self.handle_command(interp, pc, method, activation_record)
 
     def handle_bytecode(self, pc, method, activation_record):
@@ -83,7 +83,7 @@ def _post_execute(interp, pc, method, activation_record):
     DEBUGGER.post_execute(interp, pc, method, activation_record)
 
 def _interp(interp, method, activation_record):
-    DEBUGGER.interpret(method, activation_record)
+    DEBUGGER.interpret(interp, method, activation_record)
     Interpreter.interp(interp, method, activation_record)
 
 Interpreter.interp = Interpreter.interpret

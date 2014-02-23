@@ -40,7 +40,7 @@ class BytecodeViewWindow(object):
         self.refresh()
 
 
-    def draw_bytecodes(self, current_pc, method, activation_record):
+    def draw_bytecodes(self, current_pc, method, interp):
         self._win.erase()
         height_width = self._stdscreen.getmaxyx()
 
@@ -55,7 +55,7 @@ class BytecodeViewWindow(object):
                 break
 
             bc = method.get_bytecode(pc)
-            bytecode, offset = self.get_bytecode_info(pc, method, activation_record)
+            bytecode, offset = self.get_bytecode_info(pc, method, interp)
 
             if pc == current_pc:
                 try:
@@ -72,7 +72,7 @@ class BytecodeViewWindow(object):
         self.refresh()
 
 
-    def get_bytecode_info(self, pc, method, activation_record):
+    def get_bytecode_info(self, pc, method, interp):
         current_bytecode = method.get_bytecode(pc)
         current_bytecode_name = bytecode_names[current_bytecode]
         pc_offset = 0
@@ -95,7 +95,7 @@ class BytecodeViewWindow(object):
         elif current_bytecode == Bytecode.INVOKE_GLOBAL:
             bytecode += current_bytecode_name + ", "
             globul = method.get_bytecode(pc + 1)
-            name = activation_record.universe().get_primitive_function(globul).identifier
+            name = interp.universe.get_primitive_function(globul).identifier
             bytecode += "global=" + str(globul) + " (" + name + ")"
             pc_offset = 2
         elif current_bytecode == Bytecode.LOAD_DYNAMIC:
@@ -126,18 +126,18 @@ class View(object):
         self.refresh()
         return self._bytecodeview._win.getch()
 
-    def load_method_bytecode(self, method, activation_record):
+    def load_method_bytecode(self, method, interp):
         if self._bytecodeview is not None:
             self._bytecodeviews.append(self._bytecodeview)
 
         self._bytecodeview = BytecodeViewWindow(self._stdscreen)
-        self._bytecodeview.draw_bytecodes(0, method, activation_record)
+        self._bytecodeview.draw_bytecodes(0, method, interp)
 
     def update_stack_value(self, value):
         self._stackview.update_value(value)
 
-    def update_bytecode_position(self, pc, method, activation_record):
-        self._bytecodeview.draw_bytecodes(pc, method, activation_record)
+    def update_bytecode_position(self, pc, method, interp):
+        self._bytecodeview.draw_bytecodes(pc, method, interp)
 
 
     def refresh(self):

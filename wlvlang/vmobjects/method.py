@@ -55,4 +55,4 @@ class Method(Object):
         return Disassembler().disassemble(self)
 
     def __repr__(self):
-        return "<%r> vmobjects.Method(signature=%r, literals=%r, locals=%r, bytecodes=%r, argument_count=%r): closed by: %r" % (id(self), self._signature, self._literals, self._locals, self._bytecodes, self._argument_count, self._enclosing_arec)
+        return "vmobjects.Method<%r>: closed by: <%r>" % (id(self), id(self._enclosing_arec))
