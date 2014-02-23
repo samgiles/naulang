@@ -1,5 +1,5 @@
 from wlvlang.interpreter.interpreter import Interpreter
-from wlvlang.interpreter.bytecode import bytecode_names
+from wlvlang.interpreter.bytecode import bytecode_names, Bytecode
 import os
 
 import sys
@@ -22,7 +22,6 @@ class Debugger(object):
         except EOFError:
             action = self._lastaction
 
-        print action
         if action == "next" or action == "n":
             self._lastaction = "n"
             return
@@ -70,10 +69,44 @@ Commands:
 
 
     def pre_execute(self, interp, pc, method, activation_record):
+        self.handle_bytecode(pc, method, activation_record)
+        self.handle_command(interp, pc, method, activation_record)
+
+    def handle_bytecode(self, pc, method, activation_record):
         current_bytecode = method.get_bytecode(pc)
         current_bytecode_name = bytecode_names[current_bytecode]
-        print current_bytecode_name
-        self.handle_command(interp, pc, method, activation_record)
+        os.write(1, str(pc) + ": ")
+        if current_bytecode == Bytecode.LOAD:
+            os.write(1, current_bytecode_name + ", ")
+            os.write(1, "local=" + str(method.get_bytecode(pc + 1)) + "\n")
+        elif current_bytecode == Bytecode.LOAD_CONST:
+            os.write(1, current_bytecode_name + ", ")
+            os.write(1, "literal=" + str(method.get_bytecode(pc + 1)) + "\n")
+        elif current_bytecode == Bytecode.STORE:
+            os.write(1, current_bytecode_name + ", ")
+            os.write(1, "local=" + str(method.get_bytecode(pc + 1)) + "\n")
+        elif current_bytecode == Bytecode.JUMP_IF_FALSE or current_bytecode == Bytecode.JUMP_BACK:
+            os.write(1, current_bytecode_name + ", ")
+            os.write(1, "jump_to=" + str(method.get_bytecode(pc + 1)) + "\n")
+        elif current_bytecode == Bytecode.INVOKE:
+            os.write(1, current_bytecode_name + ", ")
+            os.write(1, "local=" + str(method.get_bytecode(pc + 1)) + "\n")
+        elif current_bytecode == Bytecode.INVOKE_GLOBAL:
+            os.write(1, current_bytecode_name + ", ")
+            globul = method.get_bytecode(pc + 1)
+            name = activation_record.universe().get_primitive_function(globul).identifier
+            os.write(1, "global=" + str(globul) + " (" + name + ")\n")
+        elif current_bytecode == Bytecode.LOAD_DYNAMIC:
+            os.write(1, current_bytecode_name + ", ")
+            os.write(1, "local=" + str(method.get_bytecode(pc + 1)) + ", ")
+            os.write(1, "level=" + str(method.get_bytecode(pc + 2)) + "\n")
+
+        elif current_bytecode == Bytecode.STORE_DYNAMIC:
+            os.write(1, current_bytecode_name + ", ")
+            os.write(1, "local=" + str(method.get_bytecode(pc + 1)) + ", ")
+            os.write(1, "level=" + str(method.get_bytecode(pc + 2)) + "\n")
+        else:
+            print current_bytecode_name
 
     def post_execute(self, interp, pc, method, activation_record):
         pass

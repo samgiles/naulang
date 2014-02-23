@@ -4,6 +4,7 @@ class Primitive(Object):
     """ Defines a primitive invokable method """
 
     def __init__(self, identifier, universe, invoke):
+        self.identifier = identifier
         self._invoke = invoke
 
     def invoke(self, activation_record, interpreter):
