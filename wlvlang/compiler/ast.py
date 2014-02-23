@@ -245,7 +245,7 @@ class ModOp(Node):
         self._rhs = rhs
 
     def accept(self, astvisitor):
-        if astvisitor.visit_divop(self):
+        if astvisitor.visit_modop(self):
             self._lhs.accept(astvisitor)
             self._rhs.accept(astvisitor)
 
@@ -539,6 +539,9 @@ class ASTVisitor(object):
         return True
 
     def visit_divop(self, node):
+        return True
+
+    def visit_modop(self, node):
         return True
 
     def visit_unarynot(self, node):

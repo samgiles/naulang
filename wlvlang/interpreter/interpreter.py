@@ -96,6 +96,9 @@ class Interpreter(object):
             elif bytecode == Bytecode.NEG:
                 self._send(activation_record, "_neg")
                 pc += 1
+            elif bytecode == Bytecode.MOD:
+                self._send(activation_record, "%")
+                pc += 1
             elif bytecode == Bytecode.JUMP_IF_FALSE:
                 pc += 1
                 jmp_to = method.get_bytecode(pc)

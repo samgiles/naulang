@@ -44,6 +44,7 @@ class Bytecode(object):
     LOAD_DYNAMIC = 26
 
     INVOKE_GLOBAL = 27
+    MOD = 28
 
 def _bytecode_names(cls):
     "NOT_RPYTHON"

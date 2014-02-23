@@ -123,6 +123,13 @@ class SyntaxDirectedTranslator(ASTVisitor):
         self._context.emit(Bytecode.DIV)
         return False
 
+    def visit_modop(self, node):
+        node._lhs.accept(self)
+        node._rhs.accept(self)
+        self._context.emit(Bytecode.MOD)
+        return False
+
+
     def visit_unarynot(self, node):
         node._expression.accept(self)
         self._context.emit(Bytecode.NOT)
@@ -244,6 +251,8 @@ class SyntaxDirectedTranslator(ASTVisitor):
             self._context.emit(Bytecode.LOAD, local)
         else:
             slot, level = self._context.register_dynamic(node._identifier)
+            if slot == MethodCompilerContext.REGISTER_DYNAMIC_FAILED:
+                raise CompilerException("Variable '%s' has not been defined in this scope. You should use `let %s = ...` to initialise a variable" % (node._identifier, node._identifier))
             self._context.emit(Bytecode.LOAD_DYNAMIC, slot)
             self._context.emit(level)
 
