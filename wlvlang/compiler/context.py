@@ -175,6 +175,9 @@ class MethodCompilerContext(object):
 
     def register_literal(self, constant_value):
         """ Register a constant value """
+        if constant_value in self._literals:
+            return self._literals.index(constant_value)
+
         self._literals.append(constant_value)
         return len(self._literals) - 1
 
