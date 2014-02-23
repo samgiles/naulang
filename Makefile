@@ -5,7 +5,9 @@ RPYTHON?=$(PYPYPATH)/rpython/bin/rpython
 
 all: test_compiler test_interpreter test_vmobjects test_vm
 
-compile: bin/wlvlang-python wlvlang-no-jit
+compile: debugger bin/wlvlang-python wlvlang-no-jit
+
+debugger: bin/wlvdbg
 
 wlvlang-no-jit:
 	@mkdir -p bin/
@@ -20,6 +22,11 @@ wlvlang-jit:
 bin/wlvlang-python:
 	@mkdir -p bin/
 	@cat ./wlvlang/wlvlang-python | sed 's,{PYTHON_PATH},$(PYTHONPATH):$(PYPYPATH):.,g' > ./bin/wlvlang-python
+	@chmod +x bin/wlvlang-python
+
+bin/wlvdbg:
+	@mkdir -p bin/
+	@cat ./wlvlang/wlvdbg | sed 's,{PYTHON_PATH},$(PYTHONPATH):$(PYPYPATH):.,g' > ./bin/wlvdbg
 	@chmod +x bin/wlvlang-python
 
 createdist:
