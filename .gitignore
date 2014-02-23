@@ -2,3 +2,4 @@ dist/
 bin/
 MANIFEST
 *.pyc
+_venv/
