@@ -10,104 +10,66 @@ else:
 
 class Debugger(object):
 
-    def __init__(self):
+    def __init__(self, view=None):
+        self._view = view
         self._lastaction = "?"
 
+    def set_view(self, view):
+        self._view = view
+
     def get_next_action(self):
-        return get_input(">>> ")
+        return self._view.get_key_press()
 
-    def handle_command(self, interp, pc, method, activation_record):
-        try:
-            action = self.get_next_action()
-        except EOFError:
-            action = self._lastaction
-
-        if action == "next" or action == "n":
-            self._lastaction = "n"
-            return
-        elif action == "stack":
+    def get_stack_info(self, activation_record):
+            info = ""
             i = 0
             for stack_item in activation_record._stack:
                 if i == activation_record._local_offset:
-                    os.write(1, "-------------------\n")
+                    info += "-------------------\n"
                 elif i == activation_record._literal_offset:
-                    os.write(1, "-------------------\n")
+                    info += "-------------------\n"
                 elif i == activation_record._stack_base:
-                    os.write(1, "-------------------\n")
+                    info += "-------------------\n"
 
-                os.write(1, str(stack_item))
+                info += str(stack_item)
 
                 if i == activation_record._stack_base:
-                    os.write(1, "   <- STACK_BASE")
+                    info += "   <- STACK_BASE"
 
                 if i == activation_record._literal_offset:
-                    os.write(1, "   <- LITERALS")
+                    info += "   <- LITERALS"
                 if i == activation_record._local_offset:
-                    os.write(1, "   <- LOCALS")
+                    info += "   <- LOCALS"
 
                 if i == activation_record._stack_pointer - 1:
-                    os.write(1, "   <- HEAD")
-                    os.write(1, "\n")
+                    info += "   <- HEAD\n"
                     break
 
-                os.write(1, "\n")
+                info += "\n"
                 i += 1
-            self._lastaction = "stack"
-            self.handle_command(interp, pc, method, activation_record)
-        elif action == "?" or action == "help":
-            print """
-Commands:
-    (n)ext    -- Perform next bytecode operation
-    stack     -- Print the entire stack
-    ? or help -- Print help information
-            """
-            self._lastaction = "?"
-            self.handle_command(interp, pc, method, activation_record)
-        else:
-            self.handle_command(interp, pc, method, activation_record)
+
+            return info
 
 
+    def handle_command(self, interp, pc, method, activation_record):
+
+        while True:
+            action = self.get_next_action()
+            if action == ord("n"):
+                return
+
+
+    def interpret(self, method, activation_record):
+        self._view.load_method_bytecode(method, activation_record)
 
     def pre_execute(self, interp, pc, method, activation_record):
-        self.handle_bytecode(pc, method, activation_record)
+        stack_info = self.get_stack_info(activation_record)
+        self._view.update_stack_value(stack_info)
+        self._view.update_bytecode_position(pc, method, activation_record)
         self.handle_command(interp, pc, method, activation_record)
 
     def handle_bytecode(self, pc, method, activation_record):
-        current_bytecode = method.get_bytecode(pc)
-        current_bytecode_name = bytecode_names[current_bytecode]
-        os.write(1, str(pc) + ": ")
-        if current_bytecode == Bytecode.LOAD:
-            os.write(1, current_bytecode_name + ", ")
-            os.write(1, "local=" + str(method.get_bytecode(pc + 1)) + "\n")
-        elif current_bytecode == Bytecode.LOAD_CONST:
-            os.write(1, current_bytecode_name + ", ")
-            os.write(1, "literal=" + str(method.get_bytecode(pc + 1)) + "\n")
-        elif current_bytecode == Bytecode.STORE:
-            os.write(1, current_bytecode_name + ", ")
-            os.write(1, "local=" + str(method.get_bytecode(pc + 1)) + "\n")
-        elif current_bytecode == Bytecode.JUMP_IF_FALSE or current_bytecode == Bytecode.JUMP_BACK:
-            os.write(1, current_bytecode_name + ", ")
-            os.write(1, "jump_to=" + str(method.get_bytecode(pc + 1)) + "\n")
-        elif current_bytecode == Bytecode.INVOKE:
-            os.write(1, current_bytecode_name + ", ")
-            os.write(1, "local=" + str(method.get_bytecode(pc + 1)) + "\n")
-        elif current_bytecode == Bytecode.INVOKE_GLOBAL:
-            os.write(1, current_bytecode_name + ", ")
-            globul = method.get_bytecode(pc + 1)
-            name = activation_record.universe().get_primitive_function(globul).identifier
-            os.write(1, "global=" + str(globul) + " (" + name + ")\n")
-        elif current_bytecode == Bytecode.LOAD_DYNAMIC:
-            os.write(1, current_bytecode_name + ", ")
-            os.write(1, "local=" + str(method.get_bytecode(pc + 1)) + ", ")
-            os.write(1, "level=" + str(method.get_bytecode(pc + 2)) + "\n")
-
-        elif current_bytecode == Bytecode.STORE_DYNAMIC:
-            os.write(1, current_bytecode_name + ", ")
-            os.write(1, "local=" + str(method.get_bytecode(pc + 1)) + ", ")
-            os.write(1, "level=" + str(method.get_bytecode(pc + 2)) + "\n")
-        else:
-            print current_bytecode_name
-
+        pass
     def post_execute(self, interp, pc, method, activation_record):
         pass
 
@@ -120,6 +82,12 @@ def _pre_execute(interp, pc, method, activation_record):
 def _post_execute(interp, pc, method, activation_record):
     DEBUGGER.post_execute(interp, pc, method, activation_record)
 
+def _interp(interp, method, activation_record):
+    DEBUGGER.interpret(method, activation_record)
+    Interpreter.interp(interp, method, activation_record)
+
+Interpreter.interp = Interpreter.interpret
+Interpreter.interpret = _interp
 Interpreter.pre_execute = _pre_execute
 Interpreter.post_execute = _post_execute
 
