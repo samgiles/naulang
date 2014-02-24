@@ -142,11 +142,8 @@ class ScopedAssignment(Node):
 
 # Expressions
 
-# # Logical
-
-class Or(Node):
-    """ Or Expression """
-
+class BinaryExpression(Node):
+    """ A generic Binary expression """
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
@@ -158,198 +155,197 @@ class Or(Node):
         return self.rhs
 
     def accept(self, astvisitor):
+        if astvisitor.visit_binaryexpression(self):
+            self.lhs.accept(astvisitor)
+            self.rhs.accept(astvisitor)
+
+
+# # Logical
+
+class Or(BinaryExpression):
+    """ Or Expression """
+
+    def accept(self, astvisitor):
         if astvisitor.visit_or(self):
-            self._lhs.accept(astvisitor)
-            self._rhs.accept(astvisitor)
+            BinaryExpression.accept(self, astvisitor)
 
     def __repr__(self):
         return "ast.Or(%r, %r)" % (self.lhs, self.rhs)
 
-class And(Node):
-    def __init__(self, lhs, rhs):
-        self._lhs = lhs
-        self._rhs = rhs
-
+class And(BinaryExpression):
+    """ And Expression """
     def accept(self, astvisitor):
         if astvisitor.visit_and(self):
-            self._lhs.accept(astvisitor)
-            self._rhs.accept(astvisitor)
+            BinaryExpression.accept(self, astvisitor)
 
     def __repr__(self):
-        return "And(%r, %r)" % (self._lhs, self._rhs)
+        return "ast.And(%r, %r)" % (self.lhs, self.rhs)
 
-class Equals(Node):
-
-    def __init__(self, lhs, rhs):
-        self._lhs = lhs
-        self._rhs = rhs
+class Equals(BinaryExpression):
+    """ Equals/Is expression; ==/is """
 
     def accept(self, astvisitor):
         if astvisitor.visit_equals(self):
-            self._lhs.accept(astvisitor)
-            self._rhs.accept(astvisitor)
+            BinaryExpression.accept(self, astvisitor)
 
     def __repr__(self):
-        return "Equals(%r, %r)" % (self._lhs, self._rhs)
+        return "ast.Equals(%r, %r)" % (self.lhs, self.rhs)
 
-class NotEquals(Node):
-    def __init__(self, lhs, rhs):
-        self._lhs = lhs
-        self._rhs = rhs
+class NotEquals(BinaryExpression):
+    """ Not equals expression; != """
 
     def accept(self, astvisitor):
         if astvisitor.visit_notequals(self):
-            self._lhs.accept(astvisitor)
-            self._rhs.accept(astvisitor)
+            BinaryExpression.accept(self, astvisitor)
 
     def __repr__(self):
-        return "NotEquals(%r, %r)" % (self._lhs, self._rhs)
+        return "ast.NotEquals(%r, %r)" % (self.lhs, self.rhs)
 
-class LessThan(Node):
-    def __init__(self, lhs, rhs):
-        self._lhs = lhs
-        self._rhs = rhs
+# # Relational
+
+class LessThan(BinaryExpression):
+    """ Less than expression; < """
 
     def accept(self, astvisitor):
         if astvisitor.visit_lessthan(self):
-            self._lhs.accept(astvisitor)
-            self._rhs.accept(astvisitor)
+            BinaryExpression.accept(self, astvisitor)
 
     def __repr__(self):
-        return "LessThan(%r, %r)" % ((self._lhs), (self._rhs))
+        return "ast.LessThan(%r, %r)" % ((self.lhs), (self.rhs))
 
-class LessThanOrEqual(Node):
-    def __init__(self, lhs, rhs):
-        self._lhs = lhs
-        self._rhs = rhs
+class LessThanOrEqual(BinaryExpression):
+    """ Less than or equal; <= """
 
     def accept(self, astvisitor):
         if astvisitor.visit_lessthanorequal(self):
-            self._lhs.accept(astvisitor)
-            self._rhs.accept(astvisitor)
+            BinaryExpression.accept(self, astvisitor)
 
     def __repr__(self):
-        return "LessThanOrEqual(%r, %r)" % ((self._lhs), (self._rhs))
+        return "ast.LessThanOrEqual(%r, %r)" % ((self.lhs), (self.rhs))
 
-class GreaterThan(Node):
-    def __init__(self, lhs, rhs):
-        self._lhs = lhs
-        self._rhs = rhs
+class GreaterThan(BinaryExpression):
+    """ Greater than; > """
 
     def accept(self, astvisitor):
         if astvisitor.visit_greaterthan(self):
-            self._lhs.accept(astvisitor)
-            self._rhs.accept(astvisitor)
+            BinaryExpression.accept(self, astvisitor)
 
     def __repr__(self):
-        return "GreaterThan(%r, %r)" % ((self._lhs), (self._rhs))
+        return "ast.GreaterThan(%r, %r)" % ((self.lhs), (self.rhs))
 
-class GreaterThanOrEqual(Node):
-    def __init__(self, lhs, rhs):
-        self._lhs = lhs
-        self._rhs = rhs
+class GreaterThanOrEqual(BinaryExpression):
+    """ Greater than or equal; >= """
 
     def accept(self, astvisitor):
         if astvisitor.visit_greaterthanorequal(self):
-            self._lhs.accept(astvisitor)
-            self._rhs.accept(astvisitor)
+            BinaryExpression.accept(self, astvisitor)
 
     def __repr__(self):
-        return "GreaterThanOrEqual(%r, %r)" % ((self._lhs), (self._rhs))
+        return "ast.GreaterThanOrEqual(%r, %r)" % ((self.lhs), (self.rhs))
 
-class AddOp(Node):
-    def __init__(self, lhs, rhs):
-        self._lhs = lhs
-        self._rhs = rhs
+# # Arithmetic
+
+class Add(BinaryExpression):
+    """ Add; +.  Is concatenative if left hand side is string """
 
     def accept(self, astvisitor):
-        if astvisitor.visit_addop(self):
-            self._lhs.accept(astvisitor)
-            self._rhs.accept(astvisitor)
+        if astvisitor.visit_add(self):
+            BinaryExpression.accept(self, astvisitor)
 
     def __repr__(self):
-        return "AddOp(%r, %r)" % ((self._lhs), (self._rhs))
+        return "ast.AddOp(%r, %r)" % ((self.lhs), (self.rhs))
 
-class SubtractOp(Node):
-    def __init__(self, lhs, rhs):
-        self._lhs = lhs
-        self._rhs = rhs
+class Subtract(Node):
+    """ Subtract; -. """
 
     def accept(self, astvisitor):
         if astvisitor.visit_subtractop(self):
-            self._lhs.accept(astvisitor)
-            self._rhs.accept(astvisitor)
+            BinaryExpression.accept(self, astvisitor)
 
     def __repr__(self):
-        return "SubtractOp(%r, %r)" % ((self._lhs), (self._rhs))
+        return "ast.Subtract(%r, %r)" % ((self.lhs), (self.rhs))
 
-class MulOp(Node):
-    def __init__(self, lhs, rhs):
-        self._lhs = lhs
-        self._rhs = rhs
+class Multiply(Node):
+    """ Multiply; *. """
 
     def accept(self, astvisitor):
-        if astvisitor.visit_mulop(self):
-            self._lhs.accept(astvisitor)
-            self._rhs.accept(astvisitor)
+        if astvisitor.visit_multiply(self):
+            BinaryExpression.accept(self, astvisitor)
 
     def __repr__(self):
-        return "MulOp(%r, %r)" % ((self._lhs), (self._rhs))
+        return "ast.MulOp(%r, %r)" % ((self.lhs), (self.rhs))
 
-class DivOp(Node):
-    def __init__(self, lhs, rhs):
-        self._lhs = lhs
-        self._rhs = rhs
+class Divide(Node):
+    """ Divide; /. """
 
     def accept(self, astvisitor):
-        if astvisitor.visit_divop(self):
-            self._lhs.accept(astvisitor)
-            self._rhs.accept(astvisitor)
+        if astvisitor.visit_divide(self):
+            BinaryExpression.accept(self, astvisitor)
 
     def __repr__(self):
-        return "DivOp(%r, %r)" % ((self._lhs), (self._rhs))
+        return "ast.DivOp(%r, %r)" % ((self.lhs), (self.rhs))
 
-class ModOp(Node):
-    def __init__(self, lhs, rhs):
-        self._lhs = lhs
-        self._rhs = rhs
+class Mod(Node):
+    """ Mod; %. """
 
     def accept(self, astvisitor):
-        if astvisitor.visit_modop(self):
-            self._lhs.accept(astvisitor)
-            self._rhs.accept(astvisitor)
+        if astvisitor.visit_mod(self):
+            BinaryExpression.accept(self, astvisitor)
 
     def __repr__(self):
-        return "ModOp(%r, %r)" % ((self._lhs), (self._rhs))
+        return "ast.Mod(%r, %r)" % ((self.lhs), (self.rhs))
 
-class UnaryNot(Node):
+# # Unary
+
+class UnaryExpression(Node):
+    """ Unary Expression """
+
     def __init__(self, expression):
-        self._expression = expression
+        self.expression = expression
+
+    def get_expression(self):
+        return self.expression
+
+    def accept(self, astvisitor):
+        if astvisitor.visit_unaryexpression(astvisitor):
+            self.expression.accept(astvisitor)
+
+class UnaryNot(UnaryExpression):
+    """ Unary Not expression; not [x]; """
 
     def accept(self, astvisitor):
         if astvisitor.visit_unarynot(self):
-            self._expression.accept(astvisitor)
+            UnaryExpression.accept(self, astvisitor)
 
     def __repr__(self):
-        return "UnaryNot(%r)" % ((self._expression))
+        return "ast.UnaryNot(%r)" % (self.expression)
 
-class UnaryNegate(Node):
-    def __init__(self, expression):
-        self._expression = expression
+class UnaryNegate(unaryExpression):
+    """ Unary negate;  - [x] """
 
     def accept(self, astvisitor):
         if astvisitor.visit_unarynegate(self):
-            self._expression.accept(astvisitor)
+            UnaryExpression.accept(self, astvisitor)
 
     def __repr__(self):
-        return "UnaryNegate(%r)" % ((self._expression))
+        return "ast.UnaryNegate(%r)" % (self.expression)
+
+# Flow Control
 
 class WhileStatement(Node):
+    """ while [condition] { [block] } """
 
     def __init__(self, condition, block):
-        assert isinstance(condition, Node)
+        assert isinstance(condition, Node) # RPython
+
         self.condition = condition
         self.block = block
+
+    def get_condition(self):
+        return self.condition
+
+    def get_block(self):
+        return self.block
 
     def accept(self, astvisitor):
         if astvisitor.visit_whilestatement(self):
@@ -357,12 +353,36 @@ class WhileStatement(Node):
             self.block.accept(astvisitor)
 
     def __repr__(self):
-        return "WhileStatement(condition=%r, block=%r)" % ((self.condition), (self.block))
+        return "ast.WhileStatement(condition=%r, block=%r)" % (self.condition, self.block)
+
+class BreakStatement(Node):
+
+    def accept(self, astvisitor):
+        astvisitor.visit_breakstatement(self)
+
+    def __repr__(self):
+        return "ast.BreakStatement()"
+
+class ContinueStatement(Node):
+
+    def accept(self, astvisitor):
+        astvisitor.visit_continuestatement(self)
+
+    def __repr__(self):
+        return "ast.ContinueStatement()"
 
 class IfStatement(Node):
+    """ if [condition] { [block] } """
+
     def __init__(self, condition, ifclause):
         self.condition = condition
         self.ifclause = ifclause
+
+    def get_condition(self):
+        return self.condition
+
+    def get_block(self):
+        return self.ifclause
 
     def accept(self, astvisitor):
         if astvisitor.visit_ifstatement(self):
@@ -370,73 +390,115 @@ class IfStatement(Node):
             self.ifclause.accept(astvisitor)
 
     def __repr__(self):
-        return "IfStatement(condition=%r, ifclause=%r)" % (self.condition, self.ifclause)
+        return "ast.IfStatement(condition=%r, block=%r)" % (self.condition, self.ifclause)
+
+# Built ins
 
 class PrintStatement(Node):
-    def __init__(self, statement):
-        self.statement = statement
+    """ print [statement] """
+
+    def __init__(self, expression):
+        self.expression = expression
+
+    def get_expression(self):
+        return self.expression
 
     def accept(self, astvisitor):
         if astvisitor.visit_printstatement(self):
-            self.statement.accept(astvisitor)
+            self.expression.accept(astvisitor)
 
     def __repr__(self):
-        return "PrintStatement(%r)" % self.statement
+        return "ast.PrintStatement(%r)" % (self.expression)
+
+# Functions
 
 class ParameterList(Node):
+    """ Function definition parameter list: fn ([parameters]) """
     def __init__(self, parameters):
+        """ Args:
+                parameters -- A list of parameters
+        """
         self.parameters = parameters
 
     def get_parameters(self):
         return self.parameters
 
     def accept(self, astvisitor):
-        astvisitor.visit_paramlist(self)
+        astvisitor.visit_parameterlist(self)
 
     def __repr__(self):
-        return "ParameterList(%r)" % self.parameters
+        return "ast.ParameterList(%r)" % self.parameters
+
+class ArgumentList(Node):
+    """ Function call argument list """
+
+    def __init__(self, arglist):
+        """ Args:
+                arglist -- A List of expressions
+        """
+        self.arguments = arglist
+
+    def get_arguments(self):
+        return self.arguments
+
+    def accept(self, astvisitor):
+        if astvisitor.visit_argumentlist(self):
+            for arg in self.arguments:
+                arg.accept(astvisitor)
+
+    def __repr__(self):
+        return "ast.FunctionArgList(%r)" % (self.arguments)
 
 class FunctionExpression(Node):
+    """ A function expression:  fn([paramlist]) { [block] } """
+
     def __init__(self, paramlist, block):
         self.paramlist = paramlist
         self.block = block
 
-    def get_parameters(self):
-        return self.paramlist.get_parameters()
+    def get_parameterlist(self):
+        return self.paramlist
 
     def accept(self, astvisitor):
         if astvisitor.visit_functionexpression(self):
             self.block.accept(astvisitor)
 
     def __repr__(self):
-        return "FunctionExpression(paramlist=%r, block=%r)" % (self.paramlist, self.block)
+        return "ast.FunctionExpression(paramlist=%r, block=%r)" % (self.paramlist, self.block)
 
 class FunctionStatement(Node):
+    """ A function statement: fn [identifier]([paramlist]) { [block] } """
+
     def __init__(self, identifier, paramlist, block):
         self.identifier = identifier
-        self._paramlist = paramlist
-        self._block = block
+        self.paramlist = paramlist
+        self.block = block
 
     def get_parameters(self):
-        return self._paramlist.get_parameters()
+        return self.paramlist
+
+    def get_name(self):
+        return self.identifier
 
     def accept(self, astvisitor):
         if astvisitor.visit_functionstatement(self):
-            self._block.accept(astvisitor)
+            self.block.accept(astvisitor)
 
     def __repr__(self):
-        return "FunctionStatement(%r, %r, %r)" % (self.identifier, self._paramlist, self._block)
+        return "ast.FunctionStatement(%r, %r, %r)" % (self.identifier, self.paramlist, self.block)
 
 class FunctionCall(Node):
+    """ Function call: [identifier]([arglist]) """
+
     def __init__(self, identifier, arglist):
-        self._identifier = identifier
-        self._arglist = arglist
+        self.identifier = identifier
+        self.arglist = arglist
 
     def get_arguments(self):
-        return self._arglist.get_arguments()
+        return self.arglist
 
     def get_identifier(self):
-        return self._identifier
+        return self.identifier
 
     def accept(self, astvisitor):
         if astvisitor.visit_functioncall(self):
@@ -444,67 +506,42 @@ class FunctionCall(Node):
                 arg.accept(astvisitor)
 
     def __repr__(self):
-        return "FunctionCall(%r, %r)" % (self._identifier, self._arglist)
+        return "ast.FunctionCall(%r, %r)" % (self.identifier, self.arglist)
 
-class FunctionArgList(Node):
-    def __init__(self, arglist):
-        self.arguments = arglist
-
-    def get_arguments(self):
-        return self.arguments
-
-    def accept(self, astvisitor):
-        if astvisitor.visit_arglist(self):
-            for arg in self.arguments:
-                arg.accept(astvisitor)
-
-    def __repr__(self):
-        return "FunctionArgList(%r)" % (self.arguments)
 
 class ReturnStatement(Node):
-    def __init__(self, statement):
-        self._statement = statement
+    def __init__(self, expression):
+        self.expression = expression
+
+    def get_expression(self):
+        return self.expression
 
     def accept(self, astvisitor):
         if astvisitor.visit_returnstatement(self):
-            self._statement.accept(astvisitor)
+            self.expression.accept(astvisitor)
 
     def __repr__(self):
-        return "ReturnStatement(%r)" % (self._statement)
+        return "ast.ReturnStatement(%r)" % (self.expression)
 
-class BreakStatement(Node):
-
-    def __init__(self):
-        pass
-
-    def accept(self, astvisitor):
-        astvisitor.visit_breakstatement(self)
-
-    def __repr__(self):
-        return "BreakStatement()"
-
-class ContinueStatement(Node):
-
-    def __init__(self):
-        pass
-
-    def accept(self, astvisitor):
-        astvisitor.visit_continuestatement(self)
-
-    def __repr__(self):
-        return "ContinueStatement()"
+# Value Expressions
 
 class IdentifierExpression(Node):
+    """ identifier: 'a' """
+
     def __init__(self, identifier):
-        self._identifier = identifier
+        self.identifier = identifier
+
+    def get_identifier(self):
+        return self.identifier
 
     def accept(self, astvisitor):
         astvisitor.visit_identifierexpression(self)
 
     def __repr__(self):
-        return "IdentifierExpression(%r)" % (self._identifier)
+        return "ast.IdentifierExpression(%r)" % (self.identifier)
 
 class ArrayAccess(Node):
+    """ Array access: {identifier}[{index}]; """
     def __init__(self, identifier, index):
         self.identifier = identifier
         self.index = index
@@ -521,17 +558,21 @@ class ArrayAccess(Node):
             self.index.accept(astvisitor)
 
     def __repr__(self):
-        return "ArrayAccess()"
+        return "ast.ArrayAccess(identifier=%r, index=%r)" % (self.identifier, self.index)
 
 class ArrayAssignment(Node):
 
     def __init__(self, array_access, expression):
-        assert isinstance(array_access, ArrayAccess)
+        assert isinstance(array_access, ArrayAccess)  # RPython
+
         self.array_access = array_access
         self.expression = expression
 
     def get_array_access(self):
         return self.array_access
+
+    def get_expression(self):
+        return self.expression
 
     def accept(self, astvisitor):
         if astvisitor.visit_arrayassignment(self):
@@ -539,7 +580,7 @@ class ArrayAssignment(Node):
             self.expression.accept(astvisitor)
 
     def __repr__(self):
-        return "ArrayAssignment"
+        return "ast.ArrayAssignment(%r, %r)" % (self.array_access, self.expression)
 
 
 def _visit(visitor, node):
