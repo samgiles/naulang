@@ -24,6 +24,8 @@ class Object(object):
 
         invokable(self, activation_record, interpreter)
 
+    def get_as_string(self):
+        return "Object"
 
     def get_class(self, universe):
         pass
