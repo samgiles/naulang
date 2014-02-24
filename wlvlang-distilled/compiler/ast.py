@@ -1,6 +1,9 @@
+import sys
+
 from rply.token import BaseBox
 
 class Node(BaseBox):
+    """ Base ast Node """
     def __eq__(self, other):
         return (self.__class__ == other.__class__ and self.__dict__ == other.__dict__)
 
@@ -8,84 +11,151 @@ class Node(BaseBox):
         return not self == other
 
     def accept(self, astvisitor):
+        """ Implements visitor pattern """
         pass
 
+# Structure
+
 class Block(Node):
+    """ A Basic block or collection of Statements/Expressions """
+
     def __init__(self, statement_list):
-        self._statements = statement_list
+        self.statements = statement_list
 
     def get_statements(self):
-        return self._statements
+        return self.statements
 
     def accept(self, astvisitor):
         if astvisitor.visit_block(self):
-            for statement in self._statements:
+            for statement in self.statements:
                 statement.accept(astvisitor)
 
     def __repr__(self):
-        return "Block(%r)" % (self._statements)
+        return "ast.Block(%r)" % (self.statements)
+
+
+# Constants
 
 class BooleanConstant(Node):
+    """ Represents a Boolean constant "true" or "false" """
 
     def __init__(self, value):
-        self._value = value
+        self.value = value
+
+    def get_boolean_value(self):
+        return self.value
 
     def accept(self, astvisitor):
         astvisitor.visit_booleanconstant(self)
 
     def __repr__(self):
-        return "BooleanConstant(%r)" % (self._value)
+        return "ast.BooleanConstant(%r)" % (self.value)
 
 class StringConstant(Node):
+    """ Represents a String constant """
 
     def __init__(self, value):
-        self._value = value
+        self.value = value
+
+    def get_string_value(self):
+        return self.value
 
     def accept(self, astvisitor):
         astvisitor.visit_stringconstant(self)
 
     def __repr__(self):
-        return "StringConstant(%s)" % (self._value)
+        return "ast.StringConstant(%s)" % (self.value)
 
 class IntegerConstant(Node):
+    """ Represents an Integer constant """
 
     def __init__(self, value):
-        self._value = value
+        self.value = value
+
+    def get_integer_constant(self):
+        return self.value
 
     def accept(self, astvisitor):
         astvisitor.visit_integerconstant(self)
 
     def __repr__(self):
-        return "IntegerConstant(%d)" % (self._value)
+        return "ast.IntegerConstant(%d)" % (self.value)
 
 class FloatConstant(Node):
+    """ Represents a Floating point constant """
+
     def __init__(self, value):
-        self._value = value
+        self.value = value
+
+    def get_float_constant(self):
+        return self.value
 
     def accept(self, astvisitor):
         astvisitor.visit_floatconstant(self)
 
     def __repr__(self):
-        return "FloatConstant(%r)" % (self._value)
+        return "ast.FloatConstant(%r)" % (self.value)
+
+# Statements
+
+# # Assignment
 
 class Assignment(Node):
+    """ Represents simple assignment """
 
     def __init__(self, variable_name, expression):
-        self._varname = variable_name
-        self._expression = expression
+        self.varname = variable_name
+        self.expression = expression
+
+    def get_varname(self):
+        return self.varname
+
+    def get_expression(self):
+        return expression
 
     def accept(self, astvisitor):
         if astvisitor.visit_assignment(self):
-            self._expression.accept(astvisitor)
+            self.expression.accept(astvisitor)
 
     def __repr__(self):
-        return "Assignment(%r, %r)" % (self._varname, self._expression)
+        return "ast.Assignment(%r, %r)" % (self.varname, self.expression)
+
+class ScopedAssignment(Node):
+    """ Represents variable initialisation within a scope (using let keyword) """
+
+    def __init__(self, variable_name, expression):
+        self.varname = variable_name
+        self.expression = expression
+
+    def get_varname(self):
+        return self.varname
+
+    def get_expression(self):
+        return self.expression
+
+    def accept(self, astvisitor):
+        if astvisitor.visit_scopedassignment(self):
+            self.expression.accept(astvisitor)
+
+    def __repr__(self):
+        return "ast.ScopedAssignment(%r, %r)" % (self.varname, self.expression)
+
+# Expressions
+
+# # Logical
 
 class Or(Node):
+    """ Or Expression """
 
     def __init__(self, lhs, rhs):
-        self._lhs = lhs
-        self._rhs = rhs
+        self.lhs = lhs
+        self.rhs = rhs
+
+    def get_lhs(self):
+        return self.lhs
+
+    def get_rhs(self):
+        return self.rhs
 
     def accept(self, astvisitor):
         if astvisitor.visit_or(self):
@@ -93,7 +163,7 @@ class Or(Node):
             self._rhs.accept(astvisitor)
 
     def __repr__(self):
-        return "Or(%r, %r)" % (self._lhs, self._rhs)
+        return "ast.Or(%r, %r)" % (self.lhs, self.rhs)
 
 class And(Node):
     def __init__(self, lhs, rhs):
@@ -471,126 +541,22 @@ class ArrayAssignment(Node):
     def __repr__(self):
         return "ArrayAssignment"
 
-class ScopedAssignment(Node):
 
-    def __init__(self, variable_name, expression):
-        self._varname = variable_name
-        self._expression = expression
+def _visit(visitor, node):
+    return True
 
-    def accept(self, astvisitor):
-        if astvisitor.visit_scopedassignment(self):
-            self._expression.accept(astvisitor)
+def _create_visitor():
+    """ NOT_RPYTHON
 
-    def __repr__(self):
-        return "ScopedAssignment(%r, %r)" % (self._varname, self._expression)
-
+        Dynamically creates the ASTVisitor
+    """
+    import inspect
+    import sys
+    asts = inspect.getmembers(sys.modules[__name__], lambda obj: inspect.isclass(obj) and issubclass(obj, Node))
+    for cls in asts:
+        setattr(ASTVisitor, 'visit_' + cls.lower(), classmethod(_visit))
 
 class ASTVisitor(object):
-    """ Base class for any AST visitor implementation. """
-    def visit_block(self, node):
-        return True
+    pass
 
-    def visit_booleanconstant(self, node):
-        return True
-
-    def visit_stringconstant(self, node):
-        return True
-
-    def visit_integerconstant(self, node):
-        return True
-
-    def visit_floatconstant(self, node):
-        return True
-
-    def visit_assignment(self, node):
-        return True
-
-    def visit_or(self, node):
-        return True
-
-    def visit_and(self, node):
-        return True
-
-    def visit_equals(self, node):
-        return True
-
-    def visit_notequals(self, node):
-        return True
-
-    def visit_lessthan(self, node):
-        return True
-
-    def visit_lessthanorequal(self, node):
-        return True
-
-    def visit_greaterthan(self, node):
-        return True
-
-    def visit_greaterthanorequal(self, node):
-        return True
-
-    def visit_addop(self, node):
-        return True
-
-    def visit_subtractop(self, node):
-        return True
-
-    def visit_mulop(self, node):
-        return True
-
-    def visit_divop(self, node):
-        return True
-
-    def visit_modop(self, node):
-        return True
-
-    def visit_unarynot(self, node):
-        return True
-
-    def visit_unarynegate(self, node):
-        return True
-
-    def visit_whilestatement(self, node):
-        return True
-
-    def visit_ifstatement(self, node):
-        return True
-
-    def visit_printstatement(self, node):
-        return True
-
-    def visit_functionstatement(self, node):
-        return True
-
-    def visit_functionexpression(self, node):
-        return True
-
-    def visit_functioncall(self, node):
-        return True
-
-    def visit_returnstatement(self, node):
-        return True
-
-    def visit_identifier(self, node):
-        return True
-
-    def visit_arglist(self, node):
-        return True
-
-    def visit_paramlist(self, node):
-        return True
-
-    def visit_arrayaccess(self, node):
-        return True
-
-    def visit_arrayassignment(self, node):
-        return True
-
-    def visit_scopedassignment(self, node):
-        return True
-
-    def visit_breakstatement(self, node):
-        return True
-
-    def visit_continuestatement(self, node):
-        return True
+_create_visitor()
