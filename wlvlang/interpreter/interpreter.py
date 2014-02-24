@@ -165,6 +165,14 @@ class Interpreter(object):
                 value = activation_record.pop()
                 activation_record.set_dynamic_at(local_slot, level, value)
                 pc += 1
+            elif bytecode == Bytecode.COPY_LOCAL:
+                pc += 1
+                local = method.get_bytecode(pc)
+                pc += 1
+                activation_record.set_local_at(local, activation_record.peek())
+            elif bytecode == Bytecode.DUP:
+                activation_record.push(activation_record.peek())
+                pc += 1
             else:
                 raise TypeError("Bytecode is not implemented: %d" % bytecode)
 

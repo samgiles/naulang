@@ -25,7 +25,7 @@ class Integer(Object):
         return universe.integerClass
 
     def __str__(self):
-        return str(self.get_value())
+        return self.get_as_string()
 
     def __repr__(self):
         return "int(%s)" % self.__str__()

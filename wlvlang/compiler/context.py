@@ -4,7 +4,7 @@ class MethodCompilerContext(object):
 
     REGISTER_DYNAMIC_FAILED = -1
 
-    def __init__(self, vm_universe, outer=None):
+    def __init__(self, vm_universe, outer=None, optimiser=None):
         self._universe = vm_universe
         self._literals = []
         self._locals = []
@@ -21,6 +21,8 @@ class MethodCompilerContext(object):
         # current loop value 1 being the label for the top of the loop (pre-condition)
         # value 2 being the label for the block after the loop.
         self._loop_control = []
+
+        self.optimiser = optimiser
 
     def get_top_position(self):
         """ Returns:
@@ -96,6 +98,8 @@ class MethodCompilerContext(object):
 
     def generate_method(self):
         # First replace bytecode labels with actual values
+        if self.optimiser is not None:
+            self.bytecode = self.optimiser.optimise(self.bytecode)
 
         return Method(self._signature, self._literals, self._locals, self.get_bytecode(), argument_count=self._parameter_count)
 

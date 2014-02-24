@@ -305,7 +305,9 @@ def compile_source_from_file(path, filename, universe, arguments):
         os.write(2, "%s: %s\n" % (os.strerror(msg.errno), fullname))
         raise IOError()
 
-    compiler_context = MethodCompilerContext(universe)
+    from wlvlang.compiler.optimisers.bytecode_optimiser import Optimiser, LoadAndStoreOptimiser, LoadLoadOptimiser
+    optimisers = Optimiser([LoadLoadOptimiser(), LoadAndStoreOptimiser()])
+    compiler_context = MethodCompilerContext(universe, optimiser=optimisers)
     array = universe.new_array(len(arguments))
 
     i = len(arguments) - 1

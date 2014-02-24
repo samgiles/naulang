@@ -45,6 +45,8 @@ class Bytecode(object):
 
     INVOKE_GLOBAL = 27
     MOD = 28
+    COPY_LOCAL = 29
+    DUP = 30
 
 def _bytecode_names(cls):
     "NOT_RPYTHON"
