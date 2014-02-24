@@ -1,30 +1,27 @@
 from wlvlang.interpreter.bytecode import Bytecode
 from wlvlang.interpreter.activationrecord import ActivationRecord
-from wlvlang.vmobjects.array import Array
-from rpython.rlib import jit
-from rpython.rlib.jit import JitDriver
 
-jitdriver = JitDriver(greens=[], reds=[])
+from wlvlang.vmobjects.array import Array
 
 class Interpreter(object):
 
-    _immutable_fields_ = ['universe']
-
-    def __init__(self, universe):
-        self.universe = universe
+    def __init__(self, space):
+        self.space = space
 
     def _send(self, arec, signature):
 
-        # Lookup for left value
+        # Lookup left hand value (pop top, peek, push)
         top = arec.pop()
         invokable = arec.peek().get_class(self.universe).lookup_invokable(signature)
         arec.push(top)
         invokable(None, arec, self)
 
     def pre_execute(self, pc, method, activation_record):
+        """ Interpreter hooks, (used by the debugger) """
         pass
 
     def post_execute(self, pc, method, activation_record):
+        """ Interpreter hooks, (used by the debugger) """
         pass
 
     def interpret(self, method, activation_record):
@@ -32,11 +29,9 @@ class Interpreter(object):
         pc = 0
         running = True
 
-        jitdriver.can_enter_jit(bytecode_index=pc, interp=self, method=method, arec=activation_record)
 
         while running:
 
-            jitdriver.jit_merge_point(bytecode_index=pc, interp=self, method=method, arec=activation_record)
             bytecode = method.get_bytecode(pc)
 
             self.pre_execute(pc, method, activation_record)
@@ -132,7 +127,7 @@ class Interpreter(object):
             elif bytecode == Bytecode.RETURN:
                 caller = activation_record.get_previous_record()
                 if caller is None:
-                    # TODO: Logic for root function exit
+                    # TODO: Logic for root function exit and returning
                     running = False
 
                 caller.push(activation_record.pop())
@@ -140,14 +135,14 @@ class Interpreter(object):
             elif bytecode == Bytecode.ARRAY_LOAD:
                 index = activation_record.pop()
                 array = activation_record.pop()
-                assert isinstance(array, Array)
+                assert isinstance(array, Array)     # RPython
                 activation_record.push(array.get_value_at(index.get_integer_value()))
                 pc += 1
             elif bytecode == Bytecode.ARRAY_STORE:
                 value = activation_record.pop()
                 index = activation_record.pop()
                 array = activation_record.pop()
-                assert isinstance(array, Array)
+                assert isinstance(array, Array)     # RPython
                 array.set_value_at(index.get_integer_value(), value)
                 pc += 1
             elif bytecode == Bytecode.LOAD_DYNAMIC:
@@ -166,6 +161,7 @@ class Interpreter(object):
                 activation_record.set_dynamic_at(local_slot, level, value)
                 pc += 1
             elif bytecode == Bytecode.COPY_LOCAL:
+                """ Copy the top of the stack into a local, preserving the stack """
                 pc += 1
                 local = method.get_bytecode(pc)
                 pc += 1
@@ -177,11 +173,3 @@ class Interpreter(object):
                 raise TypeError("Bytecode is not implemented: %d" % bytecode)
 
             self.post_execute(pc, method, activation_record)
-
-jitdriver = jit.JitDriver(
-    greens=['bytecode_index', 'interp', 'method'],
-    reds=['arec'])
-
-def jitpolicy(driver):
-    from rpython.jit.codewriter.policy import JitPolicy
-    return JitPolicy()
