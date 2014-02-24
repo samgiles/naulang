@@ -27,7 +27,7 @@ def primitive_functions():
 
 def _time_primitive(primitive, activation_record, interpreter):
     # HACK: Return an integer until floats are implemented
-    activation_record.push(interpreter.universe.new_integer(time.time() * 1000000))
+    activation_record.push(interpreter.universe.new_integer(int(time.time() * 1000000)))
 
 def _int_primitive(primitive, activation_record, interpreter):
     string = activation_record.pop()
