@@ -18,11 +18,17 @@ class BytecodeOptimiser(object):
     def optimise(self, bytecode):
 
         i = 0
-        new_bytecodes = []
+        new_i = 0
+        new_bytecodes = [0] * len(bytecode)
 
         while i < len(bytecode):
             new_bytes, advance = self.process_bytecode(i, bytecode)
-            new_bytecodes = new_bytecodes + new_bytes
+            n = 0
+            while n < len(new_bytes):
+                new_bytecodes[new_i] = new_bytes[n]
+                new_i += 1
+                n += 1
+
             i = i + advance
 
         return new_bytecodes
