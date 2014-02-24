@@ -3,12 +3,6 @@ from wlvlang.vmobjects.object import Object
 class ActivationRecord(Object):
     """
         Defines an Activation Record.
-
-        The shape of the stack is as follows, where the top of the stack is
-        the lowest item in the diagram (keeping to the same convention as
-        "The Dragon Book" (Compilers: Principles, Techniques and Tools -
-        Aho, Lam Sethi and Ullman 2014 (International Ed.)
-
         --------------------
         | Caller Record    |
         | aka Control Link |
@@ -22,12 +16,6 @@ class ActivationRecord(Object):
         | Temporaries      |
         --------------------
 
-        Parameters: refer to the parameters used by the calling procedure.
-                    NOTE: In register based machines these are often placed
-                    in registers for efficiency
-
-        Return Values: Refers to the return value of the function (if there is one)
-                        May be placed in a register for efficiency in some machines.
 
         Control Link:  Refers to the caller.
 
@@ -37,9 +25,10 @@ class ActivationRecord(Object):
         Local Data:  Contains local constant data that is to be used during the execution of the
                     method.
 
+        Literal data: Contains literals that are used during the execution of the method
+
         Temporaries: Contains any temporary variables that may need to be allocated and used
                      during the execution of the procedure.
-
     """
 
     def __init__(self, locals, local_size, literal_size, temp_size, previous_record, access_link=None):
