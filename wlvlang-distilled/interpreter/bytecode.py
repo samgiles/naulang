@@ -1,27 +1,27 @@
 class Bytecode(object):
     HALT = 0
     LOAD_CONST = 1
-    LOAD = 21
-    STORE = 2
-    OR = 3
-    AND = 4
-    EQUAL = 5
-    NOT_EQUAL = 6
-    LESS_THAN = 7
-    LESS_THAN_EQ = 8
-    GREATER_THAN = 9
-    GREATER_THAN_EQ = 22
-    ADD = 10
-    SUB = 11
-    MUL = 12
-    DIV = 13
-    NOT = 14
-    NEG = 15
-    JUMP_IF_FALSE = 16
-    JUMP_BACK = 17
-    PRINT = 18
-    INVOKE = 19
-    RETURN = 20
+    LOAD = 3
+    STORE = 4
+    OR = 5
+    AND = 6
+    EQUAL = 7
+    NOT_EQUAL = 8
+    LESS_THAN = 9
+    LESS_THAN_EQ = 10
+    GREATER_THAN = 11
+    GREATER_THAN_EQ = 12
+    ADD = 13
+    SUB = 14
+    MUL = 15
+    DIV = 16
+    NOT = 17
+    NEG = 18
+    JUMP_IF_FALSE = 19
+    JUMP_BACK = 20
+    PRINT = 21
+    INVOKE = 22
+    RETURN = 23
 
     """
     ARRAY_LOAD
@@ -29,7 +29,7 @@ class Bytecode(object):
 
         array, index -> value
     """
-    ARRAY_LOAD = 23
+    ARRAY_LOAD = 24
 
     """
     ARRAY_STORE
@@ -37,16 +37,16 @@ class Bytecode(object):
 
         array, index, value ->
     """
-    ARRAY_STORE = 24
+    ARRAY_STORE = 25
 
-    STORE_DYNAMIC = 25
+    STORE_DYNAMIC = 26
 
-    LOAD_DYNAMIC = 26
+    LOAD_DYNAMIC = 27
 
-    INVOKE_GLOBAL = 27
-    MOD = 28
-    COPY_LOCAL = 29
-    DUP = 30
+    INVOKE_GLOBAL = 28
+    MOD = 29
+    COPY_LOCAL = 30
+    DUP = 31
 
 def _bytecode_names(cls):
     "NOT_RPYTHON"
