@@ -1,5 +1,3 @@
-import sys
-
 from rply.token import BaseBox
 
 class Node(BaseBox):
