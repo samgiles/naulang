@@ -1,23 +1,24 @@
-from wlvlang.vmobjects.classs import Class
-from wlvlang.vmobjects.primitives.primitives import initialise_primitives
-from wlvlang.vmobjects.integer import Integer
-from wlvlang.vmobjects.boolean import Boolean
-from wlvlang.vmobjects.string import String
-from wlvlang.vmobjects.array import Array
+from wlvlang.interpreter.objectspace.klass import Class
+from wlvlang.interpreter.objectspace.integer import Integer
+from wlvlang.interpreter.objectspace.boolean import Boolean
+from wlvlang.interpreter.objectspace.string import String
+from wlvlang.interpreter.objectspace.array import Array
+
+from wlvlang.interpreter.objectspace.primitives import initialise_primitives
 
 
 class ObjectSpace(object):
 
     def __init__(self):
-        self.primitive_functions = []
+        self.builtin_functions = []
 
         # Classes define the operations that can be performed on a type
-        self.integerClass = Class(self)
-        self.methodClass = Class(self)
-        self.booleanClass = Class(self)
-        self.arrayClass = Class(self)
-        self.primitiveClass = Class(self)
-        self.stringClass = Class(self)
+        self.integerClass = Class()
+        self.methodClass = Class()
+        self.booleanClass = Class()
+        self.arrayClass = Class()
+        self.builtinClass = Class()
+        self.stringClass = Class()
 
         self.initialise_primitives()
 
@@ -25,11 +26,11 @@ class ObjectSpace(object):
         # Initialise prims
         initialise_primitives(self)
 
-    def get_primitive_function(self, index):
-        return self.primitive_functions[index]
+    def get_builtin_function(self, index):
+        return self.builitin_function[index]
 
     def add_primitive_function(self, index, function):
-        self.primitive_functions[index] = function
+        self.builtin_functions[index] = function
 
     def new_integer(self, value):
         return Integer(value)

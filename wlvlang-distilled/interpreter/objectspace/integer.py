@@ -11,9 +11,8 @@ class Integer(Object):
     def get_as_string(self):
         return str(self)
 
-    def get_class(self, universe):
-        # Not keen on this coupling
-        return universe.integerClass
+    def get_class(self, space):
+        return space.integerClass
 
     def __str__(self):
         return self.value

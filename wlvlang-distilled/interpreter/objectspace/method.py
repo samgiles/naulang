@@ -42,8 +42,8 @@ class Method(Object):
 
         interpreter.interpret(self, new_arec)
 
-    def get_class(self, universe):
-        return universe.methodClass
+    def get_class(self, space):
+        return space.methodClass
 
     def __repr__(self):
         return "Method<%r>: closed by: <%r>" % (hex(id(self)), hex(id(self.enclosing_arec)))

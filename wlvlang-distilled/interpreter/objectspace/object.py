@@ -27,5 +27,5 @@ class Object(object):
     def get_as_string(self):
         return "Object"
 
-    def get_class(self, universe):
+    def get_class(self, space):
         pass
