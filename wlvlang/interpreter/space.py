@@ -29,7 +29,6 @@ class ObjectSpace(object):
         # Initialise prims
         initialise_primitives(self)
 
-    @jit.elidable
     def get_builtin_function(self, index):
         return self.builtin_functions[index]
 
@@ -38,16 +37,20 @@ class ObjectSpace(object):
 
     @jit.elidable
     def new_integer(self, value):
+        jit.promote(value)
         return Integer(value)
 
     @jit.elidable
     def new_boolean(self, value):
+        jit.promote(value)
         return Boolean(value)
 
     @jit.elidable
     def new_array(self, initial_size):
+        jit.promote(initial_size)
         return Array(initial_size)
 
     @jit.elidable
     def new_string(self, value):
+        jit.promote(value)
         return String(value)
