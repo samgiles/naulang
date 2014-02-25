@@ -34,7 +34,7 @@ def _parse_source(source):
 
 def parse_file(filename, object_space, arguments=[]):
     """ Given a source file, return a vmobjects.Method object """
-
+    path = os.getcwd()
     fullname = path + os.sep + filename
     try:
         input_file = open_file_as_stream(fullname, "r")

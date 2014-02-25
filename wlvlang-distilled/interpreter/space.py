@@ -10,8 +10,6 @@ from wlvlang.interpreter.objectspace.primitives import initialise_primitives
 class ObjectSpace(object):
 
     def __init__(self):
-        self.builtin_functions = []
-
         # Classes define the operations that can be performed on a type
         self.integerClass = Class()
         self.methodClass = Class()
@@ -20,6 +18,7 @@ class ObjectSpace(object):
         self.builtinClass = Class()
         self.stringClass = Class()
 
+        self.builtin_functions = []
         self.initialise_primitives()
 
     def initialise_primitives(self):
@@ -29,7 +28,7 @@ class ObjectSpace(object):
     def get_builtin_function(self, index):
         return self.builitin_function[index]
 
-    def add_primitive_function(self, index, function):
+    def add_builtin_function(self, index, function):
         self.builtin_functions[index] = function
 
     def new_integer(self, value):
