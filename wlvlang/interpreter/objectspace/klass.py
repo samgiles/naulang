@@ -1,10 +1,13 @@
 from wlvlang.interpreter.objectspace.object import Object
 
+from rpython.rlib import jit
+
 class Class(Object):
 
     def __init__(self):
         self.invokabletable = {}
 
+    @jit.elidable
     def lookup_invokable(self, signature):
         invokable = self.invokabletable.get(signature, None)
 
