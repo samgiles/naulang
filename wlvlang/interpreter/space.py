@@ -6,6 +6,8 @@ from wlvlang.interpreter.objectspace.array import Array
 
 from wlvlang.interpreter.objectspace.primitives.primitives import initialise_primitives
 
+from rpython.rlib import jit
+
 
 class ObjectSpace(object):
 
@@ -25,20 +27,25 @@ class ObjectSpace(object):
         # Initialise prims
         initialise_primitives(self)
 
+    @jit.elidable
     def get_builtin_function(self, index):
         return self.builtin_functions[index]
 
     def add_builtin_function(self, index, function):
         self.builtin_functions[index] = function
 
+    @jit.elidable
     def new_integer(self, value):
         return Integer(value)
 
+    @jit.elidable
     def new_boolean(self, value):
         return Boolean(value)
 
+    @jit.elidable
     def new_array(self, initial_size):
         return Array(initial_size)
 
+    @jit.elidable
     def new_string(self, value):
         return String(value)
