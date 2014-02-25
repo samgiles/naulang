@@ -91,8 +91,8 @@ class ActivationRecord(Object):
         return arec
 
     def get_dynamic_at(self, index, level):
-        index = hint(index, promote=True)
-        level = hint(level, promote=True)
+        index = jit.hint(index, promote=True)
+        level = jit.hint(level, promote=True)
 
         arec = self._get_arec_at_level(level)
         if arec:
@@ -101,9 +101,9 @@ class ActivationRecord(Object):
         return None
 
     def set_dynamic_at(self, index, level, value):
-        index = hint(index, promote=True)
-        level = hint(level, promote=True)
-        value = hint(value, promote=True)
+        index = jit.hint(index, promote=True)
+        level = jit.hint(level, promote=True)
+        value = jit.hint(value, promote=True)
 
         i = 1
         arec = self._get_arec_at_level(level)
