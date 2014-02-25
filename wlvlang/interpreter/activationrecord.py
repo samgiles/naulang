@@ -4,7 +4,7 @@ from rpython.rlib import jit
 
 class ActivationRecord(Object):
 
-    _virtualizable_ = ["_locals[*]"]
+    _virtualizable_ = ["_locals[*]", "_literals[*]"]
     _immutable_fields_ = ["_literals", "_locals"]
 
     """
