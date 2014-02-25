@@ -4,6 +4,8 @@ from wlvlang.interpreter.activationrecord import ActivationRecord
 class Method(Object):
     """ Defines a Method in wlvlang. """
 
+    _immutable_fields_ = ["locals[*]", "literals[*]"]
+
     def __init__(self, literals, locals, bytecodes, argument_count=0):
         self.literals = literals
         self.locals = locals

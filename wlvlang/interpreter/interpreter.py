@@ -17,11 +17,7 @@ class Interpreter(object):
         self.space = space
 
     def _send(self, arec, signature):
-
-        # Lookup left hand value (pop top, peek, push)
-        top = arec.pop()
         invokable = arec.peek().get_class(self.space).lookup_invokable(signature)
-        arec.push(top)
         invokable(None, arec, self)
 
     def pre_execute(self, pc, method, activation_record):

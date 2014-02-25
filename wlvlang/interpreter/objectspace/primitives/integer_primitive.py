@@ -1,26 +1,26 @@
 def _mul(invokable, activation_record, interpreter):
-    right = activation_record.pop()
     left = activation_record.pop()
+    right = activation_record.pop()
     result = left.get_integer_value() * right.get_integer_value()
     activation_record.push(interpreter.space.new_integer(result))
 
 def _add(invokable, activation_record, interpreter):
-    right = activation_record.pop()
     left = activation_record.pop()
+    right = activation_record.pop()
 
     result = left.get_integer_value() + right.get_integer_value()
     activation_record.push(interpreter.space.new_integer(result))
 
 def _sub(invokable, activation_record, interpreter):
-    right = activation_record.pop()
     left = activation_record.pop()
+    right = activation_record.pop()
 
     result = left.get_integer_value() - right.get_integer_value()
     activation_record.push(interpreter.space.new_integer(result))
 
 def _div(invokable, activation_record, interpreter):
-    right = activation_record.pop()
     left = activation_record.pop()
+    right = activation_record.pop()
 
     if (right.get_integer_value() == 0):
         pass
@@ -30,8 +30,8 @@ def _div(invokable, activation_record, interpreter):
     activation_record.push(interpreter.space.new_integer(result))
 
 def _mod(invokable, activation_record, interpreter):
-    right = activation_record.pop()
     left  = activation_record.pop()
+    right = activation_record.pop()
 
     result = int(left.get_integer_value()) % int(right.get_integer_value())
     activation_record.push(interpreter.space.new_integer(result))

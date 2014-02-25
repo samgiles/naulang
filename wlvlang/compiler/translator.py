@@ -93,32 +93,32 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         return False
 
     def visit_add(self, node):
-        node.lhs.accept(self)
         node.rhs.accept(self)
+        node.lhs.accept(self)
         self.context.emit(Bytecode.ADD)
         return False
 
     def visit_subtract(self, node):
-        node.lhs.accept(self)
         node.rhs.accept(self)
+        node.lhs.accept(self)
         self.context.emit(Bytecode.SUB)
         return False
 
     def visit_multiply(self, node):
-        node.lhs.accept(self)
         node.rhs.accept(self)
+        node.lhs.accept(self)
         self.context.emit(Bytecode.MUL)
         return False
 
     def visit_divide(self, node):
-        node.lhs.accept(self)
         node.rhs.accept(self)
+        node.lhs.accept(self)
         self.context.emit(Bytecode.DIV)
         return False
 
     def visit_mod(self, node):
-        node.lhs.accept(self)
         node.rhs.accept(self)
+        node.lhs.accept(self)
         self.context.emit(Bytecode.MOD)
         return False
 

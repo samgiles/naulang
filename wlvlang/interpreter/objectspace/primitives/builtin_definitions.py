@@ -24,7 +24,6 @@ def _time_primitive(primitive, activation_record, interpreter):
 def _int_primitive(primitive, activation_record, interpreter):
     # Parse a value into an integer
     string = activation_record.pop()
-    print string.get_as_string()
     activation_record.push(interpreter.space.new_integer(int(string.get_as_string())))
 
 def _list_primitive(primitive, activation_record, interpreter):

@@ -1,6 +1,6 @@
 def _concat(invokable, activation_record, interpreter):
-    right = activation_record.pop()
     left = activation_record.pop()
+    right = activation_record.pop()
 
     result = interpreter.space.new_string(left.get_as_string() + right.get_as_string())
     activation_record.push(result)
