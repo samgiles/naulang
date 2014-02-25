@@ -5,6 +5,11 @@ from wlvlang.interpreter.space import ObjectSpace
 
 def main(args):
 
+    if len(args) < 2:
+        os.write(2, "No source file given\n")
+        os.write(2, "    The first argument should be a wlvlang source code file\n")
+        return 1
+
     space = ObjectSpace()
 
     # Trim command line arguments to pass into source parser
