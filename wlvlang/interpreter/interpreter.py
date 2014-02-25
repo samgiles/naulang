@@ -3,6 +3,13 @@ from wlvlang.interpreter.activationrecord import ActivationRecord
 
 from wlvlang.interpreter.objectspace.array import Array
 
+from rpython.rlib import jit
+
+jitdriver = jit.JitDriver(
+        greens=['pc', 'interp', 'method'],
+        reds=['running', 'frame']
+    )
+
 class Interpreter(object):
 
     def __init__(self, space):
@@ -31,6 +38,13 @@ class Interpreter(object):
 
 
         while running:
+            jitdriver.jit_merge_point(
+                    pc=pc,
+                    interp=self,
+                    running=running,
+                    frame=activation_record,
+                    method=method
+                )
 
             bytecode = method.get_bytecode(pc)
 
