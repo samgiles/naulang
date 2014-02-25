@@ -1,2 +1,0 @@
-class CompilerException(Exception):
-    pass

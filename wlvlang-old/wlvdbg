@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-unset CDPATH
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd)"
-cd $DIR/../
-PYTHONPATH={PYTHON_PATH} python -m wlvlang.tools.interp_debugger.bytecode_debugger $@
