@@ -11,7 +11,6 @@ class FunctionCompilerContext(object):
         self.parameter_count = 0
         self.bytecode = []
         self.outer = outer
-        self.signature = None
         self.id_to_number = {}
         self.inner_contexts = []
 
@@ -113,14 +112,13 @@ class FunctionCompilerContext(object):
             Generate a method object from this function context.
         """
 
-        byetcode = self.bytecode
+        bytecode = self.get_bytecode()
 
         # First replace bytecode labels with actual values
         if self.optimiser is not None:
             bytecode = self.optimiser.optimise(bytecode)
 
-        raise NotImplementedError()
-        # return Method(self._signature, self._literals, self._locals, self.get_bytecode(), argument_count=self._parameter_count)
+        return Method(self.literals, self.locals, bytecode, argument_count=self.parameter_count)
 
     def get_bytecode(self):
         """

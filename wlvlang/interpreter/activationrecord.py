@@ -33,7 +33,7 @@ class ActivationRecord(Object):
 
     def __init__(self, locals, local_size, literal_size, temp_size, previous_record, access_link=None):
         """ The locals_count should include the parameters """
-        from wlvlang.vmobjects.method import Method
+        from wlvlang.interpreter.objectspace.method import Method
         stack_size = (len(locals) + 2)
         self._stack = [None] * (stack_size + temp_size)
         self._stack_pointer = 0

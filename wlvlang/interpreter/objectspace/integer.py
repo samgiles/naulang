@@ -6,7 +6,7 @@ class Integer(Object):
         self.value = value
 
     def get_integer_value(self):
-        return self._value
+        return self.value
 
     def get_as_string(self):
         return str(self)

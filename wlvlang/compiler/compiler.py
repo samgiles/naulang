@@ -7,6 +7,8 @@ from wlvlang.compiler.parser import create_parser
 from wlvlang.compiler.context import FunctionCompilerContext
 from wlvlang.compiler.translator import SyntaxDirectedTranslator
 
+from wlvlang.interpreter.bytecode import Bytecode
+
 from rpython.rlib.streamio import open_file_as_stream
 
 
