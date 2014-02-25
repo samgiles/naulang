@@ -9,7 +9,7 @@ class Integer(Object):
         return self.value
 
     def get_as_string(self):
-        return str(self)
+        return str(self.value)
 
     def get_class(self, space):
         return space.integerClass
@@ -18,7 +18,7 @@ class Integer(Object):
         return str(self.value)
 
     def __repr__(self):
-        return "int(%s)" % (str(self))
+        return "int(%s)" % (self.get_as_string())
 
     def __eq__(self, other):
         return isinstance(other, Integer) and self.value == other.value
