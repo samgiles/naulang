@@ -4,6 +4,8 @@ from rpython.rlib import jit
 
 class Class(Object):
 
+    _immutable_fields_ = ["invokeabletable"]
+
     def __init__(self):
         self.invokabletable = {}
 
