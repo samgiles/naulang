@@ -3,6 +3,8 @@ from wlvlang.interpreter.objectspace.object import Object
 class Boolean(Object):
     """ Represents a Boolean object """
 
+    _immutable_fields_ = ["value"]
+
     def __init__(self, value):
         self.value = value
 
