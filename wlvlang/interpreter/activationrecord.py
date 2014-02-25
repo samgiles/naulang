@@ -21,9 +21,6 @@ class ActivationRecord(Object):
         self.previous_record = previous_record
         self.access_link = access_link
 
-        self.push(previous_record)
-        self.push(access_link)
-
         self._locals = locals
         self._literals = literals
         self._set_up_local_methods()
