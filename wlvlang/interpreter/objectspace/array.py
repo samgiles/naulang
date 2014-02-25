@@ -2,6 +2,8 @@ from wlvlang.interpreter.objectspace.object import Object
 
 class Array(Object):
 
+    _immutable_fields_ = ["_list"]
+
     def __init__(self, initial_size):
         self._list = [None] * int(initial_size)
 
