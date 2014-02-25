@@ -90,7 +90,7 @@ let fannkuch = fn(n) {
 let n = int(args[1])
 
 let i = 0
-let warmup = 2
+let warmup = 5
 
 while i < warmup {
     fannkuch(n)
@@ -112,4 +112,4 @@ while runs >= 0 {
     total = total + (t1 - t0)
 }
 
-print "fannkuch: iterations=10 runtime: " + int(total) + "us"
+print "fannkuch(" + n + "): total: iterations=10 runtime: " + total + "us"
