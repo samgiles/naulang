@@ -7,7 +7,8 @@ from rpython.rlib import jit
 
 jitdriver = jit.JitDriver(
         greens=['pc', 'interp', 'method'],
-        reds=['running', 'frame']
+        reds=['running', 'frame'],
+        virtualizables=['frame']
     )
 
 class Interpreter(object):

@@ -119,7 +119,17 @@ class FunctionCompilerContext(object):
         if self.optimiser is not None:
             bytecode = self.optimiser.optimise(bytecode)
 
-        return Method(self.literals, self.locals, bytecode, argument_count=self.parameter_count)
+        # finalize locals and literals
+        literals = [None] * len(self.literals)
+        locals = [None] * len(self.locals)
+
+        for i in range(0, len(literals)):
+            literals[i] = self.literals[i]
+
+        for i in range(0, len(locals)):
+            locals[i] = self.locals[i]
+
+        return Method(literals, locals, bytecode, argument_count=self.parameter_count)
 
     def get_bytecode(self):
         """
