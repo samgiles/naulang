@@ -19,7 +19,7 @@ def _and(invokable, activation_record, interpreter):
     result = left.get_boolean_value() and right.get_boolean_value()
     activation_record.push(interpreter.space.new_boolean(result))
 
-def _print(activation_record, interpreter):
+def _print(invokable, activation_record, interpreter):
     top = activation_record.pop()
     print top.get_as_string()
 

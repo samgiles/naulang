@@ -47,11 +47,11 @@ def parse_file(filename, object_space, arguments=[]):
             # TODO: Better errors
             os.write(2, "Failed to parse")
             raise e
+        finally:
+            input_file.close()
     except OSError, msg:
         os.write(2, "%s: %s\n" % (os.strerror(msg.errno), fullname))
         raise IOError()
-    finally:
-        input_file.close()
 
     # Set up compilation context
     compiler_context = FunctionCompilerContext(object_space)

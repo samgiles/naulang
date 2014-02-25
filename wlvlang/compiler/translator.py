@@ -191,7 +191,7 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         new_context = FunctionCompilerContext(self.context.space, outer=self.context)
         self.context.add_inner_context(new_context)
 
-        parameters = node.get_parameterlist().get_parameters()
+        parameters = node.get_parameterlist().get_parameter_list()
         parameter_count = len(parameters)
 
         for param in parameters:
@@ -206,7 +206,7 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         return False
 
     def visit_functioncall(self, node):
-        for arg in node.get_arguments().get_arguments():
+        for arg in node.get_arguments().get_argument_list():
             arg.accept(self)
 
         if node.identifier in _builtin_functions:

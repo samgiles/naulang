@@ -3,6 +3,7 @@ from wlvlang.interpreter.bytecode import Bytecode
 
 class FunctionCompilerContext(object):
     """ Context used for compiling a function """
+    REGISTER_DYNAMIC_FAILED = -1
 
     def __init__(self, object_space, outer=None, optimiser=None):
         self.space = object_space

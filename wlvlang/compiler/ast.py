@@ -305,7 +305,7 @@ class UnaryExpression(Node):
         return self.expression
 
     def accept(self, astvisitor):
-        if astvisitor.visit_unaryexpression(astvisitor):
+        if astvisitor.visit_unaryexpression(self):
             self.expression.accept(astvisitor)
 
 class UnaryNot(UnaryExpression):
@@ -418,7 +418,7 @@ class ParameterList(Node):
         """
         self.parameters = parameters
 
-    def get_parameters(self):
+    def get_parameter_list(self):
         return self.parameters
 
     def accept(self, astvisitor):
@@ -436,7 +436,7 @@ class ArgumentList(Node):
         """
         self.arguments = arglist
 
-    def get_arguments(self):
+    def get_argument_list(self):
         return self.arguments
 
     def accept(self, astvisitor):
@@ -580,6 +580,8 @@ class ArrayAssignment(Node):
     def __repr__(self):
         return "ast.ArrayAssignment(%r, %r)" % (self.array_access, self.expression)
 
+class ASTVisitor(object):
+    pass
 
 def _visit(visitor, node):
     return True
@@ -592,10 +594,11 @@ def _create_visitor():
     import inspect
     import sys
     asts = inspect.getmembers(sys.modules[__name__], lambda obj: inspect.isclass(obj) and issubclass(obj, Node))
-    for cls in asts:
-        setattr(ASTVisitor, 'visit_' + cls[0].lower(), classmethod(_visit))
 
-class ASTVisitor(object):
-    pass
+    methods = {}
+    for cls in asts:
+        setattr(ASTVisitor, 'visit_' + cls[0].lower(), _visit)
 
 _create_visitor()
+
+
