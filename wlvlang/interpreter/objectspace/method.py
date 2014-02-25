@@ -1,6 +1,8 @@
 from wlvlang.interpreter.objectspace.object import Object
 from wlvlang.interpreter.activationrecord import ActivationRecord
 
+from rpython.rlib import jit
+
 class Method(Object):
     """ Defines a Method in wlvlang. """
 
@@ -30,6 +32,8 @@ class Method(Object):
         return Method(self.literals, self.locals, self.bytecodes, argument_count=self.argument_count)
 
     def invoke(self, activation_record, interpreter):
+        jit.promote(self)
+        jit.promote(interpreter)
 
         # TODO Calculate stack depth
         new_arec = ActivationRecord(self.locals, self.literals, 200, activation_record, access_link=self.get_enclosing_arec())
