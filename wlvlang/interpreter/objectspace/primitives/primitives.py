@@ -5,10 +5,10 @@ from wlvlang.interpreter.objectspace.primitives.builtin_definitions import built
 
 from wlvlang.interpreter.objectspace.builtin import BuiltIn
 
-def initialise_primitives(universe):
-    init_integer_prims(universe)
-    init_boolean_prims(universe)
-    init_string_prims(universe)
+def initialise_primitives(space):
+    init_integer_prims(space)
+    init_boolean_prims(space)
+    init_string_prims(space)
 
     bifs = builtin_functions()
     space.builtin_functions = [None] * len(bifs)

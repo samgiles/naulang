@@ -253,17 +253,17 @@ class Add(BinaryExpression):
     def __repr__(self):
         return "ast.AddOp(%r, %r)" % ((self.lhs), (self.rhs))
 
-class Subtract(Node):
+class Subtract(BinaryExpression):
     """ Subtract; -. """
 
     def accept(self, astvisitor):
-        if astvisitor.visit_subtractop(self):
+        if astvisitor.visit_subtract(self):
             BinaryExpression.accept(self, astvisitor)
 
     def __repr__(self):
         return "ast.Subtract(%r, %r)" % ((self.lhs), (self.rhs))
 
-class Multiply(Node):
+class Multiply(BinaryExpression):
     """ Multiply; *. """
 
     def accept(self, astvisitor):
@@ -273,7 +273,7 @@ class Multiply(Node):
     def __repr__(self):
         return "ast.MulOp(%r, %r)" % ((self.lhs), (self.rhs))
 
-class Divide(Node):
+class Divide(BinaryExpression):
     """ Divide; /. """
 
     def accept(self, astvisitor):
@@ -283,7 +283,7 @@ class Divide(Node):
     def __repr__(self):
         return "ast.DivOp(%r, %r)" % ((self.lhs), (self.rhs))
 
-class Mod(Node):
+class Mod(BinaryExpression):
     """ Mod; %. """
 
     def accept(self, astvisitor):
@@ -318,7 +318,7 @@ class UnaryNot(UnaryExpression):
     def __repr__(self):
         return "ast.UnaryNot(%r)" % (self.expression)
 
-class UnaryNegate(unaryExpression):
+class UnaryNegate(UnaryExpression):
     """ Unary negate;  - [x] """
 
     def accept(self, astvisitor):
@@ -593,7 +593,7 @@ def _create_visitor():
     import sys
     asts = inspect.getmembers(sys.modules[__name__], lambda obj: inspect.isclass(obj) and issubclass(obj, Node))
     for cls in asts:
-        setattr(ASTVisitor, 'visit_' + cls.lower(), classmethod(_visit))
+        setattr(ASTVisitor, 'visit_' + cls[0].lower(), classmethod(_visit))
 
 class ASTVisitor(object):
     pass

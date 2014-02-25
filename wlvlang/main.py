@@ -1,7 +1,7 @@
 import os
 from wlvlang.compiler import compiler
 from wlvlang.interpreter.interpreter import Interpreter
-from wlvlang.interpreter.objectspace import ObjectSpace
+from wlvlang.interpreter.space import ObjectSpace
 
 def main(args):
 

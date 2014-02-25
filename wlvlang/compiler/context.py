@@ -1,5 +1,4 @@
-from wlvlang.vmobjects.method import Method
-
+from wlvlang.interpreter.objectspace.method import Method
 from wlvlang.interpreter.bytecode import Bytecode
 
 class FunctionCompilerContext(object):
@@ -191,7 +190,7 @@ class FunctionCompilerContext(object):
 
     def register_literal(self, constant_value):
         """ Register a constant value within this function context """
-        if constant_value in self._literals:
+        if constant_value in self.literals:
             return self.literals.index(constant_value)
 
         self.literals.append(constant_value)

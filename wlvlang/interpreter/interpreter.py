@@ -1,7 +1,7 @@
 from wlvlang.interpreter.bytecode import Bytecode
 from wlvlang.interpreter.activationrecord import ActivationRecord
 
-from wlvlang.vmobjects.array import Array
+from wlvlang.interpreter.objectspace.array import Array
 
 class Interpreter(object):
 

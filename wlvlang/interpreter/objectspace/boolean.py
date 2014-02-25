@@ -13,10 +13,10 @@ class Boolean(Object):
         return str(self)
 
     def __str__(self):
-        return "true" if self._value else "false"
+        return "true" if self.value else "false"
 
     def __eq__(self, other):
-        return isinstance(other, Boolean) and other._value == self._value
+        return isinstance(other, Boolean) and other.value == self.value
 
     def get_class(self, space):
         return space.booleanClass

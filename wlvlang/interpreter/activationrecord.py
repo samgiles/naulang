@@ -1,4 +1,4 @@
-from wlvlang.vmobjects.object import Object
+from wlvlang.interpreter.objectspace.object import Object
 
 class ActivationRecord(Object):
     """

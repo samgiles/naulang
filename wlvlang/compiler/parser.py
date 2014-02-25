@@ -100,20 +100,20 @@ def statement_function(p):
 @pg.production("argument_list : arg_opt expression comma_elision")
 def argument_list(p):
     if p[0] is None:
-        return ast.FunctionArgList([p[1]])
+        return ast.ArgumentList([p[1]])
 
-    return ast.FunctionArgList(p[0].get_arguments() + [p[1]])
+    return ast.ArgumentList(p[0].get_arguments() + [p[1]])
 
 @pg.production("argument_list : none")
 def arg_list_none(p):
-    return ast.FunctionArgList([])
+    return ast.ArgumentList([])
 
 @pg.production("arg_opt : arg_opt expression COMMA")
 def arg_opt(p):
     if p[0] is None:
-        return ast.FunctionArgList([p[1]])
+        return ast.ArgumentList([p[1]])
 
-    return ast.FunctionArgList(p[0].get_arguments() + [p[1]])
+    return ast.ArgumentList(p[0].get_arguments() + [p[1]])
 
 @pg.production("arg_opt : none")
 def arg_opt_none(p):
@@ -196,11 +196,11 @@ def expression_gteq(p):
 
 @pg.production("expression : expression PLUS expression")
 def expression_plus(p):
-    return ast.AddOp(p[0], p[2])
+    return ast.Add(p[0], p[2])
 
 @pg.production("expression : expression MINUS expression")
 def expression_minus(p):
-    return ast.SubtractOp(p[0], p[2])
+    return ast.Subtract(p[0], p[2])
 
 @pg.production("expression : MINUS expression", precedence="UMINUS")
 def expression_negate(p):
@@ -208,15 +208,15 @@ def expression_negate(p):
 
 @pg.production("expression : expression MUL expression")
 def expression_multiply(p):
-    return ast.MulOp(p[0], p[2])
+    return ast.Multiply(p[0], p[2])
 
 @pg.production("expression : expression DIV expression")
 def expression_divide(p):
-    return ast.DivOp(p[0], p[2])
+    return ast.Divide(p[0], p[2])
 
 @pg.production("expression : expression MOD expression")
 def expression_mod(p):
-    return ast.ModOp(p[0], p[2])
+    return ast.Mod(p[0], p[2])
 
 @pg.production("expression : LPAREN expression RPAREN")
 def expression_parens(p):

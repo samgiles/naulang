@@ -4,9 +4,9 @@ from wlvlang.compiler.error import CompilerException
 
 from wlvlang.interpreter.bytecode import Bytecode
 
-from wlvlang.vmobjects.primitives.primitives import primitive_functions
+from wlvlang.interpreter.objectspace.primitives.builtin_definitions import builtin_functions
 
-_primitive_functions = primitive_functions()
+_builtin_functions = builtin_functions()
 
 class SyntaxDirectedTranslator(ast.ASTVisitor):
 
@@ -14,17 +14,17 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         self.context = compiler_context
 
     def visit_booleanconstant(self, node):
-        boolean = self.context.space().new_boolean(node.get_boolean_value())
+        boolean = self.context.space.new_boolean(node.get_boolean_value())
         self.context.emit(Bytecode.LOAD_CONST, self.context.register_literal(boolean))
         return True
 
     def visit_integerconstant(self, node):
-        integer = self.context.space().new_integer(node.get_integer_value())
+        integer = self.context.space.new_integer(node.get_integer_constant())
         self.context.emit(Bytecode.LOAD_CONST, self.context.register_literal(integer))
         return True
 
     def visit_stringconstant(self, node):
-        string = self.context.space().new_string(node.get_string_value())
+        string = self.context.space.new_string(node.get_string_value())
         self.context.emit(Bytecode.LOAD_CONST, self.context.register_literal(string))
         return True
 
@@ -146,7 +146,7 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
     def visit_whilestatement(self, node):
 
         # Set up the labels for this while block and push them onto the loop control stack
-        label_start = self._context.add_label(
+        label_start = self.context.add_label(
                 initial_value=self.context.get_top_position() + 1
             )
 
@@ -188,10 +188,10 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         raise NotImplementedError()
 
     def visit_functionexpression(self, node):
-        new_context = FunctionCompilerContext(self.context.space(), outer=self.context)
+        new_context = FunctionCompilerContext(self.context.space, outer=self.context)
         self.context.add_inner_context(new_context)
 
-        parameters = node.get_parameters()
+        parameters = node.get_parameterlist().get_parameters()
         parameter_count = len(parameters)
 
         for param in parameters:
@@ -206,11 +206,11 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         return False
 
     def visit_functioncall(self, node):
-        for arg in node.get_arguments():
+        for arg in node.get_arguments().get_arguments():
             arg.accept(self)
 
-        if node.identifier in _primitive_functions:
-            function = _primitive_functions[node.identifier]
+        if node.identifier in _builtin_functions:
+            function = _builtin_functions[node.identifier]
             self.context.emit(Bytecode.INVOKE_GLOBAL, function[1])
         else:
             local = self.context.register_local(node.identifier)
@@ -225,11 +225,11 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
 
     def visit_identifierexpression(self, node):
 
-        if self._context.has_local(node._identifier):
+        if self.context.has_local(node.identifier):
             local = self.context.register_local(node.identifier)
             self.context.emit(Bytecode.LOAD, local)
         else:
-            slot, level = self._context.register_dynamic(node._identifier)
+            slot, level = self.context.register_dynamic(node.identifier)
             if slot == FunctionCompilerContext.REGISTER_DYNAMIC_FAILED:
                 raise CompilerException("Variable '%s' has not been defined in this scope. You should use `let %s = ...` to initialise a variable" % (node.identifier, node.identifier))
             self.context.emit(Bytecode.LOAD_DYNAMIC, slot)
