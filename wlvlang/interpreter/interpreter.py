@@ -12,7 +12,7 @@ class Interpreter(object):
 
         # Lookup left hand value (pop top, peek, push)
         top = arec.pop()
-        invokable = arec.peek().get_class(self.universe).lookup_invokable(signature)
+        invokable = arec.peek().get_class(self.space).lookup_invokable(signature)
         arec.push(top)
         invokable(None, arec, self)
 
@@ -121,7 +121,7 @@ class Interpreter(object):
             elif bytecode == Bytecode.INVOKE_GLOBAL:
                 pc += 1
                 global_index = method.get_bytecode(pc)
-                new_method = self.universe.get_primitive_function(global_index)
+                new_method = self.space.get_builtin_function(global_index)
                 new_method.invoke(activation_record, self)
                 pc += 1
             elif bytecode == Bytecode.RETURN:

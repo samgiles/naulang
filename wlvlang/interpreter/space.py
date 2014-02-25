@@ -26,7 +26,7 @@ class ObjectSpace(object):
         initialise_primitives(self)
 
     def get_builtin_function(self, index):
-        return self.builitin_function[index]
+        return self.builtin_functions[index]
 
     def add_builtin_function(self, index, function):
         self.builtin_functions[index] = function

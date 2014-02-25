@@ -15,7 +15,7 @@ class Integer(Object):
         return space.integerClass
 
     def __str__(self):
-        return self.value
+        return str(self.value)
 
     def __repr__(self):
         return "int(%s)" % (str(self))
