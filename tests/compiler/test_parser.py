@@ -1,6 +1,6 @@
 import pytest
 
-from wlvlang.compiler.sourceparser import parse
+from wlvlang.compiler.compiler import parse
 from wlvlang.compiler import ast
 
 def test_parse_constant_integer():
@@ -15,19 +15,19 @@ def test_parse_constant_float():
     assert parse("1.0e2") == ast.Block([ast.FloatConstant(100.0)])
 
 def test_addition_expression():
-    assert parse("100+100") == ast.Block([ast.AddOp(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+    assert parse("100+100") == ast.Block([ast.Add(ast.IntegerConstant(100), ast.IntegerConstant(100))])
 
 def test_subtraction_expression():
-    assert parse("100-100") == ast.Block([ast.SubtractOp(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+    assert parse("100-100") == ast.Block([ast.Subtract(ast.IntegerConstant(100), ast.IntegerConstant(100))])
 
 def test_division_expression():
-    assert parse("100/100") == ast.Block([ast.DivOp(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+    assert parse("100/100") == ast.Block([ast.Divide(ast.IntegerConstant(100), ast.IntegerConstant(100))])
 
 def test_modulo_expression():
-    assert parse("100%100") == ast.Block([ast.ModOp(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+    assert parse("100%100") == ast.Block([ast.Mod(ast.IntegerConstant(100), ast.IntegerConstant(100))])
 
 def test_multiply_expression():
-    assert parse("100*100") == ast.Block([ast.MulOp(ast.IntegerConstant(100), ast.IntegerConstant(100))])
+    assert parse("100*100") == ast.Block([ast.Multiply(ast.IntegerConstant(100), ast.IntegerConstant(100))])
 
 def test_equality_expression():
     assert parse("100 == 100") == ast.Block([ast.Equals(ast.IntegerConstant(100), ast.IntegerConstant(100))])
@@ -57,10 +57,10 @@ def test_less_than_eq_expression():
 
 def test_compound_expression():
     assert parse("10 * 6 - 5 + 2 + 1000 / 2") == ast.Block([
-    ast.AddOp(
-        ast.AddOp(
-            ast.SubtractOp(
-                ast.MulOp(
+    ast.Add(
+        ast.Add(
+            ast.Subtract(
+                ast.Multiply(
                     ast.IntegerConstant(10),
                     ast.IntegerConstant(6)
                 ),
@@ -68,7 +68,7 @@ def test_compound_expression():
             ),
             ast.IntegerConstant(2)
         ),
-        ast.DivOp(
+        ast.Divide(
             ast.IntegerConstant(1000),
             ast.IntegerConstant(2)
         )
@@ -108,16 +108,16 @@ def test_function_expression_no_args():
     }""") == ast.Block([ast.FunctionExpression(ast.ParameterList([]), ast.Block([ast.IntegerConstant(100)]))])
 
 def test_function_call_statement():
-    assert parse("a()") == ast.Block([ast.FunctionCall('a', ast.FunctionArgList([]))])
+    assert parse("a()") == ast.Block([ast.FunctionCall('a', ast.ArgumentList([]))])
 
 def test_function_call_statement_arguments():
-    assert parse("""b(10, a, 0) """) == ast.Block([ast.FunctionCall('b', ast.FunctionArgList([ast.IntegerConstant(10), ast.IdentifierExpression('a'), ast.IntegerConstant(0)]))])
+    assert parse("""b(10, a, 0) """) == ast.Block([ast.FunctionCall('b', ast.ArgumentList([ast.IntegerConstant(10), ast.IdentifierExpression('a'), ast.IntegerConstant(0)]))])
 
 def test_return_statement():
     assert parse("""return 10""") == ast.Block([ast.ReturnStatement(ast.IntegerConstant(10))])
 
 def test_expression_assignment():
-    assert parse("""a = 10 * 10""") == ast.Block([ast.Assignment('a', ast.MulOp(ast.IntegerConstant(10), ast.IntegerConstant(10)))])
+    assert parse("""a = 10 * 10""") == ast.Block([ast.Assignment('a', ast.Multiply(ast.IntegerConstant(10), ast.IntegerConstant(10)))])
 
 def test_function_statement_noarg():
     assert parse("""fn a() {
@@ -162,8 +162,8 @@ def test_function_call_and_definition():
             paramlist=ast.ParameterList(['x']),
             block=ast.Block([
                     ast.PrintStatement(
-                        ast.AddOp(
-                            ast.MulOp(
+                        ast.Add(
+                            ast.Multiply(
                                 ast.IdentifierExpression('x'),
                                 ast.IntegerConstant(2)
                             ),
@@ -174,27 +174,27 @@ def test_function_call_and_definition():
             )
         ),
         ast.FunctionCall('a',
-            ast.FunctionArgList([
+            ast.ArgumentList([
                 ast.IntegerConstant(2)
             ])
         ),
         ast.FunctionCall('a',
-            ast.FunctionArgList([
+            ast.ArgumentList([
                 ast.IntegerConstant(4)
             ])
         ),
         ast.FunctionCall('a',
-            ast.FunctionArgList([
+            ast.ArgumentList([
                 ast.IntegerConstant(8)
             ])
         ),
         ast.FunctionCall('a',
-            ast.FunctionArgList([
+            ast.ArgumentList([
                 ast.IntegerConstant(16)
             ])
         ),
         ast.FunctionCall('a',
-            ast.FunctionArgList([
+            ast.ArgumentList([
                 ast.IntegerConstant(32)
             ])
         )

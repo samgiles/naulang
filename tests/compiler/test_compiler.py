@@ -1,13 +1,12 @@
 from wlvlang.compiler import ast
-from wlvlang.compiler.context import MethodCompilerContext
+from wlvlang.compiler.context import FunctionCompilerContext
 from wlvlang.compiler.compiler import SyntaxDirectedTranslator
 
-from wlvlang.vm.vm_universe import VM_Universe
+from wlvlang.interpreter.space import ObjectSpace
 from wlvlang.interpreter.bytecode import Bytecode
 
-from wlvlang.vmobjects.boolean import Boolean
-from wlvlang.vmobjects.integer import Integer
-
+from wlvlang.interpreter.objectspace.integer import Integer
+from wlvlang.interpreter.objectspace.boolean import Boolean
 
 class DummyCompilationUnit(ast.Node):
     def __init__(self, code_to_emit):
@@ -17,14 +16,14 @@ class DummyCompilationUnit(ast.Node):
         context.emit(self.code_to_emit)
 
     def accept(self, visitor):
-        visitor.visit_dummy(self)
+        visitor.visit_dummycompilationunit(self)
 
     def __repr__(self):
         return "DummyCompilationUnit(%r)" % self.code_to_emit
 
 def create_interpreter_context():
-    universe = VM_Universe()
-    ctx = MethodCompilerContext(universe)
+    space = ObjectSpace()
+    ctx = FunctionCompilerContext(space)
     return ctx
 
 def create_syntax_directed_translator(ctx):
@@ -32,7 +31,8 @@ def create_syntax_directed_translator(ctx):
         self._context.emit(node.code_to_emit)
         return True
 
-    SyntaxDirectedTranslator.visit_dummy = dummy_visit
+    # Patch the visit dummy method on to the translator
+    SyntaxDirectedTranslator.visit_dummycompilationunit = dummy_visit
     return SyntaxDirectedTranslator(ctx)
 
 def test_ast_integer_compile():
@@ -42,7 +42,7 @@ def test_ast_integer_compile():
     node.accept(t)
 
     # Expect the constant to be stored in the literals area at position 0 (as this was a new context)
-    assert ctx._literals[0] == Integer(100)
+    assert ctx.literals[0] == Integer(100)
 
     # Expect the byte code to be [Bytecode.LOAD_CONST, 0]
     assert ctx.get_bytecode() == [Bytecode.LOAD_CONST, 0]
@@ -66,7 +66,7 @@ def test_ast_assignment_compiler():
     node.accept(t)
 
     # Expect the constant to be stored in the literals area at position 0
-    assert ctx._literals[0] == Boolean(True)
+    assert ctx.literals[0] == Boolean(True)
 
     # Expect the bytecode to be [Bytecode.LOAD_CONST, 0, Bytecode.STORE, 0]
     assert ctx.get_bytecode() == [Bytecode.LOAD_CONST, 0, Bytecode.STORE, 0]
@@ -139,7 +139,7 @@ def test_ast_greaterthan_compiler():
 def test_ast_addop_compiler():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)
-    node = ast.AddOp(DummyCompilationUnit(91), DummyCompilationUnit(90))
+    node = ast.Add(DummyCompilationUnit(91), DummyCompilationUnit(90))
     node.accept(t)
 
     assert ctx.get_bytecode() == [91, 90, Bytecode.ADD]
