@@ -71,16 +71,16 @@ def test_bc_MUL():
             Store a result of a multiply operation on top of the stack using the values on the stack as arguments (uses the primitive operations)
 
         As these operations depend on the types they are being performed
-        on the vmobjects handle the result of these operations.
+        on the objectspace handles the result of these operations.
         testing one for now is sufficient that the _send operation is
         sent correctly
     """
 
-    uv, interpreter = create_universe_and_interpreter()
+    space, interpreter = create_space_and_interpreter()
     method = create_test_method([], [], [Bytecode.MUL, Bytecode.HALT])
     arec = create_arec(method, 2)
-    arec.push(uv.new_integer(30))
-    arec.push(uv.new_integer(100))
+    arec.push(space.new_integer(100))
+    arec.push(space.new_integer(30))
     interpreter.interpret(method, arec)
 
     assert arec.peek() == Integer(3000)
