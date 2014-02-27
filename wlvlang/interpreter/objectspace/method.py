@@ -36,7 +36,7 @@ class Method(Object):
         jit.promote(interpreter)
 
         # TODO Calculate stack depth
-        new_arec = ActivationRecord(self.locals, self.literals, 200, activation_record, access_link=self.get_enclosing_arec())
+        new_arec = ActivationRecord(self.locals, self.literals, 20, activation_record, access_link=self.get_enclosing_arec())
 
         # Push arguments into locals of new arec
         for i in range(0, self.argument_count):
