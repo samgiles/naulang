@@ -1,5 +1,5 @@
 from wlvlang.interpreter.objectspace.method import Method
-from wlvlang.interpreter.bytecode import Bytecode
+from wlvlang.interpreter.bytecode import Bytecode, get_stack_effect, stack_effect_depends_on_args, get_bytecode_length
 
 class FunctionCompilerContext(object):
     """ Context used for compiling a function """
@@ -129,7 +129,31 @@ class FunctionCompilerContext(object):
         for i in range(0, len(locals)):
             locals[i] = self.locals[i]
 
-        return Method(literals, locals, bytecode, argument_count=self.parameter_count)
+        stack_depth = self._calculate_stack_depth(bytecode)
+
+        return Method(literals, locals, bytecode, stack_depth, argument_count=self.parameter_count)
+
+    def _calculate_stack_depth(self, finalized_bytecode):
+        max_depth = 0
+        depth = 0
+        i = 0
+        while i < len(finalized_bytecode):
+            bc = finalized_bytecode[i]
+
+            if stack_effect_depends_on_args(bc):
+                method = self.literals[finalized_bytecode[i + 1]]
+                depth += get_stack_effect(bc, method.argument_count)
+            else:
+                depth += get_stack_effect(bc)
+
+
+            if depth > max_depth:
+                max_depth = depth
+
+            i += get_bytecode_length(bc)
+
+        return max_depth
+
 
     def get_bytecode(self):
         """

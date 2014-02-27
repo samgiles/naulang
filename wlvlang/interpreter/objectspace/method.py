@@ -6,14 +6,20 @@ from rpython.rlib import jit
 class Method(Object):
     """ Defines a Method in wlvlang. """
 
-    _immutable_fields_ = ["locals[*]", "literals[*]", "bytecodes[*]"]
+    _immutable_fields_ = [
+            "locals[*]",
+            "literals[*]",
+            "bytecodes[*]",
+            "stack_depth",
+        ]
 
-    def __init__(self, literals, locals, bytecodes, argument_count=0):
+    def __init__(self, literals, locals, bytecodes, stack_depth, argument_count=0):
         self.literals = literals
         self.locals = locals
         self.bytecodes = bytecodes
         self.argument_count = argument_count
         self.enclosing_arec = None
+        self.stack_depth = stack_depth
 
     def set_enclosing_arec(self, arec):
         self.enclosing_arec = arec
@@ -29,14 +35,13 @@ class Method(Object):
         return self.literals
 
     def copy(self):
-        return Method(self.literals, self.locals, self.bytecodes, argument_count=self.argument_count)
+        return Method(self.literals, self.locals, self.bytecodes, self.stack_depth, argument_count=self.argument_count)
 
     def invoke(self, activation_record, interpreter):
         jit.promote(self)
         jit.promote(interpreter)
 
-        # TODO Calculate stack depth
-        new_arec = ActivationRecord(self.locals, self.literals, 20, activation_record, access_link=self.get_enclosing_arec())
+        new_arec = ActivationRecord(self.locals, self.literals, self.stack_depth, activation_record, access_link=self.get_enclosing_arec())
 
         # Push arguments into locals of new arec
         for i in range(0, self.argument_count):
