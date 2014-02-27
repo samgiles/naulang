@@ -223,23 +223,23 @@ def test_ast_functionstatement():
     node.accept(t)
 
     assert ctx.get_bytecode() == [Bytecode.LOAD_CONST, 0]
-    assert len(ctx._inner_contexts) == 1
-    assert ctx._inner_contexts[0].get_bytecode() == [90, Bytecode.HALT]
-    assert ctx._inner_contexts[0].has_local('a') == True
-    assert ctx._inner_contexts[0].get_parameter_count() == 1
+    assert len(ctx.inner_contexts) == 1
+    assert ctx.inner_contexts[0].get_bytecode() == [90, Bytecode.HALT]
+    assert ctx.inner_contexts[0].has_local('a') == True
+    assert ctx.inner_contexts[0].get_parameter_count() == 1
 
 def test_ast_functionexpression():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)
 
-    node = ast.FunctionExpression(ast.ParameterList(['a']), ast.Block([Bytecode.ReturnStatement(ast.IdentifierExpression('a'))]))
+    node = ast.FunctionExpression(ast.ParameterList(['a']), ast.Block([ast.ReturnStatement(ast.IdentifierExpression('a'))]))
     node.accept(t)
 
     assert ctx.get_bytecode() == [Bytecode.LOAD_CONST, 0]
-    assert len(ctx._inner_contexts) == 1
-    assert ctx._inner_contexts[0].get_bytecode() == [Bytecode.LOAD, 0, Bytecode.RETURN, Bytecode.HALT]
-    assert ctx._inner_contexts[0].has_local('a') == True
-    assert ctx._inner_contexts[0].get_parameter_count() == 1
+    assert len(ctx.inner_contexts) == 1
+    assert ctx.inner_contexts[0].get_bytecode() == [Bytecode.LOAD, 0, Bytecode.RETURN, Bytecode.HALT]
+    assert ctx.inner_contexts[0].has_local('a') == True
+    assert ctx.inner_contexts[0].get_parameter_count() == 1
 
 def test_ast_functioncall():
     ctx = create_interpreter_context()
