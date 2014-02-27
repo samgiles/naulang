@@ -21,7 +21,6 @@ def create_space_and_interpreter():
     return space, Interpreter(space)
 
 def test_bc_HALT():
-    import pdb; pdb.set_trace()
     method = create_test_method([], [], [Bytecode.HALT])
     arec = create_arec(method, 0)
     _, interpreter = create_space_and_interpreter()
@@ -35,8 +34,8 @@ def test_bc_LOAD_CONST():
             Load a constant from the literals area of the ActivationRecord
             on to the top of the stack
     """
-    uv, interpreter = create_universe_and_interpreter()
-    method = create_test_method([uv.new_integer(10)], [None], [Bytecode.LOAD_CONST, 0, Bytecode.HALT])
+    space, interpreter = create_space_and_interpreter()
+    method = create_test_method([space.new_integer(10)], [None], [Bytecode.LOAD_CONST, 0, Bytecode.HALT])
     arec = create_arec(method, 1)
 
     interpreter.interpret(method, arec)
