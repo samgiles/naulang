@@ -28,7 +28,7 @@ def create_interpreter_context():
 
 def create_syntax_directed_translator(ctx):
     def dummy_visit(self, node):
-        self._context.emit(node.code_to_emit)
+        self.context.emit(node.code_to_emit)
         return True
 
     # Patch the visit dummy method on to the translator
