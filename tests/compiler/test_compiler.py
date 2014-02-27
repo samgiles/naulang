@@ -54,7 +54,7 @@ def test_ast_boolean_constant_compiler():
     node.accept(t)
 
     # Expect the constant to be stored in the literals area at position 0 (as this was a new context)
-    assert ctx._literals[0] == Boolean(True)
+    assert ctx.literals[0] == Boolean(True)
 
     # Expect the byte code to be [Bytecode.LOAD_CONST, 0]
     assert ctx.get_bytecode() == [Bytecode.LOAD_CONST, 0]
@@ -338,7 +338,7 @@ def test_ast_scoped_assignment():
     """
 
     node.accept(t)
-    assert ctx._literals[0] == Integer(10)
+    assert ctx.literals[0] == Integer(10)
 
     # Outer context loads the function expression constant from literals area 0
     assert ctx.get_bytecode() == [
@@ -351,7 +351,7 @@ def test_ast_scoped_assignment():
     # Of the first inner method context
     inner_contexts = ctx.get_inner_contexts()
     assert len(inner_contexts) == 1
-    assert inner_contexts[0]._literals[0] == Integer(12)
+    assert inner_contexts[0].literals[0] == Integer(12)
 
     assert inner_contexts[0].get_bytecode() == [
             Bytecode.LOAD_CONST, 0,            # Push 12 onto the stack
