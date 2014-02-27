@@ -147,7 +147,7 @@ def test_ast_addop_compiler():
 def test_ast_subtractop_compiler():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)
-    node = ast.SubtractOp(DummyCompilationUnit(91), DummyCompilationUnit(90))
+    node = ast.Subtract(DummyCompilationUnit(91), DummyCompilationUnit(90))
     node.accept(t)
 
     assert ctx.get_bytecode() == [90, 91, Bytecode.SUB]
@@ -155,7 +155,7 @@ def test_ast_subtractop_compiler():
 def test_ast_mulop_compiler():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)
-    node = ast.MulOp(DummyCompilationUnit(91), DummyCompilationUnit(90))
+    node = ast.Multiply(DummyCompilationUnit(91), DummyCompilationUnit(90))
     node.accept(t)
 
     assert ctx.get_bytecode() == [90, 91, Bytecode.MUL]
@@ -163,7 +163,7 @@ def test_ast_mulop_compiler():
 def test_ast_divop_compiler():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)
-    node = ast.DivOp(DummyCompilationUnit(91), DummyCompilationUnit(90))
+    node = ast.Divide(DummyCompilationUnit(91), DummyCompilationUnit(90))
     node.accept(t)
 
     assert ctx.get_bytecode() == [90, 91, Bytecode.DIV]
