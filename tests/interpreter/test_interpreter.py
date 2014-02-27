@@ -170,11 +170,11 @@ def test_bc_GREATER_THAN_EQ():
     assert arec.peek() == space.new_boolean(True)
 
 def test_bc_INVOKE_GLOBAL():
-    uv, interpreter = create_universe_and_interpreter()
+    space, interpreter = create_space_and_interpreter()
     method = create_test_method([], [], [Bytecode.INVOKE_GLOBAL, 0, Bytecode.HALT])
 
     arec = create_arec(method, 3)
-    arec.push(uv.new_integer(10))
+    arec.push(space.new_integer(10))
 
     interpreter.interpret(method, arec)
 
