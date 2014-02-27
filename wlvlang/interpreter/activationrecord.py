@@ -5,7 +5,7 @@ from rpython.rlib.rarithmetic import r_uint
 
 class ActivationRecord(Object):
 
-    _virtualizable_ = ["_locals[*]", "_literals[*]", "_stack_pointer", "_stack"]
+    _virtualizable_ = ["_locals[*]", "_literals[*]", "_stack_pointer", "_stack[*]"]
     _immutable_fields_ = ["_literals", "_locals", "_stack"]
 
     """
@@ -17,7 +17,7 @@ class ActivationRecord(Object):
         self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
 
         self._stack = [None] * (temp_size)
-        self._stack_pointer = 0
+        self._stack_pointer = r_uint(0)
 
         self.previous_record = previous_record
         self.access_link = access_link
@@ -28,13 +28,13 @@ class ActivationRecord(Object):
 
     def _set_up_local_methods(self):
         from wlvlang.interpreter.objectspace.method import Method
-        for i in range(0, len(self._locals)):
-            if isinstance(self._locals[i], Method):
-                self._locals[i] = self._locals[i].copy()
+        for i in range(0, len(self._literals)):
+            if isinstance(self._literals[i], Method):
+                self._literals[i] = self._literals[i].copy()
 
                 # Since literal methods exist in methods that have been
                 # invoked we set the activation record
-                self._locals[i].set_enclosing_arec(self)
+                self._literals[i].set_enclosing_arec(self)
 
     def get_previous_record(self):
         """ Get the previous activation record. """
@@ -43,15 +43,6 @@ class ActivationRecord(Object):
     def get_access_link(self):
         """ Get the access link for this object (if it has one).  Returns None if it does not """
         return self.access_link;
-
-    def get_element_at(self, index):
-        """ Get the element at a specific index in the arec stack """
-        assert index < len(self._stack) and index >= 0
-        return  self._stack[index]
-
-    def set_element_at(self, index, value):
-        assert index < len(self._stack) and index >= 0
-        self._stack[index] = value
 
     def is_root_record(self):
         return self.get_previous_record() == None

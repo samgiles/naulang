@@ -17,6 +17,8 @@ jitdriver = jit.JitDriver(
 
 class Interpreter(object):
 
+    _immutable_fields = ["space"]
+
     def __init__(self, space):
         self.space = space
 
