@@ -38,12 +38,6 @@ test_compiler:
 test_interpreter:
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/interpreter/test_*.py
 
-test_vm:
-	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vm/test_*.py
-
-test_vmobjects:
-	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/vmobjects/test_*.py
-
 test_full_run:
 	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. python wlvlang/targetstandalone.py tests/sources/test_simple_function.wl
 
