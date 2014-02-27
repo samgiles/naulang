@@ -6,7 +6,7 @@ from wlvlang.interpreter.objectspace.array import Array
 from rpython.rlib import jit
 
 def get_printable_location(pc, interp, method):
-    return bytecode_names[method.get_bytecode(pc)]
+    return "%d: %s" % (pc, bytecode_names[method.get_bytecode(pc)])
 
 jitdriver = jit.JitDriver(
         greens=['pc', 'interp', 'method'],
