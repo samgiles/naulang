@@ -105,19 +105,19 @@ def test_bc_ARRAY_LOAD():
     """ Expected:
     """
 
-    uv, interpreter = create_universe_and_interpreter()
+    space, interpreter = create_space_and_interpreter()
     method = create_test_method([], [], [Bytecode.ARRAY_LOAD, Bytecode.HALT])
     arec = create_arec(method, 4)
 
-    array = uv.new_array(10)
-    array.set_value_at(0, uv.new_integer(900))
+    array = space.new_array(10)
+    array.set_value_at(0, space.new_integer(900))
     arec.push(array)
-    arec.push(uv.new_integer(0))
+    arec.push(space.new_integer(0))
     interpreter.interpret(method, arec)
 
 def test_bc_LOAD_DYNAMIC():
-    uv, interpreter = create_universe_and_interpreter()
-    outer_integer = Integer(100)
+    space, interpreter = create_space_and_interpreter()
+    outer_integer = space.new_integer(100)
     method = create_test_method([
         outer_integer,
         create_test_method([], [], [
