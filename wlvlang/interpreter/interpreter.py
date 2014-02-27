@@ -32,6 +32,7 @@ class Interpreter(object):
         """ Interpreter hooks, (used by the debugger) """
         pass
 
+    @jit.unroll_safe
     def interpret(self, method, activation_record):
         """ Interpreter Main Loop """
         pc = 0
