@@ -4,7 +4,7 @@ from rpython.rlib import jit
 
 class ActivationRecord(Object):
 
-    _virtualizable_ = ["_locals[*]", "_literals[*]"]
+    _virtualizable_ = ["_locals[*]", "_literals[*]", "_stack_pointer"]
     _immutable_fields_ = ["_literals", "_locals"]
 
     """
@@ -62,6 +62,7 @@ class ActivationRecord(Object):
 
     def pop(self):
         """ Pop an object off of the stack """
+        assert self._stack_pointer > 0
         self._stack_pointer = self._stack_pointer - 1
         return self._stack[self._stack_pointer]
 

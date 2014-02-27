@@ -1,14 +1,18 @@
-from wlvlang.interpreter.bytecode import Bytecode
+from wlvlang.interpreter.bytecode import Bytecode, bytecode_names
 from wlvlang.interpreter.activationrecord import ActivationRecord
 
 from wlvlang.interpreter.objectspace.array import Array
 
 from rpython.rlib import jit
 
+def get_printable_location(pc, interp, method):
+    return bytecode_names[method.get_bytecode(pc)]
+
 jitdriver = jit.JitDriver(
         greens=['pc', 'interp', 'method'],
         reds=['running', 'frame'],
-        virtualizables=['frame']
+        virtualizables=['frame'],
+        get_printable_location=get_printable_location
     )
 
 class Interpreter(object):
