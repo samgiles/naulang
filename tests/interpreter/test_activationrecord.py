@@ -57,13 +57,13 @@ def test_pop_decreases_stackpointer():
     assert arec._stack_pointer == current_stack_pointer - 1
 
 def test_push_pop_from_stack():
-    arec = ActivationRecord([], 0, 0, 10, None)
+    arec = ActivationRecord([], [], 1, None)
     # Push a value on the stack in order to pop it off
     arec.push(10)
     assert 10 == arec.pop()
 
 def test_peek_at_stack():
-    arec = ActivationRecord([], 0, 0, 10, None)
+    arec = ActivationRecord([], [], 1, None)
     # Push a value on the stack in order to pop it off
     arec.push(10)
     assert 10 == arec.peek()
