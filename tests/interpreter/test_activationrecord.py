@@ -42,7 +42,7 @@ def test_set_local_at():
     assert arec.get_local_at(1) == 200
 
 def test_push_advances_stackpointer():
-    arec = ActivationRecord([], 0, 0, 10, None)
+    arec = ActivationRecord([], [], 1, None)
 
     current_stack_pointer = arec._stack_pointer
     arec.push(10)
