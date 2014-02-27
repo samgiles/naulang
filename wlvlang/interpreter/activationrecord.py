@@ -1,6 +1,7 @@
 from wlvlang.interpreter.objectspace.object import Object
 
 from rpython.rlib import jit
+from rpython.rlib.rarithmetic import r_uint
 
 class ActivationRecord(Object):
 
@@ -57,8 +58,9 @@ class ActivationRecord(Object):
 
     def push(self, value):
         """ Push an object onto the stack """
-        self._stack[self._stack_pointer] = value
-        self._stack_pointer = self._stack_pointer + 1
+        stack_pointer = jit.promote(self._stack_pointer)
+        self._stack[stack_pointer] = value
+        self._stack_pointer = stack_pointer + 1
 
     def pop(self):
         """ Pop an object off of the stack """
