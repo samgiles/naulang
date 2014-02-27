@@ -33,6 +33,9 @@ def _parse_source(source):
 
     return t
 
+def parse(source):
+    return _parse_source(source)
+
 
 def parse_file(filename, object_space, arguments=[]):
     """ Given a source file, return a vmobjects.Method object """
