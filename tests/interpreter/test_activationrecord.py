@@ -14,11 +14,12 @@ def test_get_literals():
     # not RPython, it's fine to use normal primitives for this test case
     # The first 4 slots are spaces for hypothetical 'locals'
     # The final 3 are hypothetical literals
-    locals = [None, None, None, None, 10, 100, 1000]
+    locals = [None] * 4
+    literals= [10, 100, 1000]
     locals_size = 4
     literals_size = 3
 
-    arec = ActivationRecord(locals, locals_size, literals_size, 0, None)
+    arec = ActivationRecord(locals, literals, 0, None)
 
     assert arec.get_literal_at(0) == 10
     assert arec.get_literal_at(1) == 100
