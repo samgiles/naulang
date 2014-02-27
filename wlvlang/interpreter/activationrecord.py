@@ -4,8 +4,8 @@ from rpython.rlib import jit
 
 class ActivationRecord(Object):
 
-    _virtualizable_ = ["_locals[*]", "_literals[*]", "_stack_pointer"]
-    _immutable_fields_ = ["_literals", "_locals"]
+    _virtualizable_ = ["_locals[*]", "_literals[*]", "_stack_pointer", "_stack"]
+    _immutable_fields_ = ["_literals", "_locals", "_stack"]
 
     """
         Defines an Activation Record.
@@ -68,6 +68,7 @@ class ActivationRecord(Object):
 
     def peek(self):
         """ Peek at the object on top of the stack. """
+        assert self._stack_pointer > 0
         return self._stack[self._stack_pointer - 1]
 
     def get_literal_at(self, index):
