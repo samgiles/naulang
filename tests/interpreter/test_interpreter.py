@@ -2,28 +2,29 @@ import pytest
 
 from wlvlang.interpreter.interpreter import Interpreter
 from wlvlang.interpreter.bytecode import Bytecode
-from wlvlang.vm.vm_universe import VM_Universe
-from wlvlang.vmobjects.integer import Integer
-from wlvlang.vmobjects.boolean import Boolean
-from wlvlang.vmobjects.array import Array
+from wlvlang.interpreter.space import ObjectSpace
+from wlvlang.interpreter.objectspace.integer import Integer
+from wlvlang.interpreter.objectspace.boolean import Boolean
+from wlvlang.interpreter.objectspace.array import Array
 
 def create_test_method(literals, locals, bytecode):
     """ create_test_method(literals, locals, bytecode) """
-    from wlvlang.vmobjects.method import Method
-    return Method(None, literals, locals, bytecode)
+    from wlvlang.interpreter.objectspace.method import Method
+    return Method(literals, locals, bytecode, 20)
 
-def create_arec(method, temp_space, parent=None):
+def create_arec(method, temp_space, parent=None, access_link=None):
     from wlvlang.interpreter.activationrecord import ActivationRecord
-    return ActivationRecord(method._locals + method._literals, len(method._locals), len(method._literals), temp_space, parent)
+    return ActivationRecord(method.locals, method.literals, temp_space, parent, access_link)
 
-def create_universe_and_interpreter():
-    vm_universe = VM_Universe()
-    return vm_universe, Interpreter(vm_universe)
+def create_space_and_interpreter():
+    space = ObjectSpace()
+    return space, Interpreter(space)
 
 def test_bc_HALT():
+    import pdb; pdb.set_trace()
     method = create_test_method([], [], [Bytecode.HALT])
     arec = create_arec(method, 0)
-    _, interpreter = create_universe_and_interpreter()
+    _, interpreter = create_space_and_interpreter()
 
     interpreter.interpret(method, arec)
     # TODO: Is this needed? No assertions here, but I guess it's a little useful
