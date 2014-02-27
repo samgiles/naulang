@@ -47,8 +47,8 @@ def test_bc_LOAD():
             Load a local from the locals area of the ActivationRecord
             on to the top of the stack
     """
-    uv, interpreter = create_universe_and_interpreter()
-    method = create_test_method([], [uv.new_integer(10)], [Bytecode.LOAD, 0, Bytecode.HALT])
+    space, interpreter = create_space_and_interpreter()
+    method = create_test_method([], [space.new_integer(10)], [Bytecode.LOAD, 0, Bytecode.HALT])
     arec = create_arec(method, 1)
     interpreter.interpret(method, arec)
     assert arec.pop() == Integer(10)
