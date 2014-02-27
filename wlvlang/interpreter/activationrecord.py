@@ -78,10 +78,12 @@ class ActivationRecord(Object):
         return self._literals[index]
 
     def get_local_at(self, index):
+        index = jit.promote(index)
         assert index < len(self._locals) and index >= 0
         return self._locals[index]
 
     def set_local_at(self, index, value):
+        index = jit.promote(index)
         assert index < len(self._locals) and index >= 0
         self._locals[index] = value
 
