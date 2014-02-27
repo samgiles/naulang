@@ -9,9 +9,8 @@ class Class(Object):
     def __init__(self):
         self.invokabletable = {}
 
-    @jit.elidable
+    @jit.elidable_promote('all')
     def lookup_invokable(self, signature):
-        jit.promote(signature)
         invokable = self.invokabletable.get(signature, None)
 
         if invokable:
