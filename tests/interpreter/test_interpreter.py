@@ -58,10 +58,10 @@ def test_bc_STORE():
             Store the local on top of the stack in it's respective
             position
     """
-    uv, interpreter = create_universe_and_interpreter()
+    space, interpreter = create_space_and_interpreter()
     method = create_test_method([], [None], [Bytecode.STORE, 0, Bytecode.HALT])
     arec = create_arec(method, 1)
-    arec.push(uv.new_integer(100))
+    arec.push(space.new_integer(100))
     interpreter.interpret(method, arec)
 
     assert arec.get_local_at(0) == Integer(100)
