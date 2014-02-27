@@ -89,14 +89,14 @@ def test_bc_ARRAY_STORE():
     """ Expected:
 
     """
-    uv, interpreter = create_universe_and_interpreter()
+    space, interpreter = create_space_and_interpreter()
     method = create_test_method([], [], [Bytecode.ARRAY_STORE, Bytecode.HALT])
     arec = create_arec(method, 4)
 
-    array = uv.new_array(10)
+    array = space.new_array(10)
     arec.push(array)
-    arec.push(uv.new_integer(0))
-    arec.push(uv.new_integer(100))
+    arec.push(space.new_integer(0))
+    arec.push(space.new_integer(100))
     interpreter.interpret(method, arec)
 
     assert array.get_value_at(0) == Integer(100)
