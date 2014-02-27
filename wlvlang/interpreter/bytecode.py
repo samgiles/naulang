@@ -1,54 +1,37 @@
 from rpython.rlib import jit
 
 class Bytecode(object):
-    HALT = 0
-    LOAD_CONST = 1
-    LOAD = 2
-    STORE = 3
-    OR = 4
-    AND = 5
-    EQUAL = 6
-    NOT_EQUAL = 7
-    LESS_THAN = 8
-    LESS_THAN_EQ = 9
-    GREATER_THAN = 10
+    HALT            = 0
+    LOAD_CONST      = 1
+    LOAD            = 2
+    STORE           = 3
+    OR              = 4
+    AND             = 5
+    EQUAL           = 6
+    NOT_EQUAL       = 7
+    LESS_THAN       = 8
+    LESS_THAN_EQ    = 9
+    GREATER_THAN    = 10
     GREATER_THAN_EQ = 11
-    ADD = 12
-    SUB = 13
-    MUL = 14
-    DIV = 15
-    NOT = 16
-    NEG = 17
-    JUMP_IF_FALSE = 18
-    JUMP_BACK = 19
-    PRINT = 20
-    INVOKE = 21
-    RETURN = 22
-
-    """
-    ARRAY_LOAD
-    Stack:
-
-        array, index -> value
-    """
-    ARRAY_LOAD = 23
-
-    """
-    ARRAY_STORE
-    Stack:
-
-        array, index, value ->
-    """
-    ARRAY_STORE = 24
-
-    STORE_DYNAMIC = 25
-
-    LOAD_DYNAMIC = 26
-
-    INVOKE_GLOBAL = 27
-    MOD = 28
-    COPY_LOCAL = 29
-    DUP = 30
+    ADD             = 12
+    SUB             = 13
+    MUL             = 14
+    DIV             = 15
+    NOT             = 16
+    NEG             = 17
+    JUMP_IF_FALSE   = 18
+    JUMP_BACK       = 19
+    PRINT           = 20
+    INVOKE          = 21
+    RETURN          = 22
+    ARRAY_LOAD      = 23
+    ARRAY_STORE     = 24
+    STORE_DYNAMIC   = 25
+    LOAD_DYNAMIC    = 26
+    INVOKE_GLOBAL   = 27
+    MOD             = 28
+    COPY_LOCAL      = 29
+    DUP             = 30
 
 _stack_effect_depends_on_args = -9999
 
@@ -85,6 +68,7 @@ _stack_effects = [
             0, # copy_local
             1, # dup
         ]
+
 
 _bytecode_lengths = [
             1, # halt
@@ -152,3 +136,8 @@ def _bytecode_names(cls):
 
 
 bytecode_names = _bytecode_names(Bytecode)
+
+# These assertions will be enforced at compile time.
+# They exist purely to catch programmer errors
+assert len(_stack_effects) == len(bytecode_names)
+assert len(_bytecode_lengths) == len(bytecode_names)
