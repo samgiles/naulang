@@ -35,11 +35,9 @@ def test_get_locals():
     assert arec.get_local_at(3) == 10000
 
 def test_set_local_at():
-    locals = [10, 100, 1000, 10000, None, None, None]
-    locals_size = 4
-    literals_size = 3
+    locals = [10, 100, 1000, 10000]
 
-    arec = ActivationRecord(locals, locals_size, literals_size, 0, None)
+    arec = ActivationRecord(locals, [], 0, None)
     arec.set_local_at(1, 200)
     assert arec.get_local_at(1) == 200
 
