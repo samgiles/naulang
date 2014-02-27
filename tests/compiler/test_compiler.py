@@ -245,7 +245,7 @@ def test_ast_functioncall():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)
 
-    node = ast.FunctionCall('a', ast.FunctionArgList([DummyCompilationUnit(90), DummyCompilationUnit(91)]))
+    node = ast.FunctionCall('a', ast.ArgumentList([DummyCompilationUnit(90), DummyCompilationUnit(91)]))
     node.accept(t)
 
     assert ctx.get_bytecode() == [90, 91, Bytecode.INVOKE, 0]
@@ -281,7 +281,7 @@ def test_invoke_global_list():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)
 
-    node = ast.FunctionCall('list', ast.FunctionArgList([ast.IntegerConstant(10)]))
+    node = ast.FunctionCall('list', ast.ArgumentList([ast.IntegerConstant(10)]))
     node.accept(t)
 
     assert ctx.get_bytecode() == [Bytecode.LOAD_CONST, 0, Bytecode.INVOKE_GLOBAL, 0]
