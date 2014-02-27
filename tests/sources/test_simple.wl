@@ -1,4 +1,4 @@
-b = 0
+let b = 0
 while b < 65536 {
     b = b + 1
 }
