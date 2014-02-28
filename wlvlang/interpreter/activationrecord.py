@@ -88,9 +88,6 @@ class ActivationRecord(Object):
         return arec
 
     def get_dynamic_at(self, index, level):
-        index = jit.hint(index, promote=True)
-        level = jit.hint(level, promote=True)
-
         arec = self._get_arec_at_level(level)
         if arec:
             return arec.get_local_at(index)
@@ -98,10 +95,6 @@ class ActivationRecord(Object):
         return None
 
     def set_dynamic_at(self, index, level, value):
-        index = jit.hint(index, promote=True)
-        level = jit.hint(level, promote=True)
-        value = jit.hint(value, promote=True)
-
         i = 1
         arec = self._get_arec_at_level(level)
         return arec.set_local_at(index, value)
