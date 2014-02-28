@@ -24,14 +24,6 @@ class Debugger(object):
             info = ""
             i = 0
             for stack_item in activation_record._stack:
-                if i == activation_record._local_offset:
-                    info += "-------------------\n"
-                elif i == activation_record._literal_offset:
-                    info += "-------------------\n"
-                elif i == activation_record._stack_base:
-                    info += "-------------------\n"
-
-                print repr(stack_item)
                 info += str(stack_item)
 
                 if i == activation_record._stack_base:
