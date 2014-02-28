@@ -16,7 +16,7 @@ There are two build targets for wlvlang, a standard, non-JITed interpreter build
 To build you need a copy of the [PyPy project](http://pypy.org/) source code obtained from [here](https://bitbucket.org/pypy/pypy "PyPy Bitbucket").
 
 
-You should then either alter the Makefile so that the `PYPYPATH` variable is pointing to your downloaded copy, or pass `PYPYPATH` as an argument to make or set a `PYPYPATH` environment variable.
+You should then set a `PYPYPATH` environment variable to your downloaded copy when running `make`.
 
 You should also run `pip install -r requirements.txt`
 
