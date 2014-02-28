@@ -95,6 +95,5 @@ class ActivationRecord(Object):
         return None
 
     def set_dynamic_at(self, index, level, value):
-        i = 1
         arec = self._get_arec_at_level(level)
         return arec.set_local_at(index, value)
