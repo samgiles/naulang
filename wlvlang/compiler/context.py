@@ -113,11 +113,13 @@ class FunctionCompilerContext(object):
             Generate a method object from this function context.
         """
 
+        # First replace bytecode labels with actual values
         bytecode = self.get_bytecode()
 
-        # First replace bytecode labels with actual values
         if self.optimiser is not None:
             bytecode = self.optimiser.optimise(bytecode)
+
+        stack_depth = self._calculate_stack_depth(bytecode)
 
         # finalize locals and literals
         literals = [None] * len(self.literals)
@@ -128,8 +130,6 @@ class FunctionCompilerContext(object):
 
         for i in range(0, len(locals)):
             locals[i] = self.locals[i]
-
-        stack_depth = self._calculate_stack_depth(bytecode)
 
         return Method(literals, locals, bytecode, stack_depth, argument_count=self.parameter_count)
 
