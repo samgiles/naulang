@@ -30,6 +30,31 @@ class StackViewWindow(object):
         self._win.box()
         self._win.refresh()
 
+class StackFrameView(object):
+    def __init__(self, stdscreen):
+        width_height = stdscreen.getmaxyx()
+
+        self._stdscreen = stdscreen
+        self._win = curses.newwin(width_height[0] / 2, width_height[1] / 2, 0, 0)
+        self.refresh()
+
+    def update_with_current_activation(self, activation):
+        previous = activation
+        self._win.erase()
+
+        i = 2
+        while previous is not None:
+            self._win.addstr(i, 1, str(previous))
+            i += 1
+            previous = previous.get_previous_record()
+
+        self.refresh()
+
+    def refresh(self):
+        self._win.box()
+        self._win.refresh()
+
+
 class BytecodeViewWindow(object):
     def __init__(self, stdscreen):
         width_height = stdscreen.getmaxyx()
@@ -119,6 +144,7 @@ class View(object):
     def __init__(self, stdscreen):
         self._stdscreen = stdscreen
         self._stackview = StackViewWindow(stdscreen)
+        self._stackframe = StackFrameView(stdscreen)
         self._bytecodeviews = []
         self._bytecodeview = None
 
@@ -126,9 +152,12 @@ class View(object):
         self.refresh()
         return self._bytecodeview._win.getch()
 
-    def load_method_bytecode(self, method, interp):
+    def load_method_bytecode(self, method, interp, arec=None):
         if self._bytecodeview is not None:
             self._bytecodeviews.append(self._bytecodeview)
+
+        if arec is not None:
+            self._stackframe.update_with_current_activation(arec)
 
         self._bytecodeview = BytecodeViewWindow(self._stdscreen)
         self._bytecodeview.draw_bytecodes(0, method, interp)

@@ -23,16 +23,28 @@ class Debugger(object):
     def get_stack_info(self, activation_record):
             info = ""
             i = 0
+
+            info += "   LITERALS\n\n"
+
+            for literal in activation_record._literals:
+                info += str(literal)
+                info += "\n"
+
+
+            info += "   LOCALS\n\n"
+            for local in activation_record._locals:
+                info += str(local)
+                info += "\n"
+
+
+            info += "\n   STACK\n\n"
+
+
             for stack_item in activation_record._stack:
-                info += str(stack_item)
-
-                if i == activation_record._stack_base:
-                    info += "   <- STACK_BASE"
-
-                if i == activation_record._literal_offset:
-                    info += "   <- LITERALS"
-                if i == activation_record._local_offset:
-                    info += "   <- LOCALS"
+                if stack_item is None:
+                    info += "_____"
+                else:
+                    info += str(stack_item)
 
                 if i == activation_record._stack_pointer - 1:
                     info += "   <- HEAD\n"
@@ -53,7 +65,7 @@ class Debugger(object):
 
 
     def interpret(self, interpret, method, activation_record):
-        self._view.load_method_bytecode(method, interpret)
+        self._view.load_method_bytecode(method, interpret, activation_record)
 
     def pre_execute(self, interp, pc, method, activation_record):
         stack_info = self.get_stack_info(activation_record)
