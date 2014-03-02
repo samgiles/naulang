@@ -13,7 +13,6 @@ class ActivationRecord(Object):
     """
 
     def __init__(self, locals, literals, temp_size, previous_record, access_link=None):
-        """ The locals_count should include the parameters """
         self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
 
         self._stack = [None] * (temp_size)
