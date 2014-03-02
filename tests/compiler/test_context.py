@@ -1,5 +1,6 @@
 from wlvlang.compiler.context import FunctionCompilerContext
 from wlvlang.interpreter.bytecode import Bytecode
+from wlvlang.interpreter.objectspace.integer import Integer
 def test_calculate_stack_depth():
     ctx = FunctionCompilerContext(None)
     code = [
@@ -17,3 +18,23 @@ def test_calculate_stack_depth():
     stack_depth = ctx._calculate_stack_depth(code)
 
     assert stack_depth == 3
+
+def test_register_literal_unique_only():
+    ctx = FunctionCompilerContext(None)
+    inta = Integer(10)
+    intb = Integer(10)
+    intc = Integer(100)
+
+    inta_num = ctx.register_literal(inta)
+    intc_num = ctx.register_literal(intc)
+    intb_num = ctx.register_literal(intb)
+
+    # First literal to be registered so should be 0
+    assert 0 == inta_num
+
+    # inta_num and intb_num should be identical as the literal
+    # bojects that were registered are equivalent.
+    assert inta_num == intb_num
+
+    # intb_num whould be the next literal slot 1
+    assert 1 == intc_num
