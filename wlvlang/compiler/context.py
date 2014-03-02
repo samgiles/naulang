@@ -138,8 +138,13 @@ class FunctionCompilerContext(object):
             bc = finalized_bytecode[i]
 
             if stack_effect_depends_on_args(bc):
-                method = self.literals[finalized_bytecode[i + 1]]
-                depth += get_stack_effect(bc, method.argument_count)
+                # HACK: It's difficult to find the arguments of a dynamically
+                # loaded method therefore the arguments consumed by this
+                # argument are assumed to be none.  Having a slightly larger
+                # stack size than necessary shouldn't have a huge effect on
+                # performance although not ideal.
+                # Adding one for the return value
+                depth += 1
             else:
                 depth += get_stack_effect(bc)
 
