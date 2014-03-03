@@ -601,6 +601,43 @@ class ArrayAssignment(Node):
     def __repr__(self):
         return "ast.ArrayAssignment(%r, %r)" % (self.array_access, self.expression)
 
+# Channel Expressions
+
+class ChannelIn(Node):
+
+    def __init__(self, channel_identifier, expression_in):
+        self.channel = channel_identifier
+        self.expression = expression_in
+
+    def get_channel(self):
+        return self.channel
+
+    def get_expression(self):
+        return self.expression
+
+    def accept(self, astvisitor):
+        if astvisitor.visit_channelin(self):
+            self.expression.accept(astvisitor)
+            self.channel.accept(astvisitor)
+
+    def __repr__(self):
+        return "ast.ChannelIn(%r, %r)" % (self.channel, self.expression)
+
+class ChannelOut(Node):
+
+    def __init__(self, channel_identifier):
+        self.channel = channel_identifier
+
+    def get_channel(self):
+        return self.channel
+
+    def accept(self, astvisitor):
+        if astvisitor.visit_channelout(self):
+            self.channel.accept(astvisitor)
+
+    def __repr__(self):
+        return "ast.ChannelOut(%r)" % (self.channel)
+
 class ASTVisitor(object):
     pass
 

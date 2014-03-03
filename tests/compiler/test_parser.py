@@ -203,8 +203,14 @@ def test_function_call_and_definition():
 def test_parse_break_statement():
     assert parse("""break""") == ast.Block([ast.BreakStatement()])
 
-def test_parse_break_statement():
+def test_parse_continue_statement():
     assert parse("""continue""") == ast.Block([ast.ContinueStatement()])
 
 def test_async_function_call():
     assert parse("""async a()""") == ast.Block([ast.AsyncFunctionCall('a', ast.ArgumentList([]))])
+
+def test_parse_channel_in():
+    assert parse("""channel <- 10 * 10""") == ast.Block([ast.ChannelIn(ast.IdentifierExpression('channel'), ast.Multiply(ast.IntegerConstant(10), ast.IntegerConstant(10)))])
+
+def test_parse_channel_out():
+    assert parse("""let n =<: channel""") == ast.Block([ast.ScopedAssignment('n', ast.ChannelOut(ast.IdentifierExpression('channel')))])

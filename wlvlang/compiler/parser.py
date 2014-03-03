@@ -10,6 +10,7 @@ pg = ParserGenerator(tokentypes,
                      precedence=[
                          ("right", ["UMINUS"]),
                          ("right", ["NEGATE"]),
+                         ("right", ["CHAN_OUT"]),
                          ("left", ["OR", "AND"]),
                          ("nonassoc", ["IS", "DOUBLE_EQ"]),
                          ("nonassoc", ["LT", "GT", "LTEQ", "GTEQ"]),
@@ -60,6 +61,7 @@ def statement_return_none(p):
 def statement_if(p):
     return ast.IfStatement(p[1], p[3])
 
+
 @pg.production("statement : WHILE expression LBRACE statement_block RBRACE")
 def statement_while(p):
     return ast.WhileStatement(p[1], p[3])
@@ -100,6 +102,13 @@ def statement_async_function_invocation(p):
 def statement_function(p):
     return ast.FunctionStatement(p[1].getstr(), p[3], p[6])
 
+@pg.production("expression : CHAN_OUT IDENTIFIER")
+def statement_chanout(p):
+    return ast.ChannelOut(ast.IdentifierExpression(p[1].getstr()))
+
+@pg.production("expression : IDENTIFIER CHAN_IN expression")
+def statement_chanin(p):
+    return ast.ChannelIn(ast.IdentifierExpression(p[0].getstr()), p[2])
 
 @pg.production("argument_list : arg_opt expression comma_elision")
 def argument_list(p):
