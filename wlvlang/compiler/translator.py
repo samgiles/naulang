@@ -205,6 +205,18 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         self.context.emit(Bytecode.LOAD_CONST, self.context.register_literal(method))
         return False
 
+    def visit_asyncfunctioncall(self, node):
+        for arg in node.get_arguments().get_argument_list():
+            arg.accept(self)
+
+        if node.identifier in _builtin_functions:
+            raise CompilerException("Built in functions can not be called with the async modifier")
+
+        local = self.context.register_local(node.identifier)
+        self.context.emit(Bytecode.INVOKE_ASYNC, local)
+
+        return False
+
     def visit_functioncall(self, node):
         for arg in node.get_arguments().get_argument_list():
             arg.accept(self)

@@ -250,6 +250,15 @@ def test_ast_functioncall():
 
     assert ctx.get_bytecode() == [90, 91, Bytecode.INVOKE, 0]
 
+def test_ast_asyncfunctioncall():
+    ctx = create_interpreter_context()
+    t = create_syntax_directed_translator(ctx)
+
+    node = ast.AsyncFunctionCall('a', ast.ArgumentList([DummyCompilationUnit(90), DummyCompilationUnit(91)]))
+    node.accept(t)
+
+    assert ctx.get_bytecode() == [90, 91, Bytecode.INVOKE_ASYNC, 0]
+
 def test_ast_returnstatement():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)

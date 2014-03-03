@@ -32,7 +32,7 @@ class Bytecode(object):
     MOD             = 28
     COPY_LOCAL      = 29
     DUP             = 30
-    ASYNC_INVOKE    = 31
+    INVOKE_ASYNC    = 31
 
 _stack_effect_depends_on_args = -9999
 
