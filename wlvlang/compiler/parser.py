@@ -92,6 +92,10 @@ def expression_function(p):
 def statement_function_invocation(p):
     return ast.FunctionCall(p[0].getstr(), p[2])
 
+@pg.production("expression : ASYNC IDENTIFIER LPAREN argument_list RPAREN")
+def statement_async_function_invocation(p):
+    return ast.AsyncFunctionCall(p[1].getstr(), p[3])
+
 @pg.production("expression : FN IDENTIFIER LPAREN parameter_list RPAREN LBRACE statement_block RBRACE")
 def statement_function(p):
     return ast.FunctionStatement(p[1].getstr(), p[3], p[6])

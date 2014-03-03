@@ -506,6 +506,27 @@ class FunctionCall(Node):
     def __repr__(self):
         return "ast.FunctionCall(%r, %r)" % (self.identifier, self.arglist)
 
+class AsyncFunctionCall(Node):
+    """ Function call: [identifier]([arglist]) """
+
+    def __init__(self, identifier, arglist):
+        self.identifier = identifier
+        self.arglist = arglist
+
+    def get_arguments(self):
+        return self.arglist
+
+    def get_identifier(self):
+        return self.identifier
+
+    def accept(self, astvisitor):
+        if astvisitor.visit_asyncfunctioncall(self):
+            for arg in self.get_arguments():
+                arg.accept(astvisitor)
+
+    def __repr__(self):
+        return "ast.AsyncFunctionCall(%r, %r)" % (self.identifier, self.arglist)
+
 
 class ReturnStatement(Node):
     def __init__(self, expression):

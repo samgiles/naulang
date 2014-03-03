@@ -205,3 +205,6 @@ def test_parse_break_statement():
 
 def test_parse_break_statement():
     assert parse("""continue""") == ast.Block([ast.ContinueStatement()])
+
+def test_async_function_call():
+    assert parse("""async a()""") == ast.Block([ast.AsyncFunctionCall('a', ast.ArgumentList([]))])
