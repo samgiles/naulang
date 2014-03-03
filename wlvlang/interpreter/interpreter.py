@@ -136,6 +136,12 @@ class Interpreter(object):
                 new_method = activation_record.get_local_at(local)
                 new_method.invoke(activation_record, self)
                 pc += 1
+            elif bytecode == Bytecode.INVOKE_ASYNC:
+                pc += 1
+                local = method.get_bytecode(pc)
+                new_method - activation_record.get_local_at(local)
+                new_method.invoke_async(activation_record, self)
+                pc += 1
             elif bytecode == Bytecode.INVOKE_GLOBAL:
                 pc += 1
                 global_index = method.get_bytecode(pc)

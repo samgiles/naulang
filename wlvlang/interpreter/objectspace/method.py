@@ -37,6 +37,9 @@ class Method(Object):
     def copy(self):
         return Method(self.literals, self.locals, self.bytecodes, self.stack_depth, argument_count=self.argument_count)
 
+    def async_invoke(self, activation_record, interpreter):
+        self.invoke(activation_record, interpreter)
+
     def invoke(self, activation_record, interpreter):
         jit.promote(self)
         jit.promote(interpreter)
