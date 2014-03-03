@@ -270,3 +270,13 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         node.expression.accept(self)
         self.context.emit(Bytecode.STORE, local)
         return False
+
+    def visit_channelout(self, node):
+        node.channel.accept(self)
+        self.context.emit(Bytecode.CHAN_OUT)
+        return False
+
+    def visit_channelin(self, node):
+        node.get_channel().accept(self)
+        node.get_expression().accept(self)
+        self.context.emit(Bytecode.CHAN_IN)

@@ -323,6 +323,33 @@ def test_continue_statement():
             Bytecode.JUMP, 0
         ]
 
+def test_channel_out():
+    ctx = create_interpreter_context()
+    t = create_syntax_directed_translator(ctx)
+
+    node = ast.ChannelOut(DummyCompilationUnit(90))
+    node.accept(t)
+
+    assert ctx.get_bytecode() == [
+            90,
+            Bytecode.CHAN_OUT,
+        ]
+
+def test_channel_in():
+    ctx = create_interpreter_context()
+    t = create_syntax_directed_translator(ctx)
+
+    node = ast.ChannelIn(DummyCompilationUnit(90), ast.Multiply(ast.IntegerConstant(10), ast.IntegerConstant(10)))
+    node.accept(t)
+
+    assert ctx.get_bytecode() == [
+            90,
+            Bytecode.LOAD_CONST, 0,
+            Bytecode.LOAD_CONST, 0,
+            Bytecode.MUL,
+            Bytecode.CHAN_IN,
+        ]
+
 def test_ast_scoped_assignment():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)

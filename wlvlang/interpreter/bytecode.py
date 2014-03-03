@@ -33,6 +33,8 @@ class Bytecode(object):
     COPY_LOCAL      = 29
     DUP             = 30
     INVOKE_ASYNC    = 31
+    CHAN_OUT        = 32
+    CHAN_IN         = 33
 
 _stack_effect_depends_on_args = -9999
 
@@ -69,6 +71,8 @@ _stack_effects = [
             0, # copy_local
             1, # dup
             _stack_effect_depends_on_args, # invoke async
+            -2,  # chan in
+            -2,  # chan out
         ]
 
 
@@ -105,6 +109,8 @@ _bytecode_lengths = [
             1, # copy_local
             1, # dup
             2, # invoke async
+            1, # chan out
+            1, # chan in
         ]
 
 @jit.elidable
