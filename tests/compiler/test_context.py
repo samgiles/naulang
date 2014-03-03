@@ -50,3 +50,16 @@ def test_register_local():
     assert y == 1
     assert x == ctx.register_local('x')
 
+
+def test_register_dynamic():
+    """ If a local has been registered in an outer context,
+    it should be accessible from an inner context via register_dynamic """
+    outer = FunctionCompilerContext(None)
+    outer_idx = outer.register_local('x')
+
+    inner = FunctionCompilerContext(None, outer=outer)
+
+    index, level = inner.register_dynamic('x')
+
+    assert index == outer_idx
+    assert level == 1
