@@ -41,7 +41,7 @@ class Method(Object):
         jit.promote(self)
         jit.promote(interpreter)
 
-        new_arec = ActivationRecord(self.locals, self.literals, self.stack_depth, activation_record, access_link=self.get_enclosing_arec())
+        new_arec = ActivationRecord([None] * len(self.locals), self.literals, self.stack_depth, activation_record, access_link=self.get_enclosing_arec())
 
         # Push arguments into locals of new arec
         for i in range(0, self.argument_count):

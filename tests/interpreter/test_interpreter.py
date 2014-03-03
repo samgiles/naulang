@@ -1,15 +1,16 @@
 import pytest
 
 from wlvlang.interpreter.interpreter import Interpreter
+from wlvlang.interpreter.activationrecord import  ActivationRecord
 from wlvlang.interpreter.bytecode import Bytecode
 from wlvlang.interpreter.space import ObjectSpace
 from wlvlang.interpreter.objectspace.integer import Integer
 from wlvlang.interpreter.objectspace.boolean import Boolean
+from wlvlang.interpreter.objectspace.method import Method
 from wlvlang.interpreter.objectspace.array import Array
 
 def create_test_method(literals, locals, bytecode):
     """ create_test_method(literals, locals, bytecode) """
-    from wlvlang.interpreter.objectspace.method import Method
     return Method(literals, locals, bytecode, 20)
 
 def create_arec(method, temp_space, parent=None, access_link=None):
@@ -179,3 +180,42 @@ def test_bc_INVOKE_GLOBAL():
     interpreter.interpret(method, arec)
 
     assert isinstance(arec.peek(), Array)
+
+def test_bc_INVOKE():
+    space, interpreter = create_space_and_interpreter()
+    innerMethod = Method([], [None], [
+        Bytecode.LOAD, 0,
+        Bytecode.LOAD_DYNAMIC, 0, 1,
+        Bytecode.MUL,
+        Bytecode.RETURN,
+        Bytecode.HALT
+    ], 2, argument_count=1)
+
+    method = Method([innerMethod], [None], [
+        Bytecode.LOAD_CONST, 0,
+        Bytecode.RETURN,
+        Bytecode.HALT
+    ], 1, argument_count=1)
+
+    mainmethod = Method([method, Integer(2), Integer(3), Integer(10)], [None, None, None], [
+        Bytecode.LOAD_CONST, 0,
+        Bytecode.STORE, 0,
+        Bytecode.LOAD_CONST, 1,
+        Bytecode.INVOKE, 0,
+        Bytecode.STORE, 1,
+        Bytecode.LOAD_CONST, 2,
+        Bytecode.INVOKE, 0,
+        Bytecode.STORE, 2,
+        Bytecode.LOAD_CONST, 3,
+        Bytecode.INVOKE, 1,
+        Bytecode.LOAD_CONST, 3,
+        Bytecode.INVOKE, 2,
+        Bytecode.SUB,
+        Bytecode.RETURN,
+        Bytecode.HALT
+    ], 10, argument_count=0)
+
+    arec = ActivationRecord([None], [], 5, None)
+    pytest.set_trace()
+    mainmethod.invoke(arec, interpreter)
+    assert arec.peek() == Integer(10)
