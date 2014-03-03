@@ -135,12 +135,12 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
 
     def visit_breakstatement(self, node):
         loop_control = self.context.peek_loop_control()
-        self.context.emit(Bytecode.JUMP_BACK, loop_control[1])
+        self.context.emit(Bytecode.JUMP, loop_control[1])
         return True
 
     def visit_continuestatement(self, node):
         loop_control = self.context.peek_loop_control()
-        self.context.emit(Bytecode.JUMP_BACK, loop_control[0])
+        self.context.emit(Bytecode.JUMP, loop_control[0])
         return True
 
     def visit_whilestatement(self, node):
@@ -165,7 +165,7 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         self.context.pop_loop_control()
 
         # Emit a GOTO to actually loop
-        self.context.emit(Bytecode.JUMP_BACK, label_start)
+        self.context.emit(Bytecode.JUMP, label_start)
 
         # Now we know what the value of the end label should be set it.
         self.context.set_label(label_end, self.context.get_top_position() + 1)

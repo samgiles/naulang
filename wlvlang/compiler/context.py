@@ -257,7 +257,7 @@ class FunctionCompilerContext(object):
                 i += 1
                 bytecodes[i] = bytecode[i]
                 i += 1
-            elif bytecode[i] == Bytecode.JUMP_BACK or bytecode[i] == Bytecode.JUMP_IF_FALSE:
+            elif bytecode[i] == Bytecode.JUMP or bytecode[i] == Bytecode.JUMP_IF_FALSE:
 
                 bytecodes[i + 1] = self.get_label_value(bytecode[i + 1])
                 i += 2

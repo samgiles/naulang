@@ -124,7 +124,7 @@ class Interpreter(object):
                     pc = jmp_to
                 else:
                     pc += 1
-            elif bytecode == Bytecode.JUMP_BACK:
+            elif bytecode == Bytecode.JUMP:
                 jmp_to = method.get_bytecode(pc + 1)
                 pc = jmp_to
             elif bytecode == Bytecode.PRINT:

@@ -193,7 +193,7 @@ def test_ast_whilestatement_compiler():
     node = ast.WhileStatement(DummyCompilationUnit(90), ast.Block([DummyCompilationUnit(91)]))
     node.accept(t)
 
-    assert ctx.get_bytecode() == [100, 90, Bytecode.JUMP_IF_FALSE, 7, 91, Bytecode.JUMP_BACK, 1]
+    assert ctx.get_bytecode() == [100, 90, Bytecode.JUMP_IF_FALSE, 7, 91, Bytecode.JUMP, 1]
 
 def test_ast_ifstatement_compiler():
     ctx = create_interpreter_context()
@@ -296,8 +296,8 @@ def test_break_statement():
     assert ctx.get_bytecode() == [
             90,
             Bytecode.JUMP_IF_FALSE, 7,
-            Bytecode.JUMP_BACK, 7,
-            Bytecode.JUMP_BACK, 0
+            Bytecode.JUMP, 7,
+            Bytecode.JUMP, 0
         ]
 
 def test_continue_statement():
@@ -310,8 +310,8 @@ def test_continue_statement():
     assert ctx.get_bytecode() == [
             90,
             Bytecode.JUMP_IF_FALSE, 7,
-            Bytecode.JUMP_BACK, 0,
-            Bytecode.JUMP_BACK, 0
+            Bytecode.JUMP, 0,
+            Bytecode.JUMP, 0
         ]
 
 def test_ast_scoped_assignment():

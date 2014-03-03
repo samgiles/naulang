@@ -20,7 +20,7 @@ class Bytecode(object):
     NOT             = 16
     NEG             = 17
     JUMP_IF_FALSE   = 18
-    JUMP_BACK       = 19
+    JUMP            = 19
     PRINT           = 20
     INVOKE          = 21
     RETURN          = 22
