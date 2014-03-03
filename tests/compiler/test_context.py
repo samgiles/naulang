@@ -38,3 +38,15 @@ def test_register_literal_unique_only():
 
     # intb_num whould be the next literal slot 1
     assert 1 == intc_num
+
+
+def test_register_local():
+    ctx = FunctionCompilerContext(None)
+
+    x = ctx.register_local('x')
+    y = ctx.register_local('y')
+
+    assert x == 0
+    assert y == 1
+    assert x == ctx.register_local('x')
+
