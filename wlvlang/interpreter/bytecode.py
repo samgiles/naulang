@@ -32,6 +32,7 @@ class Bytecode(object):
     MOD             = 28
     COPY_LOCAL      = 29
     DUP             = 30
+    ASYNC_INVOKE    = 31
 
 _stack_effect_depends_on_args = -9999
 
@@ -67,6 +68,7 @@ _stack_effects = [
             -1, # mod
             0, # copy_local
             1, # dup
+            _stack_effect_depends_on_args, # invoke async
         ]
 
 
@@ -102,6 +104,7 @@ _bytecode_lengths = [
             1, # mod
             1, # copy_local
             1, # dup
+            2, # invoke async
         ]
 
 @jit.elidable
