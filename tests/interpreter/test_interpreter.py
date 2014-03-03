@@ -216,6 +216,5 @@ def test_bc_INVOKE():
     ], 10, argument_count=0)
 
     arec = ActivationRecord([None], [], 5, None)
-    pytest.set_trace()
     mainmethod.invoke(arec, interpreter)
     assert arec.peek() == Integer(10)
