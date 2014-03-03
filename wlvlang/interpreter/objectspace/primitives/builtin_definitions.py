@@ -1,7 +1,5 @@
 import time
 
-from wlvlang.interpreter.objectspace.string import String
-
 from rpython.rlib.rarithmetic import ovfcheck_float_to_int
 
 def builtin_functions():
@@ -15,6 +13,7 @@ def builtin_functions():
         "list": (_list_primitive, 0),
         "time": (_time_primitive, 1),
         "int" : (_int_primitive,  2),
+        "chan": (_channel_primitive, 3),
     }
 
 def _time_primitive(primitive, activation_record, interpreter):
@@ -30,3 +29,7 @@ def _list_primitive(primitive, activation_record, interpreter):
     """ Creates a new array/list object and pushes onto stack """
     size = activation_record.pop()
     activation_record.push(interpreter.space.new_array((size.get_integer_value())))
+
+def _channel_primitive(primitive, activation_record, interpreter):
+    """ Creates a new channel object """
+    activation_record.push(interpreter.space.new_channel())
