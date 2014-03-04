@@ -21,6 +21,9 @@ class Interpreter(object):
 
     _immutable_fields = ["space"]
 
+    INTERP_HALT     = 0
+    INTERP_CONTINUE = 1
+
     def __init__(self, space):
         self.space = space
 
@@ -36,180 +39,171 @@ class Interpreter(object):
         """ Interpreter hooks, (used by the debugger) """
         pass
 
+
     @jit.unroll_safe
-    def interpret(self, method, activation_record):
-        """ Interpreter Main Loop """
-        pc = 0
-        running = True
+    def interpreter_step(self, pc, frame, method):
+        self.pre_execute(pc, method, frame)
 
+        jitdriver.jit_merge_point(
+                pc=pc,
+                interp=self,
+                frame=frame,
+                method=method
+            )
 
-        while running:
-            jitdriver.jit_merge_point(
-                    pc=pc,
-                    interp=self,
-                    running=running,
-                    frame=activation_record,
-                    method=method
-                )
+        bytecode = method.get_bytecode(pc)
 
-            bytecode = method.get_bytecode(pc)
-
-            self.pre_execute(pc, method, activation_record)
-
-            if bytecode == Bytecode.HALT:
-                running = False
-            elif bytecode == Bytecode.LOAD_CONST:
-                pc += 1
-                literal = method.get_bytecode(pc)
-                pc += 1
-                activation_record.push(activation_record.get_literal_at(literal))
-            elif bytecode == Bytecode.LOAD:
-                pc += 1
-                local = method.get_bytecode(pc)
-                pc += 1
-                activation_record.push(activation_record.get_local_at(local))
-            elif bytecode == Bytecode.STORE:
-                pc += 1
-                local = method.get_bytecode(pc)
-                pc += 1
-                activation_record.set_local_at(local, activation_record.pop())
-            elif bytecode == Bytecode.OR:
-                self._send(activation_record, "or")
-                pc += 1
-            elif bytecode == Bytecode.AND:
-                self._send(activation_record, "and")
-                pc += 1
-            elif bytecode == Bytecode.EQUAL:
-                self._send(activation_record, "==")
-                pc += 1
-            elif bytecode == Bytecode.NOT_EQUAL:
-                self._send(activation_record, "!=")
-                pc += 1
-            elif bytecode == Bytecode.LESS_THAN:
-                self._send(activation_record, "<")
-                pc += 1
-            elif bytecode == Bytecode.LESS_THAN_EQ:
-                self._send(activation_record, "<=")
-                pc += 1
-            elif bytecode == Bytecode.GREATER_THAN:
-                self._send(activation_record, ">")
-                pc += 1
-            elif bytecode == Bytecode.GREATER_THAN_EQ:
-                self._send(activation_record, ">=")
-                pc += 1
-            elif bytecode == Bytecode.ADD:
-                self._send(activation_record, "+")
-                pc += 1
-            elif bytecode == Bytecode.SUB:
-                self._send(activation_record, "-")
-                pc += 1
-            elif bytecode == Bytecode.MUL:
-                self._send(activation_record, "*")
-                pc += 1
-            elif bytecode == Bytecode.DIV:
-                self._send(activation_record, "/")
-                pc += 1
-            elif bytecode == Bytecode.NOT:
-                self._send(activation_record, "not")
-                pc += 1
-            elif bytecode == Bytecode.NEG:
-                self._send(activation_record, "_neg")
-                pc += 1
-            elif bytecode == Bytecode.MOD:
-                self._send(activation_record, "%")
-                pc += 1
-            elif bytecode == Bytecode.JUMP_IF_FALSE:
-                pc += 1
-                jmp_to = method.get_bytecode(pc)
-                condition = activation_record.pop()
-                if condition.get_boolean_value() == False:
-                    pc = jmp_to
-                else:
-                    pc += 1
-            elif bytecode == Bytecode.JUMP:
-                jmp_to = method.get_bytecode(pc + 1)
+        if bytecode == Bytecode.HALT:
+            return Interpreter.INTERP_HALT, 0
+        elif bytecode == Bytecode.LOAD_CONST:
+            pc += 1
+            literal = method.get_bytecode(pc)
+            pc += 1
+            frame.push(frame.get_literal_at(literal))
+        elif bytecode == Bytecode.LOAD:
+            pc += 1
+            local = method.get_bytecode(pc)
+            pc += 1
+            frame.push(frame.get_local_at(local))
+        elif bytecode == Bytecode.STORE:
+            pc += 1
+            local = method.get_bytecode(pc)
+            pc += 1
+            frame.set_local_at(local, frame.pop())
+        elif bytecode == Bytecode.OR:
+            self._send(frame, "or")
+            pc += 1
+        elif bytecode == Bytecode.AND:
+            self._send(frame, "and")
+            pc += 1
+        elif bytecode == Bytecode.EQUAL:
+            self._send(frame, "==")
+            pc += 1
+        elif bytecode == Bytecode.NOT_EQUAL:
+            self._send(frame, "!=")
+            pc += 1
+        elif bytecode == Bytecode.LESS_THAN:
+            self._send(frame, "<")
+            pc += 1
+        elif bytecode == Bytecode.LESS_THAN_EQ:
+            self._send(frame, "<=")
+            pc += 1
+        elif bytecode == Bytecode.GREATER_THAN:
+            self._send(frame, ">")
+            pc += 1
+        elif bytecode == Bytecode.GREATER_THAN_EQ:
+            self._send(frame, ">=")
+            pc += 1
+        elif bytecode == Bytecode.ADD:
+            self._send(frame, "+")
+            pc += 1
+        elif bytecode == Bytecode.SUB:
+            self._send(frame, "-")
+            pc += 1
+        elif bytecode == Bytecode.MUL:
+            self._send(frame, "*")
+            pc += 1
+        elif bytecode == Bytecode.DIV:
+            self._send(frame, "/")
+            pc += 1
+        elif bytecode == Bytecode.NOT:
+            self._send(frame, "not")
+            pc += 1
+        elif bytecode == Bytecode.NEG:
+            self._send(frame, "_neg")
+            pc += 1
+        elif bytecode == Bytecode.MOD:
+            self._send(frame, "%")
+            pc += 1
+        elif bytecode == Bytecode.JUMP_IF_FALSE:
+            pc += 1
+            jmp_to = method.get_bytecode(pc)
+            condition = frame.pop()
+            if condition.get_boolean_value() == False:
                 pc = jmp_to
-            elif bytecode == Bytecode.PRINT:
-                self._send(activation_record, "print")
-                pc += 1
-            elif bytecode == Bytecode.INVOKE:
-                pc += 1
-                local = method.get_bytecode(pc)
-                new_method = activation_record.get_local_at(local)
-                new_method.invoke(activation_record, self)
-                pc += 1
-            elif bytecode == Bytecode.INVOKE_ASYNC:
-                pc += 1
-                local = method.get_bytecode(pc)
-                new_method = activation_record.get_local_at(local)
-                assert isinstance(new_method, Method)
-                new_method.async_invoke(activation_record, self)
-                pc += 1
-            elif bytecode == Bytecode.INVOKE_GLOBAL:
-                pc += 1
-                global_index = method.get_bytecode(pc)
-                new_method = self.space.get_builtin_function(global_index)
-                new_method.invoke(activation_record, self)
-                pc += 1
-            elif bytecode == Bytecode.RETURN:
-                caller = activation_record.get_previous_record()
-                if caller is None:
-                    # TODO: Logic for root function exit and returning
-                    running = False
-
-                caller.push(activation_record.pop())
-                running = False
-            elif bytecode == Bytecode.ARRAY_LOAD:
-                index = activation_record.pop()
-                array = activation_record.pop()
-                assert isinstance(array, Array)     # RPython
-                activation_record.push(array.get_value_at(index.get_integer_value()))
-                pc += 1
-            elif bytecode == Bytecode.ARRAY_STORE:
-                value = activation_record.pop()
-                index = activation_record.pop()
-                array = activation_record.pop()
-                assert isinstance(array, Array)     # RPython
-                array.set_value_at(index.get_integer_value(), value)
-                pc += 1
-            elif bytecode == Bytecode.LOAD_DYNAMIC:
-                pc += 1
-                local_slot = method.get_bytecode(pc)
-                pc += 1
-                level = method.get_bytecode(pc)
-                pc += 1
-                activation_record.push(activation_record.get_dynamic_at(local_slot, level))
-            elif bytecode == Bytecode.STORE_DYNAMIC:
-                pc += 1
-                local_slot = method.get_bytecode(pc)
-                pc += 1
-                level = method.get_bytecode(pc)
-                value = activation_record.pop()
-                activation_record.set_dynamic_at(local_slot, level, value)
-                pc += 1
-            elif bytecode == Bytecode.COPY_LOCAL:
-                """ Copy the top of the stack into a local, preserving the stack """
-                pc += 1
-                local = method.get_bytecode(pc)
-                pc += 1
-                activation_record.set_local_at(local, activation_record.peek())
-            elif bytecode == Bytecode.DUP:
-                activation_record.push(activation_record.peek())
-                pc += 1
-
-            elif bytecode == Bytecode.CHAN_OUT:
-                channel = activation_record.pop()
-                assert isinstance(channel, ChannelInterface)
-                received = channel.receive()
-                activation_record.push(received)
-                pc += 1
-            elif bytecode == Bytecode.CHAN_IN:
-                expression = activation_record.pop()
-                channel = activation_record.pop()
-                assert isinstance(channel, ChannelInterface)
-                channel.send(expression)
-                pc += 1
             else:
-                raise TypeError("Bytecode is not implemented: %d" % bytecode)
+                pc += 1
+        elif bytecode == Bytecode.JUMP:
+            jmp_to = method.get_bytecode(pc + 1)
+            pc = jmp_to
+        elif bytecode == Bytecode.PRINT:
+            self._send(frame, "print")
+            pc += 1
+        elif bytecode == Bytecode.INVOKE:
+            pc += 1
+            local = method.get_bytecode(pc)
+            new_method = frame.get_local_at(local)
+            new_method.invoke(frame, self)
+            pc += 1
+        elif bytecode == Bytecode.INVOKE_ASYNC:
+            pc += 1
+            local = method.get_bytecode(pc)
+            new_method = frame.get_local_at(local)
+            assert isinstance(new_method, Method)
+            new_method.async_invoke(frame, self)
+            pc += 1
+        elif bytecode == Bytecode.INVOKE_GLOBAL:
+            pc += 1
+            global_index = method.get_bytecode(pc)
+            new_method = self.space.get_builtin_function(global_index)
+            new_method.invoke(frame, self)
+            pc += 1
+        elif bytecode == Bytecode.RETURN:
+            caller = frame.get_previous_record()
+            if caller is not None:
+                caller.push(frame.pop())
+            return Interpreter.INTERP_HALT, 0
+        elif bytecode == Bytecode.ARRAY_LOAD:
+            index = frame.pop()
+            array = frame.pop()
+            assert isinstance(array, Array)     # RPython
+            frame.push(array.get_value_at(index.get_integer_value()))
+            pc += 1
+        elif bytecode == Bytecode.ARRAY_STORE:
+            value = frame.pop()
+            index = frame.pop()
+            array = frame.pop()
+            assert isinstance(array, Array)     # RPython
+            array.set_value_at(index.get_integer_value(), value)
+            pc += 1
+        elif bytecode == Bytecode.LOAD_DYNAMIC:
+            pc += 1
+            local_slot = method.get_bytecode(pc)
+            pc += 1
+            level = method.get_bytecode(pc)
+            pc += 1
+            frame.push(frame.get_dynamic_at(local_slot, level))
+        elif bytecode == Bytecode.STORE_DYNAMIC:
+            pc += 1
+            local_slot = method.get_bytecode(pc)
+            pc += 1
+            level = method.get_bytecode(pc)
+            value = frame.pop()
+            frame.set_dynamic_at(local_slot, level, value)
+            pc += 1
+        elif bytecode == Bytecode.COPY_LOCAL:
+            """ Copy the top of the stack into a local, preserving the stack """
+            pc += 1
+            local = method.get_bytecode(pc)
+            pc += 1
+            frame.set_local_at(local, frame.peek())
+        elif bytecode == Bytecode.DUP:
+            frame.push(frame.peek())
+            pc += 1
 
-            self.post_execute(pc, method, activation_record)
+        elif bytecode == Bytecode.CHAN_OUT:
+            channel = frame.pop()
+            assert isinstance(channel, ChannelInterface)
+            received = channel.receive()
+            frame.push(received)
+            pc += 1
+        elif bytecode == Bytecode.CHAN_IN:
+            expression = frame.pop()
+            channel = frame.pop()
+            assert isinstance(channel, ChannelInterface)
+            channel.send(expression)
+            pc += 1
+        else:
+            raise TypeError("Bytecode is not implemented: %d" % bytecode)
+
+        return Interpreter.INTERP_CONTINUE, pc
