@@ -7,8 +7,8 @@ class BuiltIn(Object):
         self.identifier = identifier
         self.invokable = invokable
 
-    def invoke(self, activation_record, interpreter):
-        self.invokable(self, activation_record, interpreter)
+    def invoke(self, context, interpreter):
+        self.invokable(self, context.get_top_frame(), interpreter)
 
     def get_class(self, space):
         return space.builtinClass

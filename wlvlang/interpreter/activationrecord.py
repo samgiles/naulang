@@ -12,7 +12,7 @@ class ActivationRecord(Object):
         Defines an Activation Record.
     """
 
-    def __init__(self, locals, literals, temp_size, previous_record=jit.vref_None, method=None, access_link=None):
+    def __init__(self, locals, literals, temp_size, previous_record=None, method=None, access_link=None):
         self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
 
         self._stack = [None] * (temp_size)
@@ -50,7 +50,7 @@ class ActivationRecord(Object):
         return self.access_link;
 
     def is_root_record(self):
-        return self.get_previous_record() == jit.vref_None
+        return self.get_previous_record() == None
 
     def push(self, value):
         """ Push an object onto the stack """

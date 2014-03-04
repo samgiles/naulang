@@ -140,20 +140,20 @@ class Interpreter(object):
             pc += 1
             context.set_pc(pc)
             new_method = frame.get_local_at(local)
-            new_method.invoke(context)
+            new_method.invoke(context, self)
             return True
         elif bytecode == Bytecode.INVOKE_ASYNC:
             pc += 1
             local = method.get_bytecode(pc)
             new_method = frame.get_local_at(local)
             assert isinstance(new_method, Method)
-            new_method.async_invoke(frame, self)
+            new_method.async_invoke(context, self)
             pc += 1
         elif bytecode == Bytecode.INVOKE_GLOBAL:
             pc += 1
             global_index = method.get_bytecode(pc)
             new_method = self.space.get_builtin_function(global_index)
-            new_method.invoke(frame, self)
+            new_method.invoke(context, self)
             pc += 1
         elif bytecode == Bytecode.RETURN:
 

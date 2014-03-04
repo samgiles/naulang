@@ -55,7 +55,7 @@ class InterpreterContext(object):
     def __init__(self):
         self._pc = 0
         self._state = Interpreter.CONTINUE
-        self.top_frame = jit.vref_None
+        self.top_frame = None
 
     def get_top_frame(self):
         return self.top_frame
@@ -66,7 +66,7 @@ class InterpreterContext(object):
         # will then continue from the method call
         top_frame = self.get_top_frame()
 
-        if top_frame is not jit.vref_None:
+        if top_frame is not None:
             top_frame.saved_pc = self._pc
             frame.set_previous_record(top_frame)
 
