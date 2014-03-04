@@ -1,6 +1,6 @@
-import thread
-
 from wlvlang.interpreter.objectspace.object import Object
+
+from rpython.rlib import rthread
 
 from collections import deque
 
@@ -16,8 +16,8 @@ class ChannelInterface(Object):
 class BasicChannel(ChannelInterface):
 
     def __init__(self):
-        self._lock = thread.allocate_lock()
-        self._queue = deque()
+        self._lock = rthread.allocate_lock()
+        self._queue = []
 
     def send(self, value):
         with self._lock:
@@ -27,4 +27,4 @@ class BasicChannel(ChannelInterface):
         while True:
             with self._lock:
                 if len(self._queue) is not 0:
-                    return self._queue.popleft()
+                    return self._queue.pop()

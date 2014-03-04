@@ -2,6 +2,8 @@ from wlvlang.interpreter.bytecode import Bytecode, bytecode_names
 from wlvlang.interpreter.activationrecord import ActivationRecord
 
 from wlvlang.interpreter.objectspace.array import Array
+from wlvlang.interpreter.objectspace.channel import ChannelInterface
+from wlvlang.interpreter.objectspace.method import Method
 
 from rpython.rlib import jit
 
@@ -139,8 +141,9 @@ class Interpreter(object):
             elif bytecode == Bytecode.INVOKE_ASYNC:
                 pc += 1
                 local = method.get_bytecode(pc)
-                new_method - activation_record.get_local_at(local)
-                new_method.invoke_async(activation_record, self)
+                new_method = activation_record.get_local_at(local)
+                assert isinstance(new_method, Method)
+                new_method.async_invoke(activation_record, self)
                 pc += 1
             elif bytecode == Bytecode.INVOKE_GLOBAL:
                 pc += 1
@@ -192,6 +195,19 @@ class Interpreter(object):
                 activation_record.set_local_at(local, activation_record.peek())
             elif bytecode == Bytecode.DUP:
                 activation_record.push(activation_record.peek())
+                pc += 1
+
+            elif bytecode == Bytecode.CHAN_OUT:
+                channel = activation_record.pop()
+                assert isinstance(channel, ChannelInterface)
+                received = channel.receive()
+                activation_record.push(received)
+                pc += 1
+            elif bytecode == Bytecode.CHAN_IN:
+                expression = activation_record.pop()
+                channel = activation_record.pop()
+                assert isinstance(channel, ChannelInterface)
+                channel.send(expression)
                 pc += 1
             else:
                 raise TypeError("Bytecode is not implemented: %d" % bytecode)
