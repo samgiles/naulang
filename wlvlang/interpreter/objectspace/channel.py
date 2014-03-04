@@ -2,15 +2,15 @@ from wlvlang.interpreter.objectspace.object import Object
 
 from rpython.rlib import rthread
 
-from collections import deque
-
 class ChannelInterface(Object):
-
     def send(self, value):
         pass
 
     def receive(self):
         pass
+
+class YieldException(Exception):
+    pass
 
 
 class BasicChannel(ChannelInterface):
@@ -24,7 +24,8 @@ class BasicChannel(ChannelInterface):
             self._queue.append(value)
 
     def receive(self):
-        while True:
-            with self._lock:
-                if len(self._queue) is not 0:
-                    return self._queue.pop()
+        with self._lock:
+            if len(self._queue) is not 0:
+                return self._queue.pop()
+            else:
+                raise YieldException()

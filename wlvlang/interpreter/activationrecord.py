@@ -12,7 +12,7 @@ class ActivationRecord(Object):
         Defines an Activation Record.
     """
 
-    def __init__(self, locals, literals, temp_size, previous_record, access_link=None):
+    def __init__(self, locals, literals, temp_size, previous_record=jit.vref_None, method=None, access_link=None):
         self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
 
         self._stack = [None] * (temp_size)
@@ -24,6 +24,9 @@ class ActivationRecord(Object):
         self._locals = locals
         self._literals = literals
         self._set_up_local_methods()
+
+        self.saved_pc = -1
+        self.method = method
 
     def _set_up_local_methods(self):
         from wlvlang.interpreter.objectspace.method import Method
@@ -39,12 +42,15 @@ class ActivationRecord(Object):
         """ Get the previous activation record. """
         return self.previous_record;
 
+    def set_previous_record(self, previous):
+        self.previous_record = previous
+
     def get_access_link(self):
         """ Get the access link for this object (if it has one).  Returns None if it does not """
         return self.access_link;
 
     def is_root_record(self):
-        return self.get_previous_record() == None
+        return self.get_previous_record() == jit.vref_None
 
     def push(self, value):
         """ Push an object onto the stack """

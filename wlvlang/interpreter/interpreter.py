@@ -1,8 +1,7 @@
 from wlvlang.interpreter.bytecode import Bytecode, bytecode_names
-from wlvlang.interpreter.activationrecord import ActivationRecord
 
 from wlvlang.interpreter.objectspace.array import Array
-from wlvlang.interpreter.objectspace.channel import ChannelInterface
+from wlvlang.interpreter.objectspace.channel import ChannelInterface, YieldException
 from wlvlang.interpreter.objectspace.method import Method
 
 from rpython.rlib import jit
@@ -21,8 +20,9 @@ class Interpreter(object):
 
     _immutable_fields = ["space"]
 
-    INTERP_HALT     = 0
-    INTERP_CONTINUE = 1
+    HALT     = 1
+    CONTINUE = 2
+    YIELD    = 4
 
     def __init__(self, space):
         self.space = space
@@ -41,7 +41,11 @@ class Interpreter(object):
 
 
     @jit.unroll_safe
-    def interpreter_step(self, pc, frame, method):
+    def interpreter_step(self, context):
+        pc = context.get_pc()
+        method = context.get_current_method()
+        frame = context.get_top_frame()
+
         self.pre_execute(pc, method, frame)
 
         jitdriver.jit_merge_point(
@@ -54,7 +58,8 @@ class Interpreter(object):
         bytecode = method.get_bytecode(pc)
 
         if bytecode == Bytecode.HALT:
-            return Interpreter.INTERP_HALT, 0
+            context.set_state(Interpreter.HALT)
+            return False
         elif bytecode == Bytecode.LOAD_CONST:
             pc += 1
             literal = method.get_bytecode(pc)
@@ -132,9 +137,11 @@ class Interpreter(object):
         elif bytecode == Bytecode.INVOKE:
             pc += 1
             local = method.get_bytecode(pc)
-            new_method = frame.get_local_at(local)
-            new_method.invoke(frame, self)
             pc += 1
+            context.set_pc(pc)
+            new_method = frame.get_local_at(local)
+            new_method.invoke(context)
+            return True
         elif bytecode == Bytecode.INVOKE_ASYNC:
             pc += 1
             local = method.get_bytecode(pc)
@@ -149,10 +156,16 @@ class Interpreter(object):
             new_method.invoke(frame, self)
             pc += 1
         elif bytecode == Bytecode.RETURN:
+
+            # Push the result onto the callers frame
             caller = frame.get_previous_record()
             if caller is not None:
                 caller.push(frame.pop())
-            return Interpreter.INTERP_HALT, 0
+
+            # Restore the caller
+            context.restore_previous_frame()
+            context.set_state(Interpreter.CONTINUE)
+            return True
         elif bytecode == Bytecode.ARRAY_LOAD:
             index = frame.pop()
             array = frame.pop()
@@ -192,9 +205,16 @@ class Interpreter(object):
             pc += 1
 
         elif bytecode == Bytecode.CHAN_OUT:
-            channel = frame.pop()
+            channel = frame.peek()
             assert isinstance(channel, ChannelInterface)
-            received = channel.receive()
+            try:
+                received = channel.receive()
+            except YieldException:
+                context.set_state(Interpreter.YIELD)
+                context.set_pc(pc)
+                return False
+
+            frame.pop()
             frame.push(received)
             pc += 1
         elif bytecode == Bytecode.CHAN_IN:
@@ -206,4 +226,6 @@ class Interpreter(object):
         else:
             raise TypeError("Bytecode is not implemented: %d" % bytecode)
 
-        return Interpreter.INTERP_CONTINUE, pc
+        context.set_pc(pc)
+        context.set_state(Interpreter.CONTINUE)
+        return True

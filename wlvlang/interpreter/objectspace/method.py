@@ -2,6 +2,7 @@ from wlvlang.interpreter.objectspace.object import Object
 from wlvlang.interpreter.activationrecord import ActivationRecord
 
 from rpython.rlib import jit
+from rpython.rlib import rthread
 
 class Method(Object):
     """ Defines a Method in wlvlang. """
@@ -40,17 +41,17 @@ class Method(Object):
     def async_invoke(self, activation_record, interpreter):
         self.invoke(activation_record, interpreter)
 
-    def invoke(self, activation_record, interpreter):
+    def invoke(self, context):
         jit.promote(self)
-        jit.promote(interpreter)
+        jit.promote(context)
 
-        new_arec = ActivationRecord([None] * len(self.locals), self.literals, self.stack_depth, activation_record, access_link=self.get_enclosing_arec())
+        new_arec = ActivationRecord([None] * len(self.locals), self.literals, self.stack_depth, context.get_top_frame(), method=self, access_link=self.get_enclosing_arec())
 
         # Push arguments into locals of new arec
         for i in range(0, self.argument_count):
-            new_arec.set_local_at(i, activation_record.pop())
+            new_arec.set_local_at(i, context.get_top_frame().pop())
 
-        interpreter.interpret(self, new_arec)
+        context.set_top_frame(new_arec)
 
     def get_class(self, space):
         return space.methodClass
