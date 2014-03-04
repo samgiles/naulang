@@ -12,7 +12,7 @@ def get_printable_location(pc, interp, method):
 
 jitdriver = jit.JitDriver(
         greens=['pc', 'interp', 'method'],
-        reds=['running', 'frame'],
+        reds=['frame'],
         virtualizables=['frame'],
         get_printable_location=get_printable_location
     )
