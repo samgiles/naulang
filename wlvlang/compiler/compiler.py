@@ -37,7 +37,7 @@ def parse(source):
     return _parse_source(source)
 
 
-def parse_file(filename, object_space, arguments=[]):
+def parse_file_with_arguments(filename, object_space, arguments=[]):
     """ Given a source file, return a vmobjects.Method object """
     path = os.getcwd()
     fullname = path + os.sep + filename
@@ -68,7 +68,6 @@ def parse_file(filename, object_space, arguments=[]):
         i -= 1
 
     arg_local = compiler_context.register_local("args")
-    compiler_context.locals[arg_local] = array
 
     # Translate
     sdt = SyntaxDirectedTranslator(compiler_context)
@@ -77,4 +76,8 @@ def parse_file(filename, object_space, arguments=[]):
     # Ensure the bytecode is halting
     compiler_context.emit(Bytecode.HALT)
 
-    return compiler_context.generate_method()
+    return compiler_context.generate_method(), arg_local, array
+
+def parse_file(filename, object_space):
+    method, _, _ = parse_file_with_arguments(filename, object_space)
+    return method

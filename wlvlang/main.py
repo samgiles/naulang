@@ -1,6 +1,7 @@
 import os
 from wlvlang.compiler import compiler
 from wlvlang.interpreter.interpreter import Interpreter
+from wlvlang.interpreter.activationrecord import ActivationRecord
 from wlvlang.interpreter.space import ObjectSpace
 
 def main(args):
@@ -16,11 +17,14 @@ def main(args):
     # these are passed to the method that is created as an 'args'
     # argument
     arguments = args[1:]
-    main_method = compiler.parse_file(args[1], space, arguments)
+    main_method, arg_local, arg_array = compiler.parse_file_with_arguments(args[1], space, arguments)
     interpreter = Interpreter(space)
-
+    # Add file arguments into 'args' array parameter
     # Activation record is None
-    main_method.invoke(None, interpreter)
+
+    new_arec = ActivationRecord([None] * len(main_method.locals), main_method.literals, main_method.stack_depth, None)
+    new_arec.set_local_at(arg_local, arg_array)
+    interpreter.interpret(main_method, new_arec)
 
     # TODO: Return value
     return 0
