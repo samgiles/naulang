@@ -55,9 +55,9 @@ class ThreadLocalSched(object):
 
             slot += 1
 
-    def run_context(self, index):
-        context = self.contexts[index]
-        while self.interpreter.interpreter_step(context):
+    def run_task(self, slot):
+        task = self.tasks[slot]
+        while self.interpreter.interpreter_step(task):
             pass
 
 class Task(object):

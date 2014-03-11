@@ -3,7 +3,7 @@ from wlvlang.compiler import compiler
 from wlvlang.interpreter.activationrecord import ActivationRecord
 from wlvlang.interpreter.space import ObjectSpace
 
-from wlvlang.runtime.executioncontext import ExecutionContext, InterpreterContext
+from wlvlang.runtime.executioncontext import Task, ThreadLocalSched
 
 def main(args):
 
@@ -13,7 +13,7 @@ def main(args):
         return 1
 
     space = ObjectSpace()
-    ec = ExecutionContext(space)
+    ec = ThreadLocalSched(space)
 
     # Trim command line arguments to pass into source parser
     # these are passed to the method that is created as an 'args'
@@ -26,13 +26,13 @@ def main(args):
     new_arec = ActivationRecord([None] * len(main_method.locals), main_method.literals, main_method.stack_depth, None, method=main_method)
     new_arec.set_local_at(arg_local, arg_array)
 
-    main_context = InterpreterContext()
-    main_context.set_top_frame(new_arec)
+    main_task = Task()
+    main_task.set_top_frame(new_arec)
 
-    ec.add_context(main_context)
+    ec.add_task(main_task)
 
     # Run main context...TODO: Sched
-    ec.run_context(0)
+    ec.run_task(0)
 
     # TODO: Return value
     return 0
