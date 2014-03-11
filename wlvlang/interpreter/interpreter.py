@@ -11,7 +11,7 @@ def get_printable_location(pc, interp, method):
 
 jitdriver = jit.JitDriver(
         greens=['pc', 'interp', 'method'],
-        reds=['frame'],
+        reds=['frame', 'context'],
         virtualizables=['frame'],
         get_printable_location=get_printable_location
     )
@@ -48,12 +48,13 @@ class Interpreter(object):
 
         self.pre_execute(pc, method, frame)
 
-        jitdriver.jit_merge_point(
-                pc=pc,
-                interp=self,
-                frame=frame,
-                method=method
-            )
+        #jitdriver.jit_merge_point(
+        #        pc=pc,
+        #        interp=self,
+        #        frame=frame,
+        #        method=method,
+        #        context=context
+        #    )
 
         bytecode = method.get_bytecode(pc)
 
