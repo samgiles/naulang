@@ -1,57 +1,66 @@
-from rpython.rlib import jit
-
 from wlvlang.interpreter.interpreter import Interpreter
 
 
 _max_interleaved_interp = 10
 
-class ExecutionContext(object):
-    """ Describes an execution context for a task """
-
-    FRESH     = 0
-    SUSPENDED = 1
-    RUNNING   = 2
-    DEAD      = 3
+class ThreadLocalSched(object):
+    """ Describes a scheduler for a number of tasks multiplexed onto a single OS Thread """
 
     def __init__(self, space):
-        self.state = ExecutionContext.FRESH
-        self.contexts = [None] * _max_interleaved_interp
+        self.tasks = [None] * _max_interleaved_interp
+
+        # Points to the current running context in this execution context
         self._context_pointer = 0
+
+        # Points to the slot in which to insert the next context into the
+        # execution context
         self._insert_next = 0
 
+        # Interpreters are mostly stateless (they simply contain code and a
+        # reference to a space), they can be shared between local tasks in an
+        # execution context
         self.interpreter = Interpreter(space)
 
-        # Index of the previous running interpreter
-        self._last_interpreter = 0
+    def add_task(self, task):
+        self.tasks[self._insert_next] = task
+        self._update_insert_next();
 
-    def add_context(self, context):
-        self.contexts[self._insert_next] = context
+    def _update_insert_next(self):
+        slot = 0
+        while slot < _max_interleaved_interp:
 
-        i = 0
-        while i < _max_interleaved_interp:
+            task_slot_usable = self.tasks[slot] is None or self.tasks[slot].get_state() == Interpreter.HALT
 
-            if self.contexts[i] is None:
-                self._insert_next = i
+            if task_slot_usable:
+                self._insert_next = slot
                 return
 
-            if self.contexts[i].get_state() == Interpreter.HALT:
-                self._insert_next = i
-                return
+            slot += 1
 
-            i += 1
+    def _get_next_task(self):
 
-        # TODO: If flow reaches here, next insert will fail or overwrite a
-        # running context
+        # Assume th next slot is the current +1
+        slot = self._context_pointer + 1;
 
-    def _get_next_interpreter(self):
-        pass
+        # But check we haven't gone beyond the bounds of the task list
+        if not slot < _max_interleaved_interp:
+            slot = 0
+
+        while slot < _max_interleaved_interp:
+
+            task_slot_runnable = self.tasks[slot] is not None and self.tasks[slot].get_state() != Interpreter.HALT
+
+            if task_slot_runnable:
+                return self.tasks[slot]
+
+            slot += 1
 
     def run_context(self, index):
         context = self.contexts[index]
         while self.interpreter.interpreter_step(context):
             pass
 
-class InterpreterContext(object):
+class Task(object):
     def __init__(self):
         self._pc = 0
         self._state = Interpreter.CONTINUE
