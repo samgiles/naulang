@@ -130,10 +130,8 @@ class Interpreter(object):
             pc += 1
             local = method.get_bytecode(pc)
             pc += 1
-            task.set_pc(pc)
             new_method = frame.get_local_at(local)
             new_method.invoke(task, self)
-            return True
         elif bytecode == Bytecode.INVOKE_ASYNC:
             pc += 1
             local = method.get_bytecode(pc)
