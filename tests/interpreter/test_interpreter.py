@@ -164,8 +164,10 @@ def test_bc_LOAD_DYNAMIC():
     ])
 
     frame = create_frame(method, 5)
+    task = create_task(frame)
 
-    interpreter.interpret(method, frame)
+    while interpreter.interpreter_step(task):
+        pass
 
     stack_top = frame.peek()
     print repr(stack_top)
@@ -241,6 +243,16 @@ def test_bc_INVOKE():
         Bytecode.HALT
     ], 10, argument_count=0)
 
-    frame = ActivationRecord([None], [], 5, None)
-    mainmethod.invoke(frame, interpreter)
-    assert frame.peek() == Integer(10)
+    import pytest;pytest.set_trace()
+    task = create_task(None)
+    mainmethod.invoke(task)
+
+    last_active_frame = task.get_top_frame();
+    while interpreter.interpreter_step(task):
+        has_task_finished = task.get_top_frame() is None
+        if has_task_finished:
+            break
+
+        last_active_frame = task.get_top_frame()
+
+    assert last_active_frame.peek() == Integer(10)
