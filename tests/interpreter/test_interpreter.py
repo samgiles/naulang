@@ -1,106 +1,126 @@
-import pytest
 
 from wlvlang.interpreter.interpreter import Interpreter
 from wlvlang.interpreter.activationrecord import  ActivationRecord
 from wlvlang.interpreter.bytecode import Bytecode
 from wlvlang.interpreter.space import ObjectSpace
+
 from wlvlang.interpreter.objectspace.integer import Integer
-from wlvlang.interpreter.objectspace.boolean import Boolean
 from wlvlang.interpreter.objectspace.method import Method
 from wlvlang.interpreter.objectspace.array import Array
+
+from wlvlang.runtime.executioncontext import Task
 
 def create_test_method(literals, locals, bytecode):
     """ create_test_method(literals, locals, bytecode) """
     return Method(literals, locals, bytecode, 20)
 
-def create_arec(method, temp_space, parent=None, access_link=None):
-    from wlvlang.interpreter.activationrecord import ActivationRecord
-    return ActivationRecord(method.locals, method.literals, temp_space, parent, access_link)
+def create_frame(method, stack_size, parent=None, access_link=None):
+    return ActivationRecord(stack_size, previous_record=parent, method=method, access_link=access_link)
 
 def create_space_and_interpreter():
     space = ObjectSpace()
     return space, Interpreter(space)
 
-def test_bc_HALT():
-    method = create_test_method([], [], [Bytecode.HALT])
-    arec = create_arec(method, 0)
-    _, interpreter = create_space_and_interpreter()
+def create_task(frame):
+    task = Task()
+    task.set_top_frame(frame)
+    return task
 
-    interpreter.interpret(method, arec)
-    # TODO: Is this needed? No assertions here, but I guess it's a little useful
-    # to have if this code starts failing
+
+def simple_setup(literals=[], locals=[], bytecode=[], stack_space=100):
+    method = create_test_method(literals, locals, bytecode)
+    frame = create_frame(method, stack_space)
+    space, interpreter = create_space_and_interpreter()
+    task = create_task(frame)
+    return space, interpreter, task, frame
+
+def test_bc_HALT():
+    # TODO: Is this test needed? No assertions here, but I guess it's a little useful
+    # to have in case this code starts failing
+    _, interpreter, task, _ = simple_setup(bytecode=[Bytecode.HALT], stack_space=0)
+
+    while interpreter.interpreter_step(task):
+        pass
 
 def test_bc_LOAD_CONST():
-    """ Expected:
-            Load a constant from the literals area of the ActivationRecord
-            on to the top of the stack
+    """ Tests the 'LOAD_CONST n;' bytecode, where n is the offset in the literals' space to load
+
+         Expected:
+            Load a constant from the literals area of the frame on to the top of the stack
     """
-    space, interpreter = create_space_and_interpreter()
-    method = create_test_method([space.new_integer(10)], [None], [Bytecode.LOAD_CONST, 0, Bytecode.HALT])
-    arec = create_arec(method, 1)
+    space, interpreter, task, frame = simple_setup(literals=[Integer(10)], locals=[None], bytecode=[Bytecode.LOAD_CONST, 0, Bytecode.HALT])
 
-    interpreter.interpret(method, arec)
+    while interpreter.interpreter_step(task):
+        pass
 
-    assert arec.pop() == Integer(10)
+    assert frame.peek() == space.new_integer(10)
 
 def test_bc_LOAD():
-    """ Expected:
-            Load a local from the locals area of the ActivationRecord
+    """ Tests the 'LOAD n;' bytecode, where n is the offset in the locals' space to load
+
+        Expected:
+            Load a local from the locals area of the frame
             on to the top of the stack
     """
     space, interpreter = create_space_and_interpreter()
-    method = create_test_method([], [space.new_integer(10)], [Bytecode.LOAD, 0, Bytecode.HALT])
-    arec = create_arec(method, 1)
-    interpreter.interpret(method, arec)
-    assert arec.pop() == Integer(10)
+    space, interpreter, task, frame = simple_setup(literals=[], locals=[None], bytecode=[Bytecode.LOAD, 0])
+
+    frame.set_local_at(0, space.new_integer(10))
+    interpreter.interpreter_step(task)
+
+    assert frame.peek() == Integer(10)
+    assert frame.get_pc() == 2
 
 def test_bc_STORE():
-    """ Expected:
-            Store the local on top of the stack in it's respective
-            position
-    """
-    space, interpreter = create_space_and_interpreter()
-    method = create_test_method([], [None], [Bytecode.STORE, 0, Bytecode.HALT])
-    arec = create_arec(method, 1)
-    arec.push(space.new_integer(100))
-    interpreter.interpret(method, arec)
+    """ Tests the 'STORE n;' bytecode where n is the offset in the locals'
+             space to store the value at the top of the stack to.
 
-    assert arec.get_local_at(0) == Integer(100)
+        Expected:
+            Store the local on top of the stack in it's respective position
+    """
+    space, interpreter, task, frame = simple_setup(literals=[], locals=[None], bytecode=[Bytecode.STORE, 0])
+    frame.push(space.new_integer(100))
+    interpreter.interpreter_step(task)
+
+    assert frame.get_local_at(0) == Integer(100)
+    assert frame.get_pc() == 2
 
 def test_bc_MUL():
-    """ Expected:
-            Store a result of a multiply operation on top of the stack using the values on the stack as arguments (uses the primitive operations)
+    """ Tests the 'MUL;' bytecode
 
-        As these operations depend on the types they are being performed
-        on the objectspace handles the result of these operations.
-        testing one for now is sufficient that the _send operation is
-        sent correctly
+        Expected:
+            Store a result of a multiply operation on top of the stack using the values on the stack as arguments (uses the primitive operations)
     """
 
-    space, interpreter = create_space_and_interpreter()
-    method = create_test_method([], [], [Bytecode.MUL, Bytecode.HALT])
-    arec = create_arec(method, 2)
-    arec.push(space.new_integer(100))
-    arec.push(space.new_integer(30))
-    interpreter.interpret(method, arec)
+    space, interpreter, task, frame = simple_setup(literals=[], locals=[None], bytecode=[Bytecode.MUL])
+    frame.push(space.new_integer(100))
+    frame.push(space.new_integer(30))
+    interpreter.interpreter_step(task)
 
-    assert arec.peek() == Integer(3000)
+    assert frame.peek() == Integer(3000)
+    assert frame.get_pc() == 1
 
 def test_bc_ARRAY_STORE():
-    """ Expected:
+    """  Tests the 'ARRAY_STORE;' bytecode which takes three values from the stack,
+            the top value it pops off is the value it will place into the array,
+            the next value is the index in the array
+            and finally the, the last value is the array object
+    Expected:
+        Store the top of the stack into the index specified in top_of_stack - 1, in
+        the array object found at top_of_stack - 2
 
     """
-    space, interpreter = create_space_and_interpreter()
-    method = create_test_method([], [], [Bytecode.ARRAY_STORE, Bytecode.HALT])
-    arec = create_arec(method, 4)
+
+    space, interpreter, task, frame = simple_setup(literals=[], locals=[], bytecode=[Bytecode.ARRAY_STORE])
 
     array = space.new_array(10)
-    arec.push(array)
-    arec.push(space.new_integer(0))
-    arec.push(space.new_integer(100))
-    interpreter.interpret(method, arec)
+    frame.push(array)
+    frame.push(space.new_integer(0))
+    frame.push(space.new_integer(100))
+    interpreter.interpreter_step(task)
 
     assert array.get_value_at(0) == Integer(100)
+    assert frame.get_pc() == 1
 
 def test_bc_ARRAY_LOAD():
     """ Expected:
@@ -108,13 +128,13 @@ def test_bc_ARRAY_LOAD():
 
     space, interpreter = create_space_and_interpreter()
     method = create_test_method([], [], [Bytecode.ARRAY_LOAD, Bytecode.HALT])
-    arec = create_arec(method, 4)
+    frame = create_frame(method, 4)
 
     array = space.new_array(10)
     array.set_value_at(0, space.new_integer(900))
-    arec.push(array)
-    arec.push(space.new_integer(0))
-    interpreter.interpret(method, arec)
+    frame.push(array)
+    frame.push(space.new_integer(0))
+    interpreter.interpret(method, frame)
 
 def test_bc_LOAD_DYNAMIC():
     space, interpreter = create_space_and_interpreter()
@@ -137,11 +157,11 @@ def test_bc_LOAD_DYNAMIC():
         Bytecode.HALT
     ])
 
-    arec = create_arec(method, 5)
+    frame = create_frame(method, 5)
 
-    interpreter.interpret(method, arec)
+    interpreter.interpret(method, frame)
 
-    stack_top = arec.peek()
+    stack_top = frame.peek()
     print repr(stack_top)
     assert stack_top == Integer(100)
 
@@ -149,37 +169,37 @@ def test_bc_LOAD_DYNAMIC():
 def test_bc_GREATER_THAN_EQ():
     space, interpreter = create_space_and_interpreter()
     method = create_test_method([], [], [Bytecode.GREATER_THAN_EQ, Bytecode.HALT])
-    arec = create_arec(method, 2)
-    arec.push(space.new_integer(10))
-    arec.push(space.new_integer(20))
-    interpreter.interpret(method, arec)
+    frame = create_frame(method, 2)
+    frame.push(space.new_integer(10))
+    frame.push(space.new_integer(20))
+    interpreter.interpret(method, frame)
 
-    assert arec.peek() == space.new_boolean(False)
+    assert frame.peek() == space.new_boolean(False)
 
-    arec = create_arec(method, 2)
-    arec.push(space.new_integer(20))
-    arec.push(space.new_integer(20))
-    interpreter.interpret(method, arec)
+    frame = create_frame(method, 2)
+    frame.push(space.new_integer(20))
+    frame.push(space.new_integer(20))
+    interpreter.interpret(method, frame)
 
-    assert arec.peek() == space.new_boolean(True)
+    assert frame.peek() == space.new_boolean(True)
 
-    arec = create_arec(method, 2)
-    arec.push(space.new_integer(30))
-    arec.push(space.new_integer(20))
-    interpreter.interpret(method, arec)
+    frame = create_frame(method, 2)
+    frame.push(space.new_integer(30))
+    frame.push(space.new_integer(20))
+    interpreter.interpret(method, frame)
 
-    assert arec.peek() == space.new_boolean(True)
+    assert frame.peek() == space.new_boolean(True)
 
 def test_bc_INVOKE_GLOBAL():
     space, interpreter = create_space_and_interpreter()
     method = create_test_method([], [], [Bytecode.INVOKE_GLOBAL, 0, Bytecode.HALT])
 
-    arec = create_arec(method, 3)
-    arec.push(space.new_integer(10))
+    frame = create_frame(method, 3)
+    frame.push(space.new_integer(10))
 
-    interpreter.interpret(method, arec)
+    interpreter.interpret(method, frame)
 
-    assert isinstance(arec.peek(), Array)
+    assert isinstance(frame.peek(), Array)
 
 def test_bc_INVOKE():
     space, interpreter = create_space_and_interpreter()
@@ -215,6 +235,6 @@ def test_bc_INVOKE():
         Bytecode.HALT
     ], 10, argument_count=0)
 
-    arec = ActivationRecord([None], [], 5, None)
-    mainmethod.invoke(arec, interpreter)
-    assert arec.peek() == Integer(10)
+    frame = ActivationRecord([None], [], 5, None)
+    mainmethod.invoke(frame, interpreter)
+    assert frame.peek() == Integer(10)

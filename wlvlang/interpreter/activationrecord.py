@@ -12,21 +12,29 @@ class ActivationRecord(Object):
         Defines an Activation Record.
     """
 
-    def __init__(self, locals, literals, temp_size, previous_record=None, method=None, access_link=None):
+    def __init__(self, stack_size,
+                 previous_record=None, method=None,
+                 access_link=None):
         self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
 
-        self._stack = [None] * (temp_size)
+        self._stack = [None] * stack_size
         self._stack_pointer = r_uint(0)
 
         self.previous_record = previous_record
         self.access_link = access_link
 
-        self._locals = locals
-        self._literals = literals
+        self._locals = [None] * len(method.locals)
+        self._literals = method.literals
         self._set_up_local_methods()
 
-        self.saved_pc = -1
+        self._pc = 0
         self.method = method
+
+    def set_pc(self, pc):
+        self._pc = pc
+
+    def get_pc(self):
+        return self._pc
 
     def _set_up_local_methods(self):
         from wlvlang.interpreter.objectspace.method import Method

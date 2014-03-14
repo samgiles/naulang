@@ -61,10 +61,16 @@ class ThreadLocalSched(object):
             pass
 
 class Task(object):
-    def __init__(self):
+    def __init__(self, parent=None):
+        """ Create a new task
+
+            kwargs:
+                parent  -- The task that spawned this task.
+        """
         self._pc = 0
         self._state = Interpreter.CONTINUE
         self.top_frame = None
+        self.parent = parent
 
     def get_top_frame(self):
         return self.top_frame
@@ -89,14 +95,11 @@ class Task(object):
     def get_current_method(self):
         return self.top_frame.method
 
-    def set_pc(self, pc):
-        self._pc = pc
-
-    def get_pc(self):
-        return self._pc
-
     def get_state(self):
         return self._state
 
     def set_state(self, state):
         self._state = state
+
+    def __eq__(self, other):
+        return elf._state == other._state and self.top_frame == other.top_frame and self.parent == other.parent
