@@ -123,18 +123,24 @@ def test_bc_ARRAY_STORE():
     assert frame.get_pc() == 1
 
 def test_bc_ARRAY_LOAD():
-    """ Expected:
+    """ Tests the 'ARRAY_LOAD;' bytecode which takes two values from the stack,
+            the top value is the index to access
+            the next value on the stack is the array
+        Expected:
+            Put the value in the array (top_of_stack - 2) at the index (top_of_stack - 1) on top
+            of the stack.
     """
 
-    space, interpreter = create_space_and_interpreter()
-    method = create_test_method([], [], [Bytecode.ARRAY_LOAD, Bytecode.HALT])
-    frame = create_frame(method, 4)
+    space, interpreter, task, frame = simple_setup(literals=[], locals=[], bytecode=[Bytecode.ARRAY_LOAD])
 
     array = space.new_array(10)
     array.set_value_at(0, space.new_integer(900))
     frame.push(array)
     frame.push(space.new_integer(0))
-    interpreter.interpret(method, frame)
+    interpreter.interpreter_step(task)
+
+    assert frame.peek() == Integer(900)
+    assert frame.get_pc() == 1
 
 def test_bc_LOAD_DYNAMIC():
     space, interpreter = create_space_and_interpreter()
