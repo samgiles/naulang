@@ -1,8 +1,10 @@
 import pytest
 
 from wlvlang.interpreter.activationrecord import ActivationRecord
+
 from wlvlang.interpreter.objectspace.integer import Integer
 from wlvlang.interpreter.objectspace.boolean import Boolean
+from wlvlang.interpreter.objectspace.method import Method
 from wlvlang.interpreter.objectspace.primitives.integer_primitive import _mul, _add, _div, _mod, _sub, _eq
 
 from wlvlang.interpreter.interpreter import Interpreter
@@ -14,7 +16,9 @@ def test_get_value():
     assert subject.get_integer_value() == 42
 
 def setup_primitive_test(left_int, right_int):
-    arec = ActivationRecord([], [], 2, None)
+    # Create an empty method object (it's not used in these tests)
+    m = Method([], 0, [], 2)
+    arec = ActivationRecord(previous_record=None, method=m, access_link=None)
 
     arec.push(Integer(left_int))
     arec.push(Integer(right_int))
