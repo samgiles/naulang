@@ -27,7 +27,7 @@ def create_task(frame):
     return task
 
 
-def simple_setup(literals=[], locals=[], bytecode=[]):
+def simple_setup(literals=[], locals=0, bytecode=[]):
     method = create_test_method(literals, locals, bytecode)
     frame = create_frame(method)
     space, interpreter = create_space_and_interpreter()
@@ -48,7 +48,7 @@ def test_bc_LOAD_CONST():
          Expected:
             Load a constant from the literals area of the frame on to the top of the stack
     """
-    space, interpreter, task, frame = simple_setup(literals=[Integer(10)], locals=[None], bytecode=[Bytecode.LOAD_CONST, 0, Bytecode.HALT])
+    space, interpreter, task, frame = simple_setup(literals=[Integer(10)], locals=1, bytecode=[Bytecode.LOAD_CONST, 0, Bytecode.HALT])
 
     while interpreter.interpreter_step(task):
         pass
@@ -63,7 +63,7 @@ def test_bc_LOAD():
             on to the top of the stack
     """
     space, interpreter = create_space_and_interpreter()
-    space, interpreter, task, frame = simple_setup(literals=[], locals=[None], bytecode=[Bytecode.LOAD, 0])
+    space, interpreter, task, frame = simple_setup(literals=[], locals=1, bytecode=[Bytecode.LOAD, 0])
 
     frame.set_local_at(0, space.new_integer(10))
     interpreter.interpreter_step(task)
@@ -78,7 +78,7 @@ def test_bc_STORE():
         Expected:
             Store the local on top of the stack in it's respective position
     """
-    space, interpreter, task, frame = simple_setup(literals=[], locals=[None], bytecode=[Bytecode.STORE, 0])
+    space, interpreter, task, frame = simple_setup(literals=[], locals=1, bytecode=[Bytecode.STORE, 0])
     frame.push(space.new_integer(100))
     interpreter.interpreter_step(task)
 
@@ -92,7 +92,7 @@ def test_bc_MUL():
             Store a result of a multiply operation on top of the stack using the values on the stack as arguments (uses the primitive operations)
     """
 
-    space, interpreter, task, frame = simple_setup(literals=[], locals=[None], bytecode=[Bytecode.MUL])
+    space, interpreter, task, frame = simple_setup(literals=[], locals=1, bytecode=[Bytecode.MUL])
     frame.push(space.new_integer(100))
     frame.push(space.new_integer(30))
     interpreter.interpreter_step(task)
@@ -111,7 +111,7 @@ def test_bc_ARRAY_STORE():
 
     """
 
-    space, interpreter, task, frame = simple_setup(literals=[], locals=[], bytecode=[Bytecode.ARRAY_STORE])
+    space, interpreter, task, frame = simple_setup(literals=[], locals=0, bytecode=[Bytecode.ARRAY_STORE])
 
     array = space.new_array(10)
     frame.push(array)
@@ -131,7 +131,7 @@ def test_bc_ARRAY_LOAD():
             of the stack.
     """
 
-    space, interpreter, task, frame = simple_setup(literals=[], locals=[], bytecode=[Bytecode.ARRAY_LOAD])
+    space, interpreter, task, frame = simple_setup(literals=[], locals=0, bytecode=[Bytecode.ARRAY_LOAD])
 
     array = space.new_array(10)
     array.set_value_at(0, space.new_integer(900))
@@ -147,13 +147,13 @@ def test_bc_LOAD_DYNAMIC():
     outer_integer = space.new_integer(100)
     method = create_test_method(literals=[
         outer_integer,
-        create_test_method([], [], [
+        create_test_method([], 0, [
                 Bytecode.LOAD_DYNAMIC, 0, 1,
                 Bytecode.RETURN,
                 Bytecode.HALT
             ])
     ],
-    locals=[None, None],
+    locals=2,
     bytecode=[
         Bytecode.LOAD_CONST, 0,
         Bytecode.STORE, 0,
@@ -180,7 +180,7 @@ def test_bc_GREATER_THAN_EQ():
             The values on top of the stack should be compared and a boolean should be
             placed on top of the stack
     """
-    space, interpreter, task, frame = simple_setup(literals=[], locals=[], bytecode=[Bytecode.GREATER_THAN_EQ, 0])
+    space, interpreter, task, frame = simple_setup(literals=[], locals=0, bytecode=[Bytecode.GREATER_THAN_EQ, 0])
 
     frame.push(space.new_integer(10))
     frame.push(space.new_integer(20))
@@ -207,7 +207,7 @@ def test_bc_INVOKE_GLOBAL():
         Expected:
             Put an array sized by the value on top of the stack onto the top of the stack
     """
-    space, interpreter, task, frame = simple_setup(literals=[], locals=[], bytecode=[Bytecode.INVOKE_GLOBAL, 0])
+    space, interpreter, task, frame = simple_setup(literals=[], locals=0, bytecode=[Bytecode.INVOKE_GLOBAL, 0])
     frame.push(space.new_integer(10))
 
     interpreter.interpreter_step(task)
@@ -216,7 +216,7 @@ def test_bc_INVOKE_GLOBAL():
 
 def test_bc_INVOKE():
     space, interpreter = create_space_and_interpreter()
-    innerMethod = Method([], [None], [
+    innerMethod = Method([], 1, [
         Bytecode.LOAD, 0,
         Bytecode.LOAD_DYNAMIC, 0, 1,
         Bytecode.MUL,
@@ -224,13 +224,13 @@ def test_bc_INVOKE():
         Bytecode.HALT
     ], 2, argument_count=1)
 
-    method = Method([innerMethod], [None], [
+    method = Method([innerMethod], 1, [
         Bytecode.LOAD_CONST, 0,
         Bytecode.RETURN,
         Bytecode.HALT
     ], 1, argument_count=1)
 
-    mainmethod = Method([method, Integer(2), Integer(3), Integer(10)], [None, None, None], [
+    mainmethod = Method([method, Integer(2), Integer(3), Integer(10)], 3, [
         Bytecode.LOAD_CONST, 0,
         Bytecode.STORE, 0,
         Bytecode.LOAD_CONST, 1,

@@ -2,7 +2,6 @@ from wlvlang.interpreter.objectspace.object import Object
 from wlvlang.interpreter.activationrecord import ActivationRecord
 
 from rpython.rlib import jit
-from rpython.rlib import rthread
 
 class Method(Object):
     """ Defines a Method in wlvlang. """
@@ -14,9 +13,9 @@ class Method(Object):
             "stack_depth",
         ]
 
-    def __init__(self, literals, locals, bytecodes, stack_depth, argument_count=0):
+    def __init__(self, literals, local_count, bytecodes, stack_depth, argument_count=0):
         self.literals = literals
-        self.locals = locals
+        self.local_count = local_count
         self.bytecodes = bytecodes
         self.argument_count = argument_count
         self.enclosing_arec = None
@@ -36,7 +35,7 @@ class Method(Object):
         return self.literals
 
     def copy(self):
-        return Method(self.literals, self.locals, self.bytecodes, self.stack_depth, argument_count=self.argument_count)
+        return Method(self.literals, self.local_count, self.bytecodes, self.stack_depth, argument_count=self.argument_count)
 
     def async_invoke(self, context, interpreter):
         self.invoke(context, interpreter)

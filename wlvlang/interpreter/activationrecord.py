@@ -4,13 +4,10 @@ from rpython.rlib import jit
 from rpython.rlib.rarithmetic import r_uint
 
 class ActivationRecord(Object):
+    """ Defines an Activation Record. """
 
     _virtualizable_ = ["_locals[*]", "_literals[*]", "_stack_pointer", "_stack[*]"]
     _immutable_fields_ = ["_literals", "_locals", "_stack"]
-
-    """
-        Defines an Activation Record.
-    """
 
     def __init__(self, previous_record=None, method=None,
                  access_link=None):
@@ -22,7 +19,7 @@ class ActivationRecord(Object):
         self.previous_record = previous_record
         self.access_link = access_link
 
-        self._locals = [None] * len(method.locals)
+        self._locals = [None] * method.local_count
         self._literals = method.literals
         self._set_up_local_methods()
 
