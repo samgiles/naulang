@@ -36,9 +36,18 @@ class Interpreter(object):
         new_method = self.space.get_builtin_function(global_index)
         new_method.invoke(task, self)
 
+    def _invoke_method(self, method_at_local, task):
+        new_method = task.get_top_frame().get_local_at(method_at_local)
+        new_method.invoke(task)
+
     @jit.unroll_safe
     def interpreter_step(self, task):
         frame = task.get_top_frame()
+
+        if frame is None:
+            task.set_state(Interpreter.HALT)
+            return False
+
         pc = frame.get_pc()
         method = task.get_current_method()
 
@@ -127,11 +136,21 @@ class Interpreter(object):
             self._invoke_primitive(task, "print")
             pc += 1
         elif bytecode == Bytecode.INVOKE:
-            pc += 1
-            local = method.get_bytecode(pc)
-            pc += 1
-            new_method = frame.get_local_at(local)
-            new_method.invoke(task, self)
+            pc += 2
+            local = method.get_bytecode(pc - 1)
+
+            # Unlike other bytecodes, the invoke method
+            # alters the state of the task currently running,
+            # therefore by the time _invoke_method has successfully
+            # returned the frame will belong to the new method, advancing and
+            # saving the stack pointer at that point makes no sense and would
+            # result in some missed instructions in the new method
+            # In order to restart the interpreter loop we return early after
+            # this call to _invoke_method
+            frame.set_pc(pc)
+            self._invoke_method(local, task)
+            return True
+
         elif bytecode == Bytecode.INVOKE_ASYNC:
             pc += 1
             local = method.get_bytecode(pc)

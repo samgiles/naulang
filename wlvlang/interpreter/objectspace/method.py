@@ -41,17 +41,16 @@ class Method(Object):
     def async_invoke(self, context, interpreter):
         self.invoke(context, interpreter)
 
-    def invoke(self, context, interpreter):
+    def invoke(self, current_task):
         jit.promote(self)
-        jit.promote(context)
 
-        new_arec = ActivationRecord([None] * len(self.locals), self.literals, self.stack_depth, context.get_top_frame(), method=self, access_link=self.get_enclosing_arec())
+        frame = ActivationRecord(self.stack_depth, previous_record=current_task.get_top_frame(), method=self, access_link=self.get_enclosing_arec())
 
         # Push arguments into locals of new arec
         for i in range(0, self.argument_count):
-            new_arec.set_local_at(i, context.get_top_frame().pop())
+            frame.set_local_at(i, current_task.get_top_frame().pop())
 
-        context.set_top_frame(new_arec)
+        current_task.set_top_frame(frame)
 
     def get_class(self, space):
         return space.methodClass

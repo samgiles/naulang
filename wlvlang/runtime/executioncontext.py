@@ -67,7 +67,6 @@ class Task(object):
             kwargs:
                 parent  -- The task that spawned this task.
         """
-        self._pc = 0
         self._state = Interpreter.CONTINUE
         self.top_frame = None
         self.parent = parent
@@ -90,7 +89,6 @@ class Task(object):
 
     def restore_previous_frame(self):
         self.top_frame = self.get_top_frame().get_previous_record()
-        self._pc = self.top_frame.saved_pc
 
     def get_current_method(self):
         return self.top_frame.method
@@ -102,4 +100,4 @@ class Task(object):
         self._state = state
 
     def __eq__(self, other):
-        return elf._state == other._state and self.top_frame == other.top_frame and self.parent == other.parent
+        return self._state == other._state and self.top_frame == other.top_frame and self.parent == other.parent
