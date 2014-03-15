@@ -12,12 +12,11 @@ class ActivationRecord(Object):
         Defines an Activation Record.
     """
 
-    def __init__(self, stack_size,
-                 previous_record=None, method=None,
+    def __init__(self, previous_record=None, method=None,
                  access_link=None):
         self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
 
-        self._stack = [None] * stack_size
+        self._stack = [None] * method.stack_depth
         self._stack_pointer = r_uint(0)
 
         self.previous_record = previous_record

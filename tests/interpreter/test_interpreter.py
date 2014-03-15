@@ -14,8 +14,8 @@ def create_test_method(literals, locals, bytecode):
     """ create_test_method(literals, locals, bytecode) """
     return Method(literals, locals, bytecode, 20)
 
-def create_frame(method, stack_size, parent=None, access_link=None):
-    return ActivationRecord(stack_size, previous_record=parent, method=method, access_link=access_link)
+def create_frame(method, parent=None, access_link=None):
+    return ActivationRecord(previous_record=parent, method=method, access_link=access_link)
 
 def create_space_and_interpreter():
     space = ObjectSpace()
@@ -27,9 +27,9 @@ def create_task(frame):
     return task
 
 
-def simple_setup(literals=[], locals=[], bytecode=[], stack_space=100):
+def simple_setup(literals=[], locals=[], bytecode=[]):
     method = create_test_method(literals, locals, bytecode)
-    frame = create_frame(method, stack_space)
+    frame = create_frame(method)
     space, interpreter = create_space_and_interpreter()
     task = create_task(frame)
     return space, interpreter, task, frame
@@ -37,7 +37,7 @@ def simple_setup(literals=[], locals=[], bytecode=[], stack_space=100):
 def test_bc_HALT():
     # TODO: Is this test needed? No assertions here, but I guess it's a little useful
     # to have in case this code starts failing
-    _, interpreter, task, _ = simple_setup(bytecode=[Bytecode.HALT], stack_space=0)
+    _, interpreter, task, _ = simple_setup(bytecode=[Bytecode.HALT])
 
     while interpreter.interpreter_step(task):
         pass
@@ -145,7 +145,7 @@ def test_bc_ARRAY_LOAD():
 def test_bc_LOAD_DYNAMIC():
     space, interpreter = create_space_and_interpreter()
     outer_integer = space.new_integer(100)
-    method = create_test_method([
+    method = create_test_method(literals=[
         outer_integer,
         create_test_method([], [], [
                 Bytecode.LOAD_DYNAMIC, 0, 1,
@@ -153,8 +153,8 @@ def test_bc_LOAD_DYNAMIC():
                 Bytecode.HALT
             ])
     ],
-    [None, None],
-    [
+    locals=[None, None],
+    bytecode=[
         Bytecode.LOAD_CONST, 0,
         Bytecode.STORE, 0,
         Bytecode.LOAD_CONST, 1,
@@ -175,37 +175,42 @@ def test_bc_LOAD_DYNAMIC():
 
 
 def test_bc_GREATER_THAN_EQ():
-    space, interpreter = create_space_and_interpreter()
-    method = create_test_method([], [], [Bytecode.GREATER_THAN_EQ, Bytecode.HALT])
-    frame = create_frame(method, 2)
+    """ Tests the 'GREATER_THAN_EQ;' bytecode
+        Expected:
+            The values on top of the stack should be compared and a boolean should be
+            placed on top of the stack
+    """
+    space, interpreter, task, frame = simple_setup(literals=[], locals=[], bytecode=[Bytecode.GREATER_THAN_EQ, 0])
+
     frame.push(space.new_integer(10))
     frame.push(space.new_integer(20))
-    interpreter.interpret(method, frame)
+    interpreter.interpreter_step(task)
 
-    assert frame.peek() == space.new_boolean(False)
+    assert frame.pop() == space.new_boolean(False)
 
-    frame = create_frame(method, 2)
     frame.push(space.new_integer(20))
     frame.push(space.new_integer(20))
-    interpreter.interpret(method, frame)
+    frame.set_pc(0)
+    interpreter.interpreter_step(task)
 
-    assert frame.peek() == space.new_boolean(True)
+    assert frame.pop() == space.new_boolean(True)
 
-    frame = create_frame(method, 2)
     frame.push(space.new_integer(30))
     frame.push(space.new_integer(20))
-    interpreter.interpret(method, frame)
+    frame.set_pc(0)
+    interpreter.interpreter_step(task)
 
-    assert frame.peek() == space.new_boolean(True)
+    assert frame.pop() == space.new_boolean(True)
 
 def test_bc_INVOKE_GLOBAL():
-    space, interpreter = create_space_and_interpreter()
-    method = create_test_method([], [], [Bytecode.INVOKE_GLOBAL, 0, Bytecode.HALT])
-
-    frame = create_frame(method, 3)
+    """ Tests the 'INVOKE_GLOBAL n;' expect the global method identified by n to be executed
+        Expected:
+            Put an array sized by the value on top of the stack onto the top of the stack
+    """
+    space, interpreter, task, frame = simple_setup(literals=[], locals=[], bytecode=[Bytecode.INVOKE_GLOBAL, 0])
     frame.push(space.new_integer(10))
 
-    interpreter.interpret(method, frame)
+    interpreter.interpreter_step(task)
 
     assert isinstance(frame.peek(), Array)
 
@@ -243,7 +248,6 @@ def test_bc_INVOKE():
         Bytecode.HALT
     ], 10, argument_count=0)
 
-    import pytest;pytest.set_trace()
     task = create_task(None)
     mainmethod.invoke(task)
 

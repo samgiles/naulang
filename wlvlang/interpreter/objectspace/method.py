@@ -44,7 +44,7 @@ class Method(Object):
     def invoke(self, current_task):
         jit.promote(self)
 
-        frame = ActivationRecord(self.stack_depth, previous_record=current_task.get_top_frame(), method=self, access_link=self.get_enclosing_arec())
+        frame = ActivationRecord(previous_record=current_task.get_top_frame(), method=self, access_link=self.get_enclosing_arec())
 
         # Push arguments into locals of new arec
         for i in range(0, self.argument_count):
