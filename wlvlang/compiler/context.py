@@ -128,7 +128,7 @@ class FunctionCompilerContext(object):
         for i in range(0, len(literals)):
             literals[i] = self.literals[i]
 
-        return Method(literals, locals, bytecode, stack_depth, argument_count=self.parameter_count)
+        return Method(literals, len(locals), bytecode, stack_depth, argument_count=self.parameter_count)
 
     def _calculate_stack_depth(self, finalized_bytecode):
         max_depth = 0

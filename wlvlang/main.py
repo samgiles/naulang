@@ -13,7 +13,7 @@ def main(args):
         return 1
 
     space = ObjectSpace()
-    ec = ThreadLocalSched(space)
+    sched = ThreadLocalSched(space)
 
     # Trim command line arguments to pass into source parser
     # these are passed to the method that is created as an 'args'
@@ -23,16 +23,16 @@ def main(args):
     # Add file arguments into 'args' array parameter
     # Activation record is None
 
-    new_arec = ActivationRecord([None] * len(main_method.locals), main_method.literals, main_method.stack_depth, None, method=main_method)
+    new_arec = ActivationRecord(method=main_method)
     new_arec.set_local_at(arg_local, arg_array)
 
     main_task = Task()
     main_task.set_top_frame(new_arec)
 
-    ec.add_task(main_task)
+    sched.add_task(main_task)
 
     # Run main context...TODO: Sched
-    ec.run_task(0)
+    sched.run_task(0)
 
     # TODO: Return value
     return 0
