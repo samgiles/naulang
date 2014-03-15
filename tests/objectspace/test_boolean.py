@@ -1,10 +1,11 @@
-import pytest
-
-from wlvlang.interpreter.objectspace.boolean import Boolean
 from wlvlang.interpreter.activationrecord import ActivationRecord
-from wlvlang.interpreter.objectspace.primitives.boolean_primitive import _eq, _or, _and
 from wlvlang.interpreter.interpreter import Interpreter
 from wlvlang.interpreter.space import ObjectSpace
+
+from wlvlang.interpreter.objectspace.method import Method
+from wlvlang.interpreter.objectspace.boolean import Boolean
+
+from wlvlang.interpreter.objectspace.primitives.boolean_primitive import _eq, _or, _and
 
 def test_get_value():
     subjecta = Boolean(True)
@@ -14,7 +15,9 @@ def test_get_value():
     assert subjectb.get_boolean_value() == False
 
 def setup_primitive_test(left_val, right_val):
-    arec = ActivationRecord([], [], 2, None)
+    # Create an empty method object (it's not used in these tests)
+    m = Method([], 0, [], 2)
+    arec = ActivationRecord(previous_record=None, method=m, access_link=None)
 
     arec.push(Boolean(left_val))
     arec.push(Boolean(right_val))
