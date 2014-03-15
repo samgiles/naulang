@@ -3,7 +3,7 @@ PYTEST?=py.test
 PYTESTARGS=
 RPYTHON?=$(PYPYPATH)/rpython/bin/rpython
 
-all: test_compiler test_interpreter test_vmobjects test_vm
+all: test_all
 
 compile: debugger bin/wlvlang-python wlvlang-no-jit
 
@@ -31,6 +31,9 @@ bin/wlvdbg:
 
 createdist:
 	python setup.py sdist
+
+test_all:
+	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/**/test_*.py
 
 test_compiler:
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/compiler/test_*.py
