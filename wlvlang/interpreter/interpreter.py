@@ -6,12 +6,12 @@ from wlvlang.interpreter.objectspace.method import Method
 
 from rpython.rlib import jit
 
-def get_printable_location(pc, interp, method):
+def get_printable_location(pc, interp, method, task):
     return "%d: %s" % (pc, bytecode_names[method.get_bytecode(pc)])
 
 jitdriver = jit.JitDriver(
-        greens=['pc', 'interp', 'method'],
-        reds=['frame', 'task'],
+        greens=['pc', 'interp', 'method', 'task'],
+        reds=['frame'],
         virtualizables=['frame'],
         get_printable_location=get_printable_location
     )
@@ -46,6 +46,7 @@ class Interpreter(object):
 
     @jit.unroll_safe
     def interpreter_step(self, task):
+        assert task is not None
         frame = task.get_top_frame()
 
         if frame is None:
