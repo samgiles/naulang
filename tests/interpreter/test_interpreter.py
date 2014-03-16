@@ -202,6 +202,34 @@ def test_bc_GREATER_THAN_EQ():
 
     assert frame.pop() == space.new_boolean(True)
 
+def test_bc_LESS_THAN():
+    """ Tests the 'LESS_THAN;' bytecode
+        Expected:
+            The values on top of the stack should be compared and a boolean should be
+            placed on top of the stack
+    """
+    space, interpreter, task, frame = simple_setup(literals=[], locals=0, bytecode=[Bytecode.LESS_THAN, 0])
+
+    frame.push(space.new_integer(20))
+    frame.push(space.new_integer(10))
+    interpreter.interpreter_step(task)
+
+    assert frame.pop() == space.new_boolean(False)
+
+    frame.push(space.new_integer(20))
+    frame.push(space.new_integer(20))
+    frame.set_pc(0)
+    interpreter.interpreter_step(task)
+
+    assert frame.pop() == space.new_boolean(False)
+
+    frame.push(space.new_integer(10))
+    frame.push(space.new_integer(20))
+    frame.set_pc(0)
+    interpreter.interpreter_step(task)
+
+    assert frame.pop() == space.new_boolean(True)
+
 def test_bc_INVOKE_GLOBAL():
     """ Tests the 'INVOKE_GLOBAL n;' expect the global method identified by n to be executed
         Expected:
