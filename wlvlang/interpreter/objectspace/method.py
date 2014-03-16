@@ -37,8 +37,8 @@ class Method(Object):
     def copy(self):
         return Method(self.literals, self.local_count, self.bytecodes, self.stack_depth, argument_count=self.argument_count)
 
-    def async_invoke(self, task):
-        self.invoke(task)
+    def async_invoke(self, context, interpreter):
+        self.invoke(context, interpreter)
 
     def invoke(self, current_task):
         jit.promote(self)

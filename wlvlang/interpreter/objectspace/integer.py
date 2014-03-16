@@ -1,7 +1,5 @@
 from wlvlang.interpreter.objectspace.object import Object
 
-from wlvlang.interpreter.objectspace.primitives.integer_primitive import integer_prims
-
 class Integer(Object):
 
     _immutable_fields_ = ["value"]
@@ -26,13 +24,3 @@ class Integer(Object):
 
     def __eq__(self, other):
         return isinstance(other, Integer) and self.value == other.value
-
-# Initialise primitive methods at bootstrap time
-def _setup_prims():
-    """ NOT_RPYTHON """
-    prims = integer_prims()
-
-    for function in prims:
-        setattr(Integer, function.__name__, function)
-
-_setup_prims()

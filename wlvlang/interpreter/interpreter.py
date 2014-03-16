@@ -27,9 +27,9 @@ class Interpreter(object):
     def __init__(self, space):
         self.space = space
 
-    def _invoke_primitive(self, task, id):
+    def _invoke_primitive(self, task, signature):
         frame = task.get_top_frame()
-        invokable = frame.peek().get_class(self.space).lookup_invokable(id)
+        invokable = frame.peek().get_class(self.space).lookup_invokable(signature)
         invokable(None, frame, self)
 
     def _invoke_global(self, global_index, task):
@@ -42,7 +42,6 @@ class Interpreter(object):
 
     @jit.unroll_safe
     def interpreter_step(self, task):
-        assert task is not None
         frame = task.get_top_frame()
 
         if frame is None:
@@ -157,7 +156,7 @@ class Interpreter(object):
             local = method.get_bytecode(pc)
             new_method = frame.get_local_at(local)
             assert isinstance(new_method, Method)
-            new_method.async_invoke(task)
+            new_method.async_invoke(task, self)
             pc += 1
         elif bytecode == Bytecode.INVOKE_GLOBAL:
             pc += 1

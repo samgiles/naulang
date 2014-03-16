@@ -34,6 +34,7 @@ createdist:
 
 test_all:
 	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/**/test_*.py
+	tests/functional/wlvtest.py ./bin/wlvlang-python ./tests/functional
 
 test_compiler:
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/compiler/test_*.py
@@ -47,12 +48,8 @@ test_objectspace:
 test_runtime:
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/runtime/test_*.py
 
-test_full_run:
-	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. python wlvlang/targetstandalone.py tests/sources/test_simple_function.wl
-
 test_functional: bin/wlvlang-python
-	@tests/functional/wlvtest.py --xml ./bin/wlvlang-python ./tests/functional
-
+	tests/functional/wlvtest.py --xml ./bin/wlvlang-python ./tests/functional
 
 clean:
 	rm -rf MANIFEST
