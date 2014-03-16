@@ -38,7 +38,11 @@ class Interpreter(object):
 
     def _invoke_method(self, method_at_local, task):
         new_method = task.get_top_frame().get_local_at(method_at_local)
+        assert isinstance(new_method, Method)
         new_method.invoke(task)
+
+    def _invoke_method_async(self, method_at_local, task):
+        self._invoke_method(method_at_local, task)
 
     @jit.unroll_safe
     def interpreter_step(self, task):
@@ -152,12 +156,14 @@ class Interpreter(object):
             return True
 
         elif bytecode == Bytecode.INVOKE_ASYNC:
-            pc += 1
-            local = method.get_bytecode(pc)
-            new_method = frame.get_local_at(local)
-            assert isinstance(new_method, Method)
-            new_method.async_invoke(task, self)
-            pc += 1
+            pc += 2
+            local = method.get_bytecode(pc - 1)
+            # TODO: When this method invocation is made asynchronous we
+            # shouldn't need to save the pc before calling the method (I don't
+            # think)
+            frame.set_pc(pc)
+            self._invoke_method_async(local, task)
+            return True
         elif bytecode == Bytecode.INVOKE_GLOBAL:
             pc += 1
             global_index = method.get_bytecode(pc)
@@ -219,7 +225,7 @@ class Interpreter(object):
                 received = channel.receive()
             except YieldException:
                 task.set_state(Interpreter.YIELD)
-                task.set_pc(pc)
+                frame.set_pc(pc)
                 return False
 
             frame.pop()
