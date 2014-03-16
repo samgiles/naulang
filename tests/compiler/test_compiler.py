@@ -1,3 +1,4 @@
+import pytest
 from wlvlang.compiler import ast
 from wlvlang.compiler.context import FunctionCompilerContext
 from wlvlang.compiler.compiler import SyntaxDirectedTranslator
@@ -215,6 +216,7 @@ def test_ast_printstatement():
 
     assert ctx.get_bytecode() == [90, Bytecode.PRINT]
 
+@pytest.mark.xfail
 def test_ast_functionstatement():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)

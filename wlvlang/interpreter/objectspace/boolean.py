@@ -1,4 +1,5 @@
 from wlvlang.interpreter.objectspace.object import Object
+from wlvlang.interpreter.objectspace.primitives.boolean_primitive import boolean_prims
 
 class Boolean(Object):
     """ Represents a Boolean object """
@@ -22,3 +23,13 @@ class Boolean(Object):
 
     def get_class(self, space):
         return space.booleanClass
+
+# Initialise primitive methods at bootstrap time
+def _setup_prims():
+    """ NOT_RPYTHON """
+    prims = boolean_prims()
+
+    for function in prims:
+        setattr(Boolean, function.__name__, function)
+
+_setup_prims()

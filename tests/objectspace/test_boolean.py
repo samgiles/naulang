@@ -26,7 +26,6 @@ def setup_primitive_test(left_val, right_val):
 
 def test_eq_primitive_true_true():
     arec, interp = setup_primitive_test(True, True)
-
     _eq(None, arec, interp)
 
     value = arec.pop()

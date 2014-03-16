@@ -1,34 +1,32 @@
-def _eq(invokable, activation_record, interpreter):
+def _eq(invokable, activation_record):
     right = activation_record.pop()
     left = activation_record.pop()
 
     result = left.get_boolean_value() == right.get_boolean_value()
-    activation_record.push(interpreter.space.new_boolean(result))
+    activation_record.push(invokable.space.new_boolean(result))
 
-def _or(invokable, activation_record, interpreter):
+def _or(invokable, activation_record):
     right = activation_record.pop()
     left = activation_record.pop()
 
     result = left.get_boolean_value() or right.get_boolean_value()
-    activation_record.push(interpreter.space.new_boolean(result))
+    activation_record.push(invokable.space.new_boolean(result))
 
-def _and(invokable, activation_record, interpreter):
+def _and(invokable, activation_record):
     right = activation_record.pop()
     left = activation_record.pop()
 
     result = left.get_boolean_value() and right.get_boolean_value()
-    activation_record.push(interpreter.space.new_boolean(result))
+    activation_record.push(invokable.space.new_boolean(result))
 
-def _print(invokable, activation_record, interpreter):
+def _print(invokable, activation_record):
     top = activation_record.pop()
     print top.get_as_string()
 
-def init_boolean_prims(space):
-    primitives = {
-        "==": _eq,
-        "or": _or,
-        "and": _and,
-        "print": _print
-    }
-
-    space.booleanClass.add_primitives(primitives)
+def boolean_prims():
+    return [
+        _eq,
+        _or,
+        _and,
+        _print
+    ]

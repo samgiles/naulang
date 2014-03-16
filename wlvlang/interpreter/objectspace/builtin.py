@@ -3,12 +3,13 @@ from wlvlang.interpreter.objectspace.object import Object
 class BuiltIn(Object):
     """ Defines a primitive invokable method """
 
-    def __init__(self, identifier, invokable):
+    def __init__(self, identifier, invokable, space):
         self.identifier = identifier
         self.invokable = invokable
+        self.space = space
 
-    def invoke(self, context, interpreter):
-        self.invokable(self, context.get_top_frame(), interpreter)
+    def invoke(self, task):
+        self.invokable(self, task.get_top_frame())
 
     def get_class(self, space):
         return space.builtinClass
