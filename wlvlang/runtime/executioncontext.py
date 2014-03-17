@@ -70,23 +70,29 @@ class ThreadLocalSched(object):
     def run_task(self, slot):
         task = self.tasks[slot]
         assert task is not None
+        oldpc = 0
 
         while True:
-            frame = task.get_top_frame()
-
-            if frame is None:
-                task.set_state(Interpreter.HALT)
-                return
-
-            pc = frame.get_pc()
+            pc = task.get_top_frame().get_pc()
             method = task.get_current_method()
+
+            if pc < oldpc:
+                jitdriver.can_enter_jit(
+                    pc=pc,
+                    sched=self,
+                    method=method,
+                    task=task,
+                    frame=task.get_top_frame(),
+                )
+
+            oldpc = pc
 
             jitdriver.jit_merge_point(
                     pc=pc,
                     sched=self,
-                    frame=frame,
                     method=method,
-                    task=task
+                    task=task,
+                    frame=task.get_top_frame(),
                 )
 
             should_continue = self.interpreter.interpreter_step(task)
