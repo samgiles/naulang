@@ -6,16 +6,6 @@ from wlvlang.interpreter.objectspace.method import Method
 
 from rpython.rlib import jit
 
-def get_printable_location(pc, interp, method, task):
-    return "%d: %s" % (pc, bytecode_names[method.get_bytecode(pc)])
-
-jitdriver = jit.JitDriver(
-        greens=['pc', 'interp', 'method', 'task'],
-        reds=['frame'],
-        virtualizables=['frame'],
-        get_printable_location=get_printable_location
-    )
-
 class Interpreter(object):
 
     _immutable_fields = ["space"]
@@ -44,26 +34,10 @@ class Interpreter(object):
     def _invoke_method_async(self, method_at_local, task):
         self._invoke_method(method_at_local, task)
 
-    @jit.unroll_safe
     def interpreter_step(self, task):
-        assert task is not None
         frame = task.get_top_frame()
-
-        if frame is None:
-            task.set_state(Interpreter.HALT)
-            return False
-
         pc = frame.get_pc()
         method = task.get_current_method()
-
-        jitdriver.jit_merge_point(
-                pc=pc,
-                interp=self,
-                frame=frame,
-                method=method,
-                task=task
-            )
-
         bytecode = method.get_bytecode(pc)
 
         if bytecode == Bytecode.HALT:

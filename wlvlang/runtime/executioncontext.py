@@ -1,7 +1,19 @@
 from wlvlang.interpreter.interpreter import Interpreter
+from wlvlang.interpreter.bytecode import bytecode_names
 
+from rpython.rlib import jit
 
 _max_interleaved_interp = 10
+
+def get_printable_location(pc, sched, method):
+    return "%d: %s" % (pc, bytecode_names[method.get_bytecode(pc)])
+
+jitdriver = jit.JitDriver(
+        greens=['pc', 'sched', 'method'],
+        reds=['frame', 'task'],
+        virtualizables=['frame'],
+        get_printable_location=get_printable_location
+    )
 
 class ThreadLocalSched(object):
     """ Describes a scheduler for a number of tasks multiplexed onto a single OS Thread """
@@ -57,11 +69,30 @@ class ThreadLocalSched(object):
 
     def run_task(self, slot):
         task = self.tasks[slot]
+        assert task is not None
 
-        while self.interpreter.interpreter_step(task):
-            pass
+        while True:
+            frame = task.get_top_frame()
 
+            if frame is None:
+                task.set_state(Interpreter.HALT)
+                return
 
+            pc = frame.get_pc()
+            method = task.get_current_method()
+
+            jitdriver.jit_merge_point(
+                    pc=pc,
+                    sched=self,
+                    frame=frame,
+                    method=method,
+                    task=task
+                )
+
+            should_continue = self.interpreter.interpreter_step(task)
+
+            if not should_continue:
+                return
 
 class Task(object):
     def __init__(self, parent=None):
