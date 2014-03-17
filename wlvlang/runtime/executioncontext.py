@@ -101,6 +101,8 @@ class ThreadLocalSched(object):
                 return
 
 class Task(object):
+    _immutable_fields_ = ["parent"]
+
     def __init__(self, parent=None):
         """ Create a new task
 
@@ -121,11 +123,9 @@ class Task(object):
         top_frame = self.get_top_frame()
 
         if top_frame is not None:
-            top_frame.saved_pc = self._pc
             frame.set_previous_record(top_frame)
 
         self.top_frame = frame
-        self._pc = 0
 
     def restore_previous_frame(self):
         self.top_frame = self.get_top_frame().get_previous_record()
