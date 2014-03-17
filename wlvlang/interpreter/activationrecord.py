@@ -6,7 +6,7 @@ from rpython.rlib.rarithmetic import r_uint
 class ActivationRecord(Object):
     """ Defines an Activation Record. """
 
-    _virtualizable_ = ["_locals[*]", "_literals[*]", "_stack_pointer", "_stack[*]"]
+    _virtualizable_ = ["_locals[*]", "_literals[*]", "_stack_pointer", "_stack[*]", "_pc"]
     _immutable_fields_ = ["_literals", "_locals", "_stack"]
 
     def __init__(self, previous_record=None, method=None,
