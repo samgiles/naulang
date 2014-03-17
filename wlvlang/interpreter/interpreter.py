@@ -30,7 +30,7 @@ class Interpreter(object):
     def _invoke_primitive(self, task, signature):
         frame = task.get_top_frame()
         invokable = frame.peek().get_class(self.space).lookup_invokable(signature)
-        invokable(None, frame, self)
+        invokable(frame, self.space)
 
     def _invoke_global(self, global_index, task):
         new_method = self.space.get_builtin_function(global_index)

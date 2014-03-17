@@ -1,25 +1,25 @@
-def _eq(invokable, activation_record, interpreter):
+def _eq(activation_record, space):
     right = activation_record.pop()
     left = activation_record.pop()
 
     result = left.get_boolean_value() == right.get_boolean_value()
-    activation_record.push(interpreter.space.new_boolean(result))
+    activation_record.push(space.new_boolean(result))
 
-def _or(invokable, activation_record, interpreter):
+def _or(activation_record, space):
     right = activation_record.pop()
     left = activation_record.pop()
 
     result = left.get_boolean_value() or right.get_boolean_value()
-    activation_record.push(interpreter.space.new_boolean(result))
+    activation_record.push(space.new_boolean(result))
 
-def _and(invokable, activation_record, interpreter):
+def _and(activation_record, space):
     right = activation_record.pop()
     left = activation_record.pop()
 
     result = left.get_boolean_value() and right.get_boolean_value()
-    activation_record.push(interpreter.space.new_boolean(result))
+    activation_record.push(space.new_boolean(result))
 
-def _print(invokable, activation_record, interpreter):
+def _print(activation_record, space):
     top = activation_record.pop()
     print top.get_as_string()
 

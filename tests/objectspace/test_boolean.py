@@ -22,74 +22,74 @@ def setup_primitive_test(left_val, right_val):
     arec.push(Boolean(left_val))
     arec.push(Boolean(right_val))
 
-    return arec, Interpreter(ObjectSpace())
+    return arec, ObjectSpace()
 
 def test_eq_primitive_true_true():
-    arec, interp = setup_primitive_test(True, True)
-    _eq(None, arec, interp)
+    arec, space = setup_primitive_test(True, True)
+    _eq(arec, space)
 
     value = arec.pop()
     assert value.get_boolean_value() == True
 
 def test_eq_primitive_true_false():
-    arec, interp = setup_primitive_test(True, False)
+    arec, space = setup_primitive_test(True, False)
 
-    _eq(None, arec, interp)
+    _eq(arec, space)
 
     value = arec.pop()
     assert value.get_boolean_value() == False
 
 def test_eq_primitive_false_true():
-    arec, interp = setup_primitive_test(False, True)
+    arec, space = setup_primitive_test(False, True)
 
-    _eq(None, arec, interp)
+    _eq(arec, space)
 
     value = arec.pop()
     assert value.get_boolean_value() == False
 
 def test_or_primitive_true_true():
-    arec, interp = setup_primitive_test(True, True)
+    arec, space = setup_primitive_test(True, True)
 
-    _or(None, arec, interp)
+    _or(arec, space)
 
     value = arec.pop()
     assert value.get_boolean_value() == True
 
 def test_or_primitive_true_false():
-    arec, interp = setup_primitive_test(True, False)
+    arec, space = setup_primitive_test(True, False)
 
-    _or(None, arec, interp)
+    _or(arec, space)
 
     value = arec.pop()
     assert value.get_boolean_value() == True
 
 def test_or_primitive_false_true():
-    arec, interp = setup_primitive_test(False, True)
+    arec, space = setup_primitive_test(False, True)
 
-    _or(None, arec, interp)
+    _or(arec, space)
 
     value = arec.pop()
     assert value.get_boolean_value() == True
 
 def test_or_primitive_false_false():
-    arec, interp = setup_primitive_test(False, False)
+    arec, space = setup_primitive_test(False, False)
 
-    _or(None, arec, interp)
+    _or(arec, space)
 
     value = arec.pop()
     assert value.get_boolean_value() == False
 
 def test_and_primitive_true_true():
-    arec, interp = setup_primitive_test(True, True)
+    arec, space = setup_primitive_test(True, True)
 
-    _and(None, arec, interp)
+    _and(arec, space)
 
     value = arec.pop()
     assert value.get_boolean_value() == True
 
 def test_and_primitive_false_true():
-    arec, interp = setup_primitive_test(False, True)
+    arec, space = setup_primitive_test(False, True)
 
-    _and(None, arec, interp)
+    _and(arec, space)
     value = arec.pop()
     assert value.get_boolean_value() == False

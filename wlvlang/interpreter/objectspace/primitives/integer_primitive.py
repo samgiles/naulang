@@ -1,24 +1,24 @@
-def _mul(invokable, activation_record, interpreter):
+def _mul(activation_record, space):
     left = activation_record.pop()
     right = activation_record.pop()
     result = left.get_integer_value() * right.get_integer_value()
-    activation_record.push(interpreter.space.new_integer(result))
+    activation_record.push(space.new_integer(result))
 
-def _add(invokable, activation_record, interpreter):
+def _add(activation_record, space):
     left = activation_record.pop()
     right = activation_record.pop()
 
     result = left.get_integer_value() + right.get_integer_value()
-    activation_record.push(interpreter.space.new_integer(result))
+    activation_record.push(space.new_integer(result))
 
-def _sub(invokable, activation_record, interpreter):
+def _sub(activation_record, space):
     left = activation_record.pop()
     right = activation_record.pop()
 
     result = left.get_integer_value() - right.get_integer_value()
-    activation_record.push(interpreter.space.new_integer(result))
+    activation_record.push(space.new_integer(result))
 
-def _div(invokable, activation_record, interpreter):
+def _div(activation_record, space):
     left = activation_record.pop()
     right = activation_record.pop()
 
@@ -27,70 +27,72 @@ def _div(invokable, activation_record, interpreter):
         #TODO: Division by zero, exception
 
     result = left.get_integer_value() / right.get_integer_value()
-    activation_record.push(interpreter.space.new_integer(result))
+    activation_record.push(space.new_integer(result))
 
-def _mod(invokable, activation_record, interpreter):
+def _mod(activation_record, space):
     left  = activation_record.pop()
     right = activation_record.pop()
 
     result = int(left.get_integer_value()) % int(right.get_integer_value())
-    activation_record.push(interpreter.space.new_integer(result))
+    activation_record.push(space.new_integer(result))
 
-def _eq(invokable, activation_record, interpreter):
+def _eq(activation_record, space):
     right = activation_record.pop()
     left = activation_record.pop()
 
     result = left.get_integer_value() == right.get_integer_value()
 
-    activation_record.push(interpreter.space.new_boolean(result))
+    activation_record.push(space.new_boolean(result))
 
-def _neq(invokable, activation_record, interpreter):
+def _neq(activation_record, space):
     right = activation_record.pop()
     left = activation_record.pop()
 
     result = left.get_integer_value() != right.get_integer_value()
 
-    activation_record.push(interpreter.space.new_boolean(result))
+    activation_record.push(space.new_boolean(result))
 
-def _neg(invokable, activation_record, interpreter):
+def _neg(activation_record, space):
     top = activation_record.pop()
 
     result = -top.get_integer_value()
-    activation_record.push(interpreter.space.new_integer(result))
+    activation_record.push(space.new_integer(result))
 
-def _lt(invokable, activation_record, interpreter):
+def _lt(activation_record, space):
     right = activation_record.pop()
     left = activation_record.pop()
+    assert left is not None
+    assert right is not None
 
     result = left.get_integer_value() < right.get_integer_value()
-    activation_record.push(interpreter.space.new_boolean(result))
+    activation_record.push(space.new_boolean(result))
 
 
-def _gt(invokable, activation_record, interpreter):
+def _gt(activation_record, space):
     right = activation_record.pop()
     left  = activation_record.pop()
 
     result = left.get_integer_value() > right.get_integer_value()
 
-    activation_record.push(interpreter.space.new_boolean(result))
+    activation_record.push(space.new_boolean(result))
 
-def _gteq(invokable, activation_record, interpreter):
+def _gteq(activation_record, space):
     right = activation_record.pop()
     left  = activation_record.pop()
 
     result = left.get_integer_value() >= right.get_integer_value()
 
-    activation_record.push(interpreter.space.new_boolean(result))
+    activation_record.push(space.new_boolean(result))
 
-def _lteq(invokable, activation_record, interpreter):
+def _lteq(activation_record, space):
     right = activation_record.pop()
     left  = activation_record.pop()
 
     result = left.get_integer_value() <= right.get_integer_value()
 
-    activation_record.push(interpreter.space.new_boolean(result))
+    activation_record.push(space.new_boolean(result))
 
-def _print(invokable, activation_record, interpreter):
+def _print(activation_record, space):
     top = activation_record.pop()
     print top.get_as_string()
 
