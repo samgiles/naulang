@@ -22,7 +22,7 @@ def create_space_and_interpreter():
     return space, Interpreter(space)
 
 def create_task(frame):
-    task = Task()
+    task = Task(None)
     task.set_top_frame(frame)
     return task
 
