@@ -44,9 +44,11 @@ class Method(Object):
 
         new_frame = ActivationRecord(previous_record=previous_frame, method=self, access_link=self.get_enclosing_arec())
 
-        # Push arguments into locals of new arec
-        for i in range(0, self.argument_count):
-            new_frame.set_local_at(i, task.get_top_frame().pop())
+        # Push arguments into locals of new arec in reverse order
+        arg_number = self.argument_count - 1
+        while arg_number >= 0:
+            new_frame.set_local_at(arg_number, task.get_top_frame().pop())
+            arg_number -= 1
 
         return new_frame
 
@@ -67,3 +69,25 @@ class Method(Object):
 
     def __repr__(self):
         return "Method<%r>: closed by: <%r>" % (hex(id(self)), hex(id(self.enclosing_arec)))
+
+def disassemble(method):
+    from wlvlang.interpreter.bytecode import bytecode_names, get_bytecode_length
+    import pdb; pdb.set_trace()
+    bytecode_index = 0
+    disassembly = []
+    while bytecode_index < len(method.bytecodes):
+        bytecode = method.get_bytecode(bytecode_index)
+        this_bytecode = "%s " % (bytecode_names[bytecode])
+        this_bytecode_length = get_bytecode_length(bytecode)
+
+        argument = 1
+        bytecode_index += 1
+
+        while argument <= this_bytecode_length:
+            this_bytecode += "%d, " % (method.get_bytecode(bytecode_index))
+            bytecode_index += 1
+
+        disassembly.append(this_bytecode)
+
+    return disassembly
+
