@@ -36,6 +36,14 @@ test_all:
 	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/**/test_*.py
 	tests/functional/wlvtest.py ./bin/wlvlang-python ./tests/functional
 
+test_all_compiled:
+	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/**/test_*.py
+	tests/functional/wlvtest.py ./bin/wlvlang-nojit ./tests/functional
+
+test_all_jit:
+	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/**/test_*.py
+	tests/functional/wlvtest.py ./bin/wlvlang-jit ./tests/functional
+
 test_compiler:
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/compiler/test_*.py
 
