@@ -26,13 +26,13 @@ def main(args):
     new_arec = ActivationRecord(method=main_method)
     new_arec.set_local_at(arg_local, arg_array)
 
-    main_task = Task()
+    main_task = Task(sched)
     main_task.set_top_frame(new_arec)
 
     sched.add_task(main_task)
 
     # Run main context...TODO: Sched
-    sched.run_task(0)
+    sched.run()
 
     # TODO: Return value
     return 0

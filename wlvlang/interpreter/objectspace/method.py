@@ -1,6 +1,5 @@
 from wlvlang.interpreter.objectspace.object import Object
 from wlvlang.interpreter.activationrecord import ActivationRecord
-
 from rpython.rlib import jit
 
 class Method(Object):
@@ -37,19 +36,31 @@ class Method(Object):
     def copy(self):
         return Method(self.literals, self.local_count, self.bytecodes, self.stack_depth, argument_count=self.argument_count)
 
-    def async_invoke(self, context):
-        self.invoke(context)
+    def _create_new_frame(self, task, is_async=False):
+        if is_async:
+            previous_frame = None
+        else:
+            previous_frame = task.get_top_frame()
 
-    def invoke(self, current_task):
-        jit.promote(self)
-
-        frame = ActivationRecord(previous_record=current_task.get_top_frame(), method=self, access_link=self.get_enclosing_arec())
+        new_frame = ActivationRecord(previous_record=previous_frame, method=self, access_link=self.get_enclosing_arec())
 
         # Push arguments into locals of new arec
         for i in range(0, self.argument_count):
-            frame.set_local_at(i, current_task.get_top_frame().pop())
+            new_frame.set_local_at(i, task.get_top_frame().pop())
 
-        current_task.set_top_frame(frame)
+        return new_frame
+
+    def async_invoke(self, task):
+        from wlvlang.runtime.executioncontext import Task
+        frame = self._create_new_frame(task, is_async=True)
+        new_task = Task(task.sched, parent=task)
+        new_task.set_top_frame(frame)
+        task.sched.add_task(new_task)
+
+    def invoke(self, current_task):
+        jit.promote(self)
+        new_frame = self._create_new_frame(current_task, is_async=False)
+        current_task.set_top_frame(new_frame)
 
     def get_class(self, space):
         return space.methodClass

@@ -22,7 +22,7 @@ class ThreadLocalSched(object):
         self.tasks = [None] * _max_interleaved_interp
 
         # Points to the current running context in this execution context
-        self._context_pointer = 0
+        self._context_pointer = -1
 
         # Points to the slot in which to insert the next context into the
         # execution context
@@ -67,8 +67,21 @@ class ThreadLocalSched(object):
 
             slot += 1
 
-    def run_task(self, slot):
-        task = self.tasks[slot]
+        return None
+
+    def _detect_deadlock(self):
+        """ Return a boolean value indicating whether a deadlock has been detected in this
+        scheduler """
+        slot = 0
+        while slot < _max_interleaved_interp:
+            task_yielding = self.tasks[slot] is not None and self.tasks[slot].get_state() == Interpreter.YIELD
+
+            if not task_yielding:
+                return False
+
+        return True
+
+    def run_task(self, task):
         assert task is not None
         oldpc = 0
 
@@ -100,10 +113,20 @@ class ThreadLocalSched(object):
             if not should_continue:
                 return
 
+    def run(self):
+        while True:
+            task = self._get_next_task()
+
+            if task is None:
+                return
+
+            self.run_task(task)
+
+
 class Task(object):
     _immutable_fields_ = ["parent"]
 
-    def __init__(self, parent=None):
+    def __init__(self, owning_scheduler, parent=None):
         """ Create a new task
 
             kwargs:
@@ -112,6 +135,7 @@ class Task(object):
         self._state = Interpreter.CONTINUE
         self.top_frame = None
         self.parent = parent
+        self.sched = owning_scheduler
 
     def get_top_frame(self):
         return self.top_frame

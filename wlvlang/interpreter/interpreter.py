@@ -32,7 +32,9 @@ class Interpreter(object):
         new_method.invoke(task)
 
     def _invoke_method_async(self, method_at_local, task):
-        self._invoke_method(method_at_local, task)
+        new_method = task.get_top_frame().get_local_at(method_at_local)
+        assert isinstance(new_method, Method)
+        new_method.async_invoke(task)
 
     def interpreter_step(self, task):
         frame = task.get_top_frame()
