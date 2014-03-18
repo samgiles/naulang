@@ -214,3 +214,6 @@ def test_parse_channel_in():
 
 def test_parse_channel_out():
     assert parse("""let n =<: channel""") == ast.Block([ast.ScopedAssignment('n', ast.ChannelOut(ast.IdentifierExpression('channel')))])
+
+def test_parse_channel_in_out():
+    assert parse("""in <-<: out""") == ast.Block([ast.ChannelIn(ast.IdentifierExpression("in"), ast.ChannelOut(ast.IdentifierExpression("out")))])
