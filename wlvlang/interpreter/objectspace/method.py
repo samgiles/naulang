@@ -72,7 +72,6 @@ class Method(Object):
 
 def disassemble(method):
     from wlvlang.interpreter.bytecode import bytecode_names, get_bytecode_length
-    import pdb; pdb.set_trace()
     bytecode_index = 0
     disassembly = []
     while bytecode_index < len(method.bytecodes):
