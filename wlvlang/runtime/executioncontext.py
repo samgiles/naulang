@@ -1,9 +1,12 @@
 from wlvlang.interpreter.interpreter import Interpreter
 from wlvlang.interpreter.bytecode import bytecode_names
+from wlvlang.interpreter.objectspace.method import disassemble
 
 from rpython.rlib import jit
 
-_max_interleaved_interp = 10
+# For the sake of experimentation this is hardcoded
+# deadlocks abound when the number of tasks exceeds this
+_max_interleaved_interp = 10000001
 
 def get_printable_location(pc, sched, method):
     return "%d: %s" % (pc, bytecode_names[method.get_bytecode(pc)])
@@ -65,15 +68,20 @@ class ThreadLocalSched(object):
         if not slot < _max_interleaved_interp:
             slot = 0
 
-        while slot < _max_interleaved_interp:
+        while slot < _max_interleaved_interp + self._context_pointer:
+
+            if slot >= _max_interleaved_interp:
+                slot = 0
 
             task_slot_runnable = self.tasks[slot] is not None and self.tasks[slot].get_state() != Interpreter.HALT
 
             self._deadlock_counter += 1
             if task_slot_runnable:
+                self._context_pointer = slot
                 return self.tasks[slot]
 
             slot += 1
+
 
         return None
 
