@@ -16,6 +16,7 @@ def jitpolicy(driver):
     from rpython.jit.codewriter.policy import JitPolicy
     return JitPolicy()
 
+
 if __name__ == '__main__':
     from rpython.translator.driver import TranslationDriver
     entry = target(TranslationDriver(), sys.argv)
