@@ -16,7 +16,7 @@ def test_add_task():
             just refactor to keep the old functionality as a strategy or something
     """
     sched = ThreadLocalSched(ObjectSpace())
-    task = Task()
-    sched.add_task(Task())
+    task = Task(sched)
     sched.add_task(task)
+    sched.add_task(Task(sched))
     assert task is sched._get_next_task()

@@ -15,6 +15,9 @@ jitdriver = jit.JitDriver(
         get_printable_location=get_printable_location
     )
 
+class DeadLockedException(Exception):
+    pass
+
 class ThreadLocalSched(object):
     """ Describes a scheduler for a number of tasks multiplexed onto a single OS Thread """
 
@@ -32,6 +35,10 @@ class ThreadLocalSched(object):
         # reference to a space), they can be shared between local tasks in an
         # execution context
         self.interpreter = Interpreter(space)
+
+        # Used to detect for deadlocks every so often rather than every task
+        # switch
+        self._deadlock_counter = 0
 
     def add_task(self, task):
         self.tasks[self._insert_next] = task
@@ -62,6 +69,7 @@ class ThreadLocalSched(object):
 
             task_slot_runnable = self.tasks[slot] is not None and self.tasks[slot].get_state() != Interpreter.HALT
 
+            self._deadlock_counter += 1
             if task_slot_runnable:
                 return self.tasks[slot]
 
@@ -74,10 +82,13 @@ class ThreadLocalSched(object):
         scheduler """
         slot = 0
         while slot < _max_interleaved_interp:
-            task_yielding = self.tasks[slot] is not None and self.tasks[slot].get_state() == Interpreter.YIELD
+            task_is_none = self.tasks[slot] is None
+            task_yielding = not task_is_none and self.tasks[slot].get_state() == Interpreter.YIELD
 
             if not task_yielding:
                 return False
+
+            slot += 1
 
         return True
 
@@ -116,6 +127,11 @@ class ThreadLocalSched(object):
     def run(self):
         while True:
             task = self._get_next_task()
+
+            if self._deadlock_counter > _max_interleaved_interp:
+                self._deadlock_counter = 0
+                if self._detect_deadlock():
+                    raise DeadLockedException()
 
             if task is None:
                 return
