@@ -352,6 +352,19 @@ def test_channel_in():
             Bytecode.CHAN_IN,
         ]
 
+def test_channel_in_out():
+    ctx = create_interpreter_context()
+    t = create_syntax_directed_translator(ctx)
+    node = ast.Block([ast.ChannelIn(DummyCompilationUnit(90), ast.ChannelOut(DummyCompilationUnit(91)))])
+    node.accept(t)
+
+    assert ctx.get_bytecode() == [
+        90,
+        91,
+        Bytecode.CHAN_OUT,
+        Bytecode.CHAN_IN
+    ]
+
 def test_ast_scoped_assignment():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)
