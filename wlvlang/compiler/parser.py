@@ -10,6 +10,7 @@ pg = ParserGenerator(tokentypes,
                      precedence=[
                          ("right", ["UMINUS"]),
                          ("right", ["NEGATE"]),
+                         ("left", ["CHAN_IN"]),
                          ("right", ["CHAN_OUT"]),
                          ("left", ["OR", "AND"]),
                          ("nonassoc", ["IS", "DOUBLE_EQ"]),
