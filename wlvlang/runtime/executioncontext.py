@@ -6,7 +6,7 @@ from rpython.rlib import jit
 
 # For the sake of experimentation this is hardcoded
 # deadlocks abound when the number of tasks exceeds this
-_max_interleaved_interp = 10000001
+_max_interleaved_interp = 10
 
 def get_printable_location(pc, sched, method):
     return "%d: %s" % (pc, bytecode_names[method.get_bytecode(pc)])
@@ -43,18 +43,26 @@ class ThreadLocalSched(object):
         # switch
         self._deadlock_counter = 0
 
+        self._task_count = 0
+
     def add_task(self, task):
         self.tasks[self._insert_next] = task
+        self._task_count += 1
         self._update_insert_next();
 
     def _update_insert_next(self):
         slot = 0
         while slot < _max_interleaved_interp:
 
-            task_slot_usable = self.tasks[slot] is None or self.tasks[slot].get_state() == Interpreter.HALT
+            task_slot_empty = self.tasks[slot] is None
+            task_slot_usable = task_slot_empty or self.tasks[slot].get_state() == Interpreter.HALT
 
             if task_slot_usable:
                 self._insert_next = slot
+
+                if not task_slot_empty:
+                    self._task_count -= 1
+
                 return
 
             slot += 1
@@ -68,12 +76,20 @@ class ThreadLocalSched(object):
         if not slot < _max_interleaved_interp:
             slot = 0
 
-        while slot < _max_interleaved_interp + self._context_pointer:
+        max_task_slot = _max_interleaved_interp + self._context_pointer
+        counted_tasks = 0
+
+        while counted_tasks < self._task_count:
 
             if slot >= _max_interleaved_interp:
+                max_task_slot = self._context_pointer
                 slot = 0
 
-            task_slot_runnable = self.tasks[slot] is not None and self.tasks[slot].get_state() != Interpreter.HALT
+            task_in_slot = self.tasks[slot] is not None
+            task_slot_runnable = task_in_slot and self.tasks[slot].get_state() != Interpreter.HALT
+
+            if task_in_slot:
+                counted_tasks += 1
 
             self._deadlock_counter += 1
             if task_slot_runnable:
@@ -81,6 +97,7 @@ class ThreadLocalSched(object):
                 return self.tasks[slot]
 
             slot += 1
+
 
 
         return None

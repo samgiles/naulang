@@ -1,22 +1,22 @@
-let func_a = fn(chan_in, chan_out) {
-	chan_in <-<: chan_out
+let ring_node = fn(in, out) {
+	out <-<: in
 }
 
-let i = 1000000
+let i = 5
 
-let chan_start = chan()
-chan_start <- 200
+let start = chan()
+start <- 200
 
-let chan_in = chan_start
-let chan_out = chan()
-let chan_end = chan_out
+let in = start
+let out = chan()
+let end = out
 
 while i > 0 {
-	async func_a(chan_in, chan_out)
-	chan_in = chan_out
-	chan_end = chan_out
-	chan_out = chan()
+	async ring_node(in, out)
+	in = out
+	end = out
+	out = chan()
 	i = i - 1
 }
 
-print <: chan_end
+print <: end
