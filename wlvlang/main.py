@@ -31,7 +31,6 @@ def main(args):
 
     sched.add_task(main_task)
 
-    # Run main context...TODO: Sched
     sched.run()
 
     # TODO: Return value
