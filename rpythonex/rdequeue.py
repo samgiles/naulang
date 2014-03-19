@@ -23,12 +23,10 @@ class Dequeue(object):
 
     def push_bottom(self, node):
         with self._tail_lock:
-
             if self.tail is None:
                 self.tail = node
-
-                with self._head_lock:
-                    self.head = node
+                self.prev_link = self.head
+                return
 
             node.prev_link = self.tail
             self.tail.next_link = node
@@ -38,9 +36,8 @@ class Dequeue(object):
         with self._head_lock:
             if self.head is None:
                 self.head = node
-
-                with self._tail_lock:
-                    self.tail = node
+                self.next_link = self.tail
+                return
 
             node.next_link = self.head
             self.head.prev_link = node
