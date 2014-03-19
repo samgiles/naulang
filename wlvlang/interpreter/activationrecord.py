@@ -1,7 +1,7 @@
 from wlvlang.interpreter.objectspace.object import Object
 
-from rpython.rlib import jit
 from rpython.rlib.rarithmetic import r_uint
+from rpython.rlib import jit
 
 class ActivationRecord(Object):
     """ Defines an Activation Record. """

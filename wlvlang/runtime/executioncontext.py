@@ -1,6 +1,6 @@
 from wlvlang.interpreter.interpreter import Interpreter
 from wlvlang.interpreter.bytecode import bytecode_names
-from wlvlang.interpreter.objectspace.method import disassemble
+from rpythonex.rdequeue import Dequeue
 
 from rpython.rlib import jit
 
@@ -25,14 +25,10 @@ class ThreadLocalSched(object):
     """ Describes a scheduler for a number of tasks multiplexed onto a single OS Thread """
 
     def __init__(self, space):
-        self.tasks = [None] * _max_interleaved_interp
+        self.ready_tasks = Dequeue()
 
         # Points to the current running context in this execution context
         self._context_pointer = -1
-
-        # Points to the slot in which to insert the next context into the
-        # execution context
-        self._insert_next = 0
 
         # Interpreters are mostly stateless (they simply contain code and a
         # reference to a space), they can be shared between local tasks in an
@@ -45,77 +41,15 @@ class ThreadLocalSched(object):
 
         self._task_count = 0
 
-    def add_task(self, task):
-        self.tasks[self._insert_next] = task
-        self._task_count += 1
-        self._update_insert_next();
+    def add_ready_task(self, task):
+        node = self.ready_tasks.create_node(task)
+        self.ready_tasks.push_bottom(node)
 
-    def _update_insert_next(self):
-        slot = 0
-        while slot < _max_interleaved_interp:
-
-            task_slot_empty = self.tasks[slot] is None
-            task_slot_usable = task_slot_empty or self.tasks[slot].get_state() == Interpreter.HALT
-
-            if task_slot_usable:
-                self._insert_next = slot
-
-                if not task_slot_empty:
-                    self._task_count -= 1
-
-                return
-
-            slot += 1
-
-    def _get_next_task(self):
-
-        # Assume th next slot is the current +1
-        slot = self._context_pointer + 1;
-
-        # But check we haven't gone beyond the bounds of the task list
-        if not slot < _max_interleaved_interp:
-            slot = 0
-
-        max_task_slot = _max_interleaved_interp + self._context_pointer
-        counted_tasks = 0
-
-        while counted_tasks < self._task_count:
-
-            if slot >= _max_interleaved_interp:
-                max_task_slot = self._context_pointer
-                slot = 0
-
-            task_in_slot = self.tasks[slot] is not None
-            task_slot_runnable = task_in_slot and self.tasks[slot].get_state() != Interpreter.HALT
-
-            if task_in_slot:
-                counted_tasks += 1
-
-            self._deadlock_counter += 1
-            if task_slot_runnable:
-                self._context_pointer = slot
-                return self.tasks[slot]
-
-            slot += 1
-
-
-
-        return None
-
-    def _detect_deadlock(self):
-        """ Return a boolean value indicating whether a deadlock has been detected in this
-        scheduler """
-        slot = 0
-        while slot < _max_interleaved_interp:
-            task_is_none = self.tasks[slot] is None
-            task_yielding = not task_is_none and self.tasks[slot].get_state() == Interpreter.YIELD
-
-            if not task_yielding:
-                return False
-
-            slot += 1
-
-        return True
+    def _get_next_ready_task(self):
+        node = self.ready_tasks.pop_bottom()
+        if node is None:
+            return None
+        return node.value
 
     def run_task(self, task):
         assert task is not None
@@ -149,19 +83,16 @@ class ThreadLocalSched(object):
             if not should_continue:
                 return
 
+
     def run(self):
         while True:
-            task = self._get_next_task()
-
-            if self._deadlock_counter > _max_interleaved_interp:
-                self._deadlock_counter = 0
-                if self._detect_deadlock():
-                    raise DeadLockedException()
-
+            task = self._get_next_ready_task()
             if task is None:
                 return
 
             self.run_task(task)
+            node = self.ready_tasks.create_node(task)
+            self.ready_tasks.push_top(node)
 
 
 class Task(object):

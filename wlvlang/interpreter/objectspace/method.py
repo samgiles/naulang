@@ -57,7 +57,7 @@ class Method(Object):
         frame = self._create_new_frame(task, is_async=True)
         new_task = Task(task.sched, parent=task)
         new_task.set_top_frame(frame)
-        task.sched.add_task(new_task)
+        task.sched.add_ready_task(new_task)
 
     def invoke(self, current_task):
         jit.promote(self)

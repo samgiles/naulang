@@ -1,0 +1,3 @@
+[submodule "rpythonex/atomicprimitives"]
+	path = rpythonex/atomicprimitives
+	url = git@github.com:samgiles/atomic-primitives.git

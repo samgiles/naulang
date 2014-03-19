@@ -17,6 +17,6 @@ def test_add_task():
     """
     sched = ThreadLocalSched(ObjectSpace())
     task = Task(sched)
-    sched.add_task(task)
-    sched.add_task(Task(sched))
-    assert task is sched._get_next_task()
+    sched.add_ready_task(Task(sched))
+    sched.add_ready_task(task)
+    assert task is sched._get_next_ready_task()
