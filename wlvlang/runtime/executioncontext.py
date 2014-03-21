@@ -1,8 +1,12 @@
 from wlvlang.interpreter.interpreter import Interpreter
+from wlvlang.interpreter.activationrecord import ActivationRecord
 from wlvlang.interpreter.bytecode import bytecode_names
-from rpythonex.rdequeue import Dequeue
+from rpythonex.rdequeue import CircularWorkStealingDeque
+
+from wlvlang.interpreter.space import ObjectSpace
 
 from rpython.rlib import jit
+from wlvlang.runtime.os_thread import start_new_thread
 
 # For the sake of experimentation this is hardcoded
 # deadlocks abound when the number of tasks exceeds this
@@ -21,11 +25,49 @@ jitdriver = jit.JitDriver(
 class DeadLockedException(Exception):
     pass
 
+
+class Universe(object):
+    def __init__(self, thread_count, space):
+        self._thread_pool = [-1] * (thread_count - 1)
+        self._thread_count = thread_count - 1
+        self.main_scheduler = ThreadLocalSched(space)
+        self.space = space
+
+
+    def start(self, main_method, arg_local, arg_array):
+        self._bootstrap(main_method, arg_local, arg_array)
+
+        for i in range(0, self._thread_count - 1):
+            self._thread_pool[i] = start_new_thread(self.space, self, ())
+
+        self._main_sched()
+
+
+    def _bootstrap(self, main_method, arg_local, arg_array):
+        frame = ActivationRecord(method=main_method)
+        frame.set_local_at(arg_local, arg_array)
+
+        main_task = Task(self.main_scheduler)
+        main_task.set_top_frame(frame)
+
+        self.main_scheduler.add_ready_task(main_task)
+
+
+    def _main_sched(self):
+        self.main_scheduler.run()
+
+
+    @staticmethod
+    def run(args, space):
+        scheduler = ThreadLocalSched(space)
+        scheduler.run()
+
 class ThreadLocalSched(object):
     """ Describes a scheduler for a number of tasks multiplexed onto a single OS Thread """
 
     def __init__(self, space):
-        self.ready_tasks = Dequeue()
+        self.ready_tasks = CircularWorkStealingDeque(4)
+        self.yielding_tasks = CircularWorkStealingDeque(4)
 
         # Points to the current running context in this execution context
         self._context_pointer = -1
@@ -35,21 +77,19 @@ class ThreadLocalSched(object):
         # execution context
         self.interpreter = Interpreter(space)
 
-        # Used to detect for deadlocks every so often rather than every task
-        # switch
-        self._deadlock_counter = 0
-
-        self._task_count = 0
-
     def add_ready_task(self, task):
-        node = self.ready_tasks.create_node(task)
-        self.ready_tasks.push_bottom(node)
+        self.ready_tasks.push_bottom(task)
 
-    def _get_next_ready_task(self):
-        node = self.ready_tasks.pop_bottom()
-        if node is None:
-            return None
-        return node.value
+    def _get_next_task(self):
+        task = self.ready_tasks.pop_bottom()
+
+        if task is None:
+            yielding_task = self.yielding_tasks.pop_bottom()
+            if yielding_task is None:
+                return None
+
+            return yielding_task
+        return task
 
     def run_task(self, task):
         assert task is not None
@@ -86,13 +126,14 @@ class ThreadLocalSched(object):
 
     def run(self):
         while True:
-            task = self._get_next_ready_task()
+            task = self._get_next_task()
             if task is None:
                 return
 
             self.run_task(task)
-            node = self.ready_tasks.create_node(task)
-            self.ready_tasks.push_top(node)
+
+            if not task.get_state() == Interpreter.HALT:
+                self.yielding_tasks.push_bottom(task)
 
 
 class Task(object):

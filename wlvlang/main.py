@@ -3,7 +3,8 @@ from wlvlang.compiler import compiler
 from wlvlang.interpreter.activationrecord import ActivationRecord
 from wlvlang.interpreter.space import ObjectSpace
 
-from wlvlang.runtime.executioncontext import Task, ThreadLocalSched
+from wlvlang.runtime.executioncontext import Task, ThreadLocalSched, Universe
+
 
 def main(args):
 
@@ -13,7 +14,6 @@ def main(args):
         return 1
 
     space = ObjectSpace()
-    sched = ThreadLocalSched(space)
 
     # Trim command line arguments to pass into source parser
     # these are passed to the method that is created as an 'args'
@@ -23,15 +23,8 @@ def main(args):
     # Add file arguments into 'args' array parameter
     # Activation record is None
 
-    new_arec = ActivationRecord(method=main_method)
-    new_arec.set_local_at(arg_local, arg_array)
-
-    main_task = Task(sched)
-    main_task.set_top_frame(new_arec)
-
-    sched.add_task(main_task)
-
-    sched.run()
+    universe = Universe(4, space)
+    universe.start(main_method, arg_local, arg_array)
 
     # TODO: Return value
     return 0
