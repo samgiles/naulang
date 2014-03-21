@@ -1,65 +1,62 @@
-from rpython.rlib import rthread
+from rpythonex.rcircular import CircularArray
+from rpythonex.ratomic import compare_and_swap
+
+class CircularWorkStealingDeque(object):
+    def __init__(self, log_initial_size):
+        self.bottom = 0
+        self.top = 0
+        self.active_array = CircularArray(log_initial_size)
 
 
-class Node(object):
-    def __init__(self, value):
-        self.value = value
-        self.prev_link = None
-        self.next_link = None
+    def _cas_top(self, oldval, newval):
+        return compare_and_swap(self.top, oldval, newval)
 
-    def __eq__(self, other):
-        return self.value is other.value and self.prev_link is other.prev_link and self.next_link is other.next_link
+    def push_bottom(self, value):
+        bottom = self.bottom
+        top = self.top
+        array = self.active_array
 
-class Dequeue(object):
-    def __init__(self):
-        self._head_lock = rthread.allocate_lock()
-        self._tail_lock = rthread.allocate_lock()
-        self.head = None
-        self.tail = None
+        size = bottom - top
 
-    def create_node(self, value):
-        node = Node(value)
-        return node
+        if size >= array.size() - 1:
+            array = array.grow(bottom, top)
+            self.active_array = array
 
-    def push_bottom(self, node):
-        with self._tail_lock:
-            if self.tail is None:
-                self.tail = node
-                self.prev_link = self.head
-                return
+        array.put(bottom, value)
+        self.bottom = bottom + 1
 
-            node.prev_link = self.tail
-            self.tail.next_link = node
-            self.tail = node
+    def steal(self):
+        top = self.top
+        bottom = self.bottom
+        array = self.active_array
+        size = bottom - top
 
-    def push_top(self, node):
-        with self._head_lock:
-            if self.head is None:
-                self.head = node
-                self.next_link = self.tail
-                return
+        if size <= 0:
+            return None
 
-            node.next_link = self.head
-            self.head.prev_link = node
-            self.head = node
+        value = array.get(top)
 
-    def pop_top(self):
-        with self._head_lock:
-            node = self.head
+        if not self._cas_top(top, top + 1):
+            return None
 
-            if node is None:
-                return None
-
-            self.head = node.next_link
-
-        return node
+        return value
 
     def pop_bottom(self):
-        with self._tail_lock:
-            node = self.tail
-            if node is None:
-                return None
+        bottom = self.bottom
+        array = self.active_array
+        bottom -= 1
+        self.bottom = bottom
+        top = self.top
+        size = bottom - top
+        if size < 0:
+            self.bottom = top
+            return None
+        value = array.get(bottom)
+        if size > 0:
+            return value
 
-            self.tail = node.prev_link
+        if not self._cas_top(top, top + 1):
+            value = None
 
-        return node
+        self.bottom = top + 1
+        return value
