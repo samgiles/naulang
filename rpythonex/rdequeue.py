@@ -4,17 +4,18 @@ from rpython.rtyper.lltypesystem import llmemory, lltype, rffi
 import ctypes
 
 
-def _malloc_signed(initial_value):
-        SIGNEDP = lltype.Array(lltype.Signed, hints={'nolength': True})
-        value = lltype.malloc(SIGNEDP, 1, flavor='raw')
+SIGNEDP = lltype.Array(lltype.Signed)
+
+def malloc_signed(initial_value):
+        value = lltype.malloc(rffi.SIGNEDP.TO, 1, flavor="raw")
         value[0] = initial_value
         return value
 
 
 class CircularWorkStealingDeque(object):
     def __init__(self, log_initial_size):
-        self.bottom = _malloc_signed(0)
-        self.top = _malloc_signed(0)
+        self.bottom = malloc_signed(0)
+        self.top = malloc_signed(0)
         self.active_array = CircularArray(log_initial_size)
 
 
