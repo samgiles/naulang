@@ -20,5 +20,5 @@ def llexternal(name, args, result, **kwds):
     return  rffi.llexternal(name, args, result, compilation_info=eci, **kwds)
 
 
-compare_and_swap = llexternal('cas', [llmemory.Address, lltype.Signed, lltype.Signed], lltype.Bool, macro=True, _nowrapper=True)
-fetch_and_add = llexternal('faa', [llmemory.Address, lltype.Signed], lltype.Signed, macro=True, _nowrapper=True)
+compare_and_swap = llexternal('cas', [rffi.SIGNEDP, lltype.Signed, lltype.Signed], lltype.Signed, macro=True)
+fetch_and_add = llexternal('faa', [llmemory.Address, lltype.Signed], lltype.Signed, macro=True)

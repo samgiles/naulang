@@ -1,11 +1,20 @@
 from rpythonex.rcircular import CircularArray
 from rpythonex.ratomic import compare_and_swap
-from rpython.rtyper.lltypesystem import llmemory, lltype
+from rpython.rtyper.lltypesystem import llmemory, lltype, rffi
+import ctypes
+
+
+def _malloc_signed(initial_value):
+        SIGNEDP = lltype.Array(lltype.Signed, hints={'nolength': True})
+        value = lltype.malloc(SIGNEDP, 1, flavor='raw')
+        value[0] = initial_value
+        return value
+
 
 class CircularWorkStealingDeque(object):
     def __init__(self, log_initial_size):
-        self.bottom = llmemory.raw_malloc(llmemory.sizeof(lltype.Signed))
-        self.top = llmemory.raw_malloc(llmemory.sizeof(lltype.Signed))
+        self.bottom = _malloc_signed(0)
+        self.top = _malloc_signed(0)
         self.active_array = CircularArray(log_initial_size)
 
 
@@ -13,8 +22,8 @@ class CircularWorkStealingDeque(object):
         return compare_and_swap(self.top, oldval, newval)
 
     def push_bottom(self, value):
-        bottom = self.bottom.signed[0]
-        top = self.top.signed[0]
+        bottom = self.bottom[0]
+        top = self.top[0]
         array = self.active_array
 
         size = bottom - top
@@ -24,11 +33,11 @@ class CircularWorkStealingDeque(object):
             self.active_array = array
 
         array.put(bottom, value)
-        self.bottom.signed[0] = bottom + 1
+        self.bottom[0] = bottom + 1
 
     def steal(self):
-        top = self.top.signed[0]
-        bottom = self.bottom.signed[0]
+        top = self.top[0]
+        bottom = self.bottom[0]
         array = self.active_array
         size = bottom - top
 
@@ -43,14 +52,14 @@ class CircularWorkStealingDeque(object):
         return value
 
     def pop_bottom(self):
-        bottom = self.bottom.signed[0]
+        bottom = self.bottom[0]
         array = self.active_array
         bottom -= 1
-        self.bottom.signed[0] = bottom
-        top = self.top.signed[0]
+        self.bottom[0] = bottom
+        top = self.top[0]
         size = bottom - top
         if size < 0:
-            self.bottom.signed[0] = top
+            self.bottom[0] = top
             return None
         value = array.get(bottom)
         if size > 0:
@@ -59,5 +68,5 @@ class CircularWorkStealingDeque(object):
         if not self._cas_top(top, top + 1):
             value = None
 
-        self.bottom.signed[0] = top + 1
+        self.bottom[0] = top + 1
         return value
