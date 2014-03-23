@@ -1,12 +1,9 @@
 from rpythonex.rcircular import CircularArray
 from rpythonex.ratomic import compare_and_swap
-from rpython.rtyper.lltypesystem import llmemory, lltype, rffi
-import ctypes
+from rpython.rtyper.lltypesystem import lltype, rffi
 
 
-SIGNEDP = lltype.Array(lltype.Signed)
-
-def malloc_signed(initial_value):
+def _malloc_signed(initial_value):
         value = lltype.malloc(rffi.SIGNEDP.TO, 1, flavor="raw")
         value[0] = initial_value
         return value
@@ -14,8 +11,8 @@ def malloc_signed(initial_value):
 
 class CircularWorkStealingDeque(object):
     def __init__(self, log_initial_size):
-        self.bottom = malloc_signed(0)
-        self.top = malloc_signed(0)
+        self.bottom = _malloc_signed(0)
+        self.top = _malloc_signed(0)
         self.active_array = CircularArray(log_initial_size)
 
 
