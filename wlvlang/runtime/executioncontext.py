@@ -30,7 +30,7 @@ class Universe(object):
     def __init__(self, thread_count, space):
         self._thread_pool = [-1] * (thread_count - 1)
         self._thread_count = thread_count - 1
-        self.main_scheduler = ThreadLocalSched(space)
+        self.main_scheduler = ThreadLocalSched(space, self)
         self.space = space
 
 
@@ -38,7 +38,7 @@ class Universe(object):
         self._bootstrap(main_method, arg_local, arg_array)
 
         for i in range(0, self._thread_count - 1):
-            self._thread_pool[i] = start_new_thread(self.space, self, ())
+            self._thread_pool[i] = start_new_thread(self.space, self, (self))
 
         self._main_sched()
 
@@ -59,13 +59,13 @@ class Universe(object):
 
     @staticmethod
     def run(args, space):
-        scheduler = ThreadLocalSched(space)
+        scheduler = ThreadLocalSched(space, args[0])
         scheduler.run()
 
 class ThreadLocalSched(object):
     """ Describes a scheduler for a number of tasks multiplexed onto a single OS Thread """
 
-    def __init__(self, space):
+    def __init__(self, space, universe):
         self.ready_tasks = CircularWorkStealingDeque(4)
         self.yielding_tasks = CircularWorkStealingDeque(4)
 
