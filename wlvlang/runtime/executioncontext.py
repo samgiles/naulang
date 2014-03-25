@@ -38,7 +38,6 @@ class Universe(object):
 
     def register_scheduler(self, identifier, scheduler):
         index = int(identifier) % self._thread_count
-        print index
         self._thread_local_scheds[index] = scheduler
 
     def steal(self):
