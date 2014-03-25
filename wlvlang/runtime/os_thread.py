@@ -70,9 +70,6 @@ class Bootstrapper(object):
             except rthread.error:
                 raise Exception("can't allocate bootstrap lock")
 
-    def _cleanup_(self):
-        self.reinit()
-
     def bootstrap():
         # Thread Started
         rthread.gc_thread_start()
