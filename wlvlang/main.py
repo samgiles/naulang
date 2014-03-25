@@ -13,19 +13,23 @@ def main(args):
         os.write(2, "    The first argument should be a wlvlang source code file\n")
         return 1
 
-    space = ObjectSpace()
+    try:
 
-    # Trim command line arguments to pass into source parser
-    # these are passed to the method that is created as an 'args'
-    # argument
-    arguments = args[1:]
-    main_method, arg_local, arg_array = compiler.compile_file_with_arguments(args[1], space, arguments)
-    # Add file arguments into 'args' array parameter
-    # Activation record is None
+        space = ObjectSpace()
 
-    thread_count = 0
-    universe = Universe(thread_count, space)
-    universe.start(main_method, arg_local, arg_array)
+        # Trim command line arguments to pass into source parser
+        # these are passed to the method that is created as an 'args'
+        # argument
+        arguments = args[1:]
+        main_method, arg_local, arg_array = compiler.compile_file_with_arguments(args[1], space, arguments)
 
-    # TODO: Return value
-    return 0
+        # Add file arguments into 'args' array parameter
+        # Activation record is None
+
+        thread_count = 0
+        universe = Universe(thread_count, space)
+        universe.start(main_method, arg_local, arg_array)
+
+        return 0
+    except:
+        return -1
