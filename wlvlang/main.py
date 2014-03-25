@@ -19,7 +19,7 @@ def main(args):
     # these are passed to the method that is created as an 'args'
     # argument
     arguments = args[1:]
-    main_method, arg_local, arg_array = compiler.parse_file_with_arguments(args[1], space, arguments)
+    main_method, arg_local, arg_array = compiler.compile_file_with_arguments(args[1], space, arguments)
     # Add file arguments into 'args' array parameter
     # Activation record is None
 

@@ -16,29 +16,27 @@ lexer = get_lexer()
 parser = create_parser()
 
 
+def _print_syntax_error_message(message, source_position, source):
+    lineno = source_position.lineno
+    colno = source_position.colno
+    lines = source.splitlines()
+
+    os.write(2, lines[lineno - 1] + "\n")
+
+    for i in range(0, colno - 1):
+        os.write(2, " ")
+    os.write(2, "^\n")
+
+    os.write(2, "Syntax Error on line %d, column %d: %s\n" % (lineno, colno, message))
+
 def _parse_source(source):
-    try:
-        t = parser.parse(lexer.lex(source))
-    except ParsingError, e:
-        source_position = e.getsourcepos()
-        lines = source.split("\n")
-        print e.message
-        print lines[source_position.lineno - 1]
-
-        for i in range(source_position.colno - 1):
-            os.write(1, " ")
-
-        os.write(1, "^\n")
-        raise e
-
-    return t
+    return parser.parse(lexer.lex(source))
 
 def parse(source):
     return _parse_source(source)
 
 
-def parse_file_with_arguments(filename, object_space, arguments=[]):
-    """ Given a source file, return a vmobjects.Method object """
+def compile_file_with_arguments(filename, object_space, command_line_arguments=[]):
     path = os.getcwd()
     fullname = path + os.sep + filename
     try:
@@ -47,8 +45,7 @@ def parse_file_with_arguments(filename, object_space, arguments=[]):
         try:
             ast = _parse_source(source)
         except ParsingError, e:
-            # TODO: Better errors
-            os.write(2, "Failed to parse")
+            _print_syntax_error_message(e.message, e.getsourcepos(), source)
             raise e
         finally:
             input_file.close()
@@ -60,11 +57,11 @@ def parse_file_with_arguments(filename, object_space, arguments=[]):
     compiler_context = FunctionCompilerContext(object_space)
 
     # Add file arguments into 'args' array parameter
-    array = object_space.new_array(len(arguments))
+    array = object_space.new_array(len(command_line_arguments))
 
     i = len(arguments) - 1
     while i >= 0:
-        array.set_value_at(i, object_space.new_string(str(arguments[i])))
+        array.set_value_at(i, object_space.new_string(str(command_line_arguments[i])))
         i -= 1
 
     arg_local = compiler_context.register_local("args")
@@ -79,5 +76,5 @@ def parse_file_with_arguments(filename, object_space, arguments=[]):
     return compiler_context.generate_method(), arg_local, array
 
 def parse_file(filename, object_space):
-    method, _, _ = parse_file_with_arguments(filename, object_space)
+    method, _, _ = compile_file_with_arguments(filename, object_space)
     return method
