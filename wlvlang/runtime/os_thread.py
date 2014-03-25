@@ -7,6 +7,7 @@ Duplicated and altered from the pypy repository
 
 import os
 from rpython.rlib import rthread
+from rpython.rtyper.lltypesystem import rffi
 
 # Here are the steps performed to start a new thread:
 #
@@ -58,7 +59,7 @@ class Bootstrapper(object):
     # The following lock is held whenever the fields
     # 'bootstrapper.rpy_callable' and 'bootstrapper.args' are in use.
     lock = None
-    args = ()
+    args = []
     rpy_callable = None
 
     @staticmethod
@@ -69,22 +70,12 @@ class Bootstrapper(object):
             except rthread.error:
                 raise Exception("can't allocate bootstrap lock")
 
-    @staticmethod
-    def reinit():
-        bootstrapper.lock = None
-        bootstrapper.nbthreads = 0
-        bootstrapper.rpy_callable = None
-        bootstrapper.args = ()
-
     def _cleanup_(self):
         self.reinit()
 
     def bootstrap():
-        # Note that when this runs, we already hold the GIL.  This is ensured
-        # by rffi's callback mechanism: we are a callback for the
-        # c_thread_start() external function.
+        # Thread Started
         rthread.gc_thread_start()
-        print "In Thread"
         space = bootstrapper.space
         rpy_callable = bootstrapper.rpy_callable
         args = bootstrapper.args
@@ -92,7 +83,6 @@ class Bootstrapper(object):
         bootstrapper.release()
         # run!
         try:
-            print "Running the code"
             bootstrapper.run(space, rpy_callable, args)
             # done
         except Exception, e:
@@ -116,7 +106,6 @@ class Bootstrapper(object):
         # Note that bootstrapper.lock must be a regular lock, not a NOAUTO
         # lock, because the GIL must be released while we wait.
         bootstrapper.lock.acquire(True)
-        print "Acquired lock"
         bootstrapper.space = space
         bootstrapper.rpy_callable = rpy_callable
         bootstrapper.args = args
@@ -127,8 +116,7 @@ class Bootstrapper(object):
         # start_new_thread() and release the lock to tell that there
         # isn't any bootstrapping thread left.
         bootstrapper.rpy_callable = None
-        bootstrapper.args = ()
-        print "Releasing lock"
+        bootstrapper.args = []
         bootstrapper.lock.release()
     release = staticmethod(release)
 
@@ -138,18 +126,18 @@ class Bootstrapper(object):
     run = staticmethod(run)
 
 bootstrapper = Bootstrapper()
-Bootstrapper.setup()
 
-def start_new_thread(space, rpy_callable, args, w_kwargs=None):
+def start_new_thread(space, rpy_callable, args):
     """Start a new thread and return its identifier.  The thread will call the
 function with positional arguments from the tuple args and keyword arguments
 taken from the optional dictionary kwargs.  The thread exits when the
 function returns; the return value is ignored.  The thread will also exit
 when the function raises an unhandled exception; a stack trace will be
 printed unless the exception is SystemExit."""
+    bootstrapper.setup()
     bootstrapper.acquire(space, rpy_callable, args)
     try:
-        ident = rthread.start_new_thread(bootstrapper.bootstrap, ())
+        ident = rffi.cast(rffi.LONG, rthread.ll_start_new_thread(bootstrapper.bootstrap))
     except Exception, e:
         bootstrapper.release()     # normally called by the new thread
         raise e

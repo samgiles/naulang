@@ -23,7 +23,8 @@ def main(args):
     # Add file arguments into 'args' array parameter
     # Activation record is None
 
-    universe = Universe(4, space)
+    thread_count = 0
+    universe = Universe(thread_count, space)
     universe.start(main_method, arg_local, arg_array)
 
     # TODO: Return value

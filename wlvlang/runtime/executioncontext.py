@@ -2,11 +2,12 @@ from wlvlang.interpreter.interpreter import Interpreter
 from wlvlang.interpreter.activationrecord import ActivationRecord
 from wlvlang.interpreter.bytecode import bytecode_names
 from rpythonex.rdequeue import CircularWorkStealingDeque
+from rpythonex.rthread import thread_join
 
-from wlvlang.interpreter.space import ObjectSpace
-
-from rpython.rlib import jit
+from rpython.rlib import jit, rthread, rrandom
+from rpython.rtyper.lltypesystem import rffi
 from wlvlang.runtime.os_thread import start_new_thread
+
 
 # For the sake of experimentation this is hardcoded
 # deadlocks abound when the number of tasks exceeds this
@@ -28,19 +29,41 @@ class DeadLockedException(Exception):
 
 class Universe(object):
     def __init__(self, thread_count, space):
-        self._thread_pool = [-1] * (thread_count - 1)
-        self._thread_count = thread_count - 1
-        self.main_scheduler = ThreadLocalSched(space, self)
+        self._rand = rrandom.Random(9)
+        self._thread_count = thread_count + 1
+        self._thread_local_scheds = [None] * (self._thread_count + 1)
+        self._thread_pool = [-1] * (self._thread_count)
         self.space = space
 
 
+    def register_scheduler(self, identifier, scheduler):
+        index = int(identifier) % self._thread_count
+        print index
+        self._thread_local_scheds[index] = scheduler
+
+    def steal(self):
+        index = int(self._rand.random() * self._thread_count) % self._thread_count
+        sched = self._thread_local_scheds[index]
+
+        if sched is not None:
+            return sched.steal()
+
+        return None
+
     def start(self, main_method, arg_local, arg_array):
+        self.main_scheduler = ThreadLocalSched(self.space, self)
         self._bootstrap(main_method, arg_local, arg_array)
+        self._thread_pool = [-1] * (self._thread_count)
 
-        for i in range(0, self._thread_count - 1):
-            self._thread_pool[i] = start_new_thread(self.space, self, (self))
+        for i in range(1, self._thread_count):
+            self._thread_pool[i] = int(start_new_thread(self.space, self, [self]))
 
+        identifier = rthread.get_ident()
+        self.register_scheduler(identifier, self.main_scheduler)
         self._main_sched()
+
+        for i in range(1, self._thread_count):
+            thread_join(self._thread_pool[i])
 
 
     def _bootstrap(self, main_method, arg_local, arg_array):
@@ -59,6 +82,7 @@ class Universe(object):
 
     @staticmethod
     def run(args, space):
+        assert len(args) == 1
         scheduler = ThreadLocalSched(space, args[0])
         scheduler.run()
 
@@ -77,6 +101,9 @@ class ThreadLocalSched(object):
         # execution context
         self.interpreter = Interpreter(space)
 
+        self.universe = universe
+
+
     def add_ready_task(self, task):
         self.ready_tasks.push_bottom(task)
 
@@ -86,9 +113,17 @@ class ThreadLocalSched(object):
         if task is None:
             yielding_task = self.yielding_tasks.pop_bottom()
             if yielding_task is None:
-                return None
+                return self.universe.steal()
 
             return yielding_task
+
+        return task
+
+    def steal(self):
+        task = self.ready_tasks.steal()
+        if task is None:
+            task = self.yielding_tasks.steal()
+
         return task
 
     def run_task(self, task):
@@ -125,6 +160,7 @@ class ThreadLocalSched(object):
 
 
     def run(self):
+        self.universe.register_scheduler(rthread.get_ident(), self)
         while True:
             task = self._get_next_task()
             if task is None:
@@ -132,8 +168,10 @@ class ThreadLocalSched(object):
 
             self.run_task(task)
 
-            if not task.get_state() == Interpreter.HALT:
+            if task.get_state() == Interpreter.YIELD:
                 self.yielding_tasks.push_bottom(task)
+            elif task.get_state() != Interpreter.HALT:
+                self.ready_tasks.push_bottom(task)
 
 
 class Task(object):
