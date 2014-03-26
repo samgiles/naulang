@@ -142,7 +142,7 @@ def param_list(p):
 
 @pg.production("parameter_list : none")
 def param_list_none(p):
-    return ast.ParameterList([], p[0].getsourcepos())
+    return ast.ParameterList([], None)
 
 @pg.production("param_opt : param_opt IDENTIFIER COMMA")
 def param_opt(p):
