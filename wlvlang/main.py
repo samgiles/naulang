@@ -3,6 +3,11 @@ from wlvlang.compiler import compiler
 from wlvlang.interpreter.space import ObjectSpace
 from wlvlang.runtime.executioncontext import  Universe
 
+def _create_space():
+    return ObjectSpace()
+
+SPACE = _create_space()
+
 def _main(args):
 
     if len(args) < 2:
@@ -10,19 +15,17 @@ def _main(args):
         os.write(2, "    The first argument should be a wlvlang source code file\n")
         return 1
 
-    space = ObjectSpace()
-
     # Trim command line arguments to pass into source parser
     # these are passed to the method that is created as an 'args'
     # argument
     arguments = args[1:]
-    main_method, arg_local, arg_array = compiler.compile_file_with_arguments(args[1], space, arguments)
+    main_method, arg_local, arg_array = compiler.compile_file_with_arguments(args[1], SPACE, arguments)
 
     # Add file arguments into 'args' array parameter
     # Activation record is None
 
     thread_count = 0
-    universe = Universe(thread_count, space)
+    universe = Universe(thread_count, SPACE)
     universe.start(main_method, arg_local, arg_array)
 
     return 0
@@ -37,4 +40,6 @@ def _exception_wrapped(main_method):
         return wrapped
     else:
         return main_method
+
+
 main = _exception_wrapped(_main)
