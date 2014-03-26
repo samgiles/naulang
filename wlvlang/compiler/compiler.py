@@ -15,23 +15,28 @@ from rpython.rlib.streamio import open_file_as_stream
 lexer = get_lexer()
 parser = create_parser()
 
-def _print_syntax_error_message(message, source_position, source):
-    lineno = source_position.lineno
-    colno = source_position.colno
-    lines = source.splitlines()
-
-    os.write(2, lines[lineno - 1] + "\n")
-
-    for i in range(0, colno - 1):
-        os.write(2, " ")
-    os.write(2, "^\n")
-
-    os.write(2, "Syntax Error on line %d, column %d: %s\n" % (lineno, colno, message))
 
 def parse(source):
     return parser.parse(lexer.lex(source))
 
 def compile_file_with_arguments(filename, object_space, command_line_arguments=[]):
+
+    ast = _parse_file(filename)
+
+    compiler_context = FunctionCompilerContext(object_space)
+
+    arguments_array        = _create_commandline_arguments_array(object_space, command_line_arguments)
+    arguments_local_offset = _register_symbol_in_compiler_context(compiler_context, symbol="args")
+
+    translator = SyntaxDirectedTranslator(compiler_context)
+    ast.accept(translator)
+
+    # Ensure the bytecode is halting
+    compiler_context.emit(Bytecode.HALT)
+
+    return compiler_context.generate_method(), arguments_local_offset, arguments_array
+
+def _parse_file(filename):
     path = os.getcwd()
     fullname = path + os.sep + filename
     try:
@@ -47,19 +52,7 @@ def compile_file_with_arguments(filename, object_space, command_line_arguments=[
     except OSError, msg:
         os.write(2, "%s: %s\n" % (os.strerror(msg.errno), fullname))
         raise IOError()
-
-    compiler_context = FunctionCompilerContext(object_space)
-
-    arguments_array = _create_commandline_arguments_array(object_space, command_line_arguments)
-    arguments_local_offset = _register_symbol_in_compiler_context(compiler_context, symbol="args")
-
-    translator = SyntaxDirectedTranslator(compiler_context)
-    ast.accept(translator)
-
-    # Ensure the bytecode is halting
-    compiler_context.emit(Bytecode.HALT)
-
-    return compiler_context.generate_method(), arguments_local_offset, arguments_array
+    return ast
 
 def _create_commandline_arguments_array(object_space, command_line_arguments=[]):
     argument_array = object_space.new_array(len(command_line_arguments))
@@ -75,3 +68,15 @@ def _create_commandline_arguments_array(object_space, command_line_arguments=[])
 def _register_symbol_in_compiler_context(compiler_context, symbol):
     return compiler_context.register_local(symbol)
 
+def _print_syntax_error_message(message, source_position, source):
+    lineno = source_position.lineno
+    colno = source_position.colno
+    lines = source.splitlines()
+
+    os.write(2, lines[lineno - 1] + "\n")
+
+    for i in range(0, colno - 1):
+        os.write(2, " ")
+    os.write(2, "^\n")
+
+    os.write(2, "Syntax Error on line %d, column %d: %s\n" % (lineno, colno, message))
