@@ -1,6 +1,6 @@
 import py
 
-from wlvlang.runtime.executioncontext import ThreadLocalSched, Task
+from wlvlang.runtime.executioncontext import ThreadLocalSched, Task, Universe
 from wlvlang.interpreter.space import ObjectSpace
 
 def test_add_task():
@@ -15,8 +15,9 @@ def test_add_task():
             If you've implemented a new Scheduler you've probably broken this test, that's fine,
             just refactor to keep the old functionality as a strategy or something
     """
-    sched = ThreadLocalSched(ObjectSpace())
+    space = ObjectSpace()
+    sched = ThreadLocalSched(space, Universe(0, space))
     task = Task(sched)
     sched.add_ready_task(Task(sched))
     sched.add_ready_task(task)
-    assert task is sched._get_next_ready_task()
+    assert task is sched._get_next_task()
