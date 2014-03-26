@@ -22,10 +22,6 @@ jitdriver = jit.JitDriver(
         get_printable_location=get_printable_location
     )
 
-class DeadLockedException(Exception):
-    pass
-
-
 class Universe(object):
     def __init__(self, thread_count, space):
         self._rand = rrandom.Random(9)
