@@ -6,6 +6,7 @@ from wlvlang.compiler.lexer import get_lexer
 from wlvlang.compiler.parser import create_parser
 from wlvlang.compiler.context import FunctionCompilerContext
 from wlvlang.compiler.translator import SyntaxDirectedTranslator
+from wlvlang.compiler.error import CompilerException
 
 from wlvlang.interpreter.bytecode import Bytecode
 
@@ -21,7 +22,7 @@ def parse(source):
 
 def compile_file_with_arguments(filename, object_space, command_line_arguments=[]):
 
-    ast = _parse_file(filename)
+    source, ast = _parse_file(filename)
 
     compiler_context = FunctionCompilerContext(object_space)
 
@@ -29,7 +30,12 @@ def compile_file_with_arguments(filename, object_space, command_line_arguments=[
     arguments_local_offset = _register_symbol_in_compiler_context(compiler_context, symbol="args")
 
     translator = SyntaxDirectedTranslator(compiler_context)
-    ast.accept(translator)
+
+    try:
+        ast.accept(translator)
+    except CompilerException, e:
+        _print_error_message(e.message, e.getsourcepos(), source, error_type="Compilation Error")
+        raise e
 
     # Ensure the bytecode is halting
     compiler_context.emit(Bytecode.HALT)
@@ -45,14 +51,14 @@ def _parse_file(filename):
         try:
             ast = parse(source)
         except ParsingError, e:
-            _print_syntax_error_message(e.message, e.getsourcepos(), source)
+            _print_error_message(e.message, e.getsourcepos(), source, error_type="Syntax Error")
             raise e
         finally:
             input_file.close()
     except OSError, msg:
         os.write(2, "%s: %s\n" % (os.strerror(msg.errno), fullname))
         raise IOError()
-    return ast
+    return source, ast
 
 def _create_commandline_arguments_array(object_space, command_line_arguments=[]):
     argument_array = object_space.new_array(len(command_line_arguments))
@@ -68,7 +74,7 @@ def _create_commandline_arguments_array(object_space, command_line_arguments=[])
 def _register_symbol_in_compiler_context(compiler_context, symbol):
     return compiler_context.register_local(symbol)
 
-def _print_syntax_error_message(message, source_position, source):
+def _print_error_message(message, source_position, source, error_type="Syntax Error"):
     lineno = source_position.lineno
     colno = source_position.colno
     lines = source.splitlines()
@@ -79,4 +85,4 @@ def _print_syntax_error_message(message, source_position, source):
         os.write(2, " ")
     os.write(2, "^\n")
 
-    os.write(2, "Syntax Error on line %d, column %d: %s\n" % (lineno, colno, message))
+    os.write(2, "%s on line %d, column %d: %s\n" % (error_type, lineno, colno, message))

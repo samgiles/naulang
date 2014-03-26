@@ -37,7 +37,7 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         else:
             slot, level = self.context.register_dynamic(node.get_varname())
             if slot is FunctionCompilerContext.REGISTER_DYNAMIC_FAILED:
-                raise CompilerException("Variable '%s' has not been defined in this scope. You should use `let %s = ...` to initialise a variable" % (node.get_varname(), node.get_varname()))
+                raise CompilerException("Variable '%s' has not been defined in this scope. You should use `let %s = ...` to initialise a variable" % (node.get_varname(), node.get_varname()), node.getsourcepos())
 
             self.context.emit(Bytecode.STORE_DYNAMIC, slot)
             self.context.emit(level)
