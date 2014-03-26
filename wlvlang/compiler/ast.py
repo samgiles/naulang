@@ -10,7 +10,14 @@ class Node(BaseBox):
 
     """ Base ast Node """
     def __eq__(self, other):
-        return (self.__class__ == other.__class__ and self.__dict__ == other.__dict__)
+
+       # Don't include sourceposition in the comparison
+        self_compare_dict = dict(self.__dict__)
+        other_compare_dict = dict(other.__dict__)
+        self_compare_dict['sourceposition'] = None
+        other_compare_dict['sourceposition'] = None
+
+        return (self.__class__ == other.__class__ and self_compare_dict == other_compare_dict)
 
     def __ne__(self, other):
         return not self == other
@@ -24,7 +31,7 @@ class Node(BaseBox):
 class Block(Node):
     """ A Basic block or collection of Statements/Expressions """
 
-    def __init__(self, statement_list, sourceposition):
+    def __init__(self, statement_list, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.statements = statement_list
 
@@ -46,7 +53,7 @@ class Block(Node):
 class BooleanConstant(Node):
     """ Represents a Boolean constant "true" or "false" """
 
-    def __init__(self, value, sourceposition):
+    def __init__(self, value, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.value = value
 
@@ -62,7 +69,7 @@ class BooleanConstant(Node):
 class StringConstant(Node):
     """ Represents a String constant """
 
-    def __init__(self, value, sourceposition):
+    def __init__(self, value, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.value = value
 
@@ -78,7 +85,7 @@ class StringConstant(Node):
 class IntegerConstant(Node):
     """ Represents an Integer constant """
 
-    def __init__(self, value, sourceposition):
+    def __init__(self, value, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.value = value
 
@@ -94,7 +101,7 @@ class IntegerConstant(Node):
 class FloatConstant(Node):
     """ Represents a Floating point constant """
 
-    def __init__(self, value, sourceposition):
+    def __init__(self, value, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.value = value
 
@@ -114,7 +121,7 @@ class FloatConstant(Node):
 class Assignment(Node):
     """ Represents simple assignment """
 
-    def __init__(self, variable_name, expression, sourceposition):
+    def __init__(self, variable_name, expression, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.varname = variable_name
         self.expression = expression
@@ -135,7 +142,7 @@ class Assignment(Node):
 class ScopedAssignment(Node):
     """ Represents variable initialisation within a scope (using let keyword) """
 
-    def __init__(self, variable_name, expression, sourceposition):
+    def __init__(self, variable_name, expression, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.varname = variable_name
         self.expression = expression
@@ -157,7 +164,7 @@ class ScopedAssignment(Node):
 
 class BinaryExpression(Node):
     """ A generic Binary expression """
-    def __init__(self, lhs, rhs, sourceposition):
+    def __init__(self, lhs, rhs, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.lhs = lhs
         self.rhs = rhs
@@ -314,7 +321,7 @@ class Mod(BinaryExpression):
 class UnaryExpression(Node):
     """ Unary Expression """
 
-    def __init__(self, expression, sourceposition):
+    def __init__(self, expression, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.expression = expression
 
@@ -350,7 +357,7 @@ class UnaryNegate(UnaryExpression):
 class WhileStatement(Node):
     """ while [condition] { [block] } """
 
-    def __init__(self, condition, block, sourceposition):
+    def __init__(self, condition, block, sourceposition=None):
         Node.__init__(self, sourceposition)
         assert isinstance(condition, Node) # RPython
 
@@ -373,7 +380,7 @@ class WhileStatement(Node):
 
 class BreakStatement(Node):
 
-    def __init__(self, sourceposition):
+    def __init__(self, sourceposition=None):
         Node.__init__(self, sourceposition)
 
     def accept(self, astvisitor):
@@ -384,7 +391,7 @@ class BreakStatement(Node):
 
 class ContinueStatement(Node):
 
-    def __init__(self, sourceposition):
+    def __init__(self, sourceposition=None):
         Node.__init__(self, sourceposition)
 
     def accept(self, astvisitor):
@@ -396,7 +403,7 @@ class ContinueStatement(Node):
 class IfStatement(Node):
     """ if [condition] { [block] } """
 
-    def __init__(self, condition, ifclause, sourceposition):
+    def __init__(self, condition, ifclause, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.condition = condition
         self.ifclause = ifclause
@@ -420,7 +427,7 @@ class IfStatement(Node):
 class PrintStatement(Node):
     """ print [statement] """
 
-    def __init__(self, expression, sourceposition):
+    def __init__(self, expression, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.expression = expression
 
@@ -438,7 +445,7 @@ class PrintStatement(Node):
 
 class ParameterList(Node):
     """ Function definition parameter list: fn ([parameters]) """
-    def __init__(self, parameters, sourceposition):
+    def __init__(self, parameters, sourceposition=None):
         """ Args:
                 parameters -- A list of parameters
         """
@@ -457,7 +464,7 @@ class ParameterList(Node):
 class ArgumentList(Node):
     """ Function call argument list """
 
-    def __init__(self, arglist, sourceposition):
+    def __init__(self, arglist, sourceposition=None):
         """ Args:
                 arglist -- A List of expressions
         """
@@ -478,7 +485,7 @@ class ArgumentList(Node):
 class FunctionExpression(Node):
     """ A function expression:  fn([paramlist]) { [block] } """
 
-    def __init__(self, paramlist, block, sourceposition):
+    def __init__(self, paramlist, block, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.paramlist = paramlist
         self.block = block
@@ -496,7 +503,7 @@ class FunctionExpression(Node):
 class FunctionStatement(Node):
     """ A function statement: fn [identifier]([paramlist]) { [block] } """
 
-    def __init__(self, identifier, paramlist, block, sourceposition):
+    def __init__(self, identifier, paramlist, block, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.identifier = identifier
         self.paramlist = paramlist
@@ -518,7 +525,7 @@ class FunctionStatement(Node):
 class FunctionCall(Node):
     """ Function call: [identifier]([arglist]) """
 
-    def __init__(self, identifier, arglist, sourceposition):
+    def __init__(self, identifier, arglist, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.identifier = identifier
         self.arglist = arglist
@@ -540,7 +547,7 @@ class FunctionCall(Node):
 class AsyncFunctionCall(Node):
     """ Function call: [identifier]([arglist]) """
 
-    def __init__(self, identifier, arglist, sourceposition):
+    def __init__(self, identifier, arglist, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.identifier = identifier
         self.arglist = arglist
@@ -561,7 +568,7 @@ class AsyncFunctionCall(Node):
 
 
 class ReturnStatement(Node):
-    def __init__(self, expression, sourceposition):
+    def __init__(self, expression, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.expression = expression
 
@@ -580,7 +587,7 @@ class ReturnStatement(Node):
 class IdentifierExpression(Node):
     """ identifier: 'a' """
 
-    def __init__(self, identifier, sourceposition):
+    def __init__(self, identifier, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.identifier = identifier
 
@@ -595,7 +602,7 @@ class IdentifierExpression(Node):
 
 class ArrayAccess(Node):
     """ Array access: {identifier}[{index}]; """
-    def __init__(self, identifier, index, sourceposition):
+    def __init__(self, identifier, index, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.identifier = identifier
         self.index = index
@@ -616,7 +623,7 @@ class ArrayAccess(Node):
 
 class ArrayAssignment(Node):
 
-    def __init__(self, array_access, expression, sourceposition):
+    def __init__(self, array_access, expression, sourceposition=None):
         Node.__init__(self, sourceposition)
         assert isinstance(array_access, ArrayAccess)  # RPython
 
@@ -641,7 +648,7 @@ class ArrayAssignment(Node):
 
 class ChannelIn(Node):
 
-    def __init__(self, channel_identifier, expression_in, sourceposition):
+    def __init__(self, channel_identifier, expression_in, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.channel = channel_identifier
         self.expression = expression_in
@@ -662,7 +669,7 @@ class ChannelIn(Node):
 
 class ChannelOut(Node):
 
-    def __init__(self, channel_identifier, sourceposition):
+    def __init__(self, channel_identifier, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.channel = channel_identifier
 
