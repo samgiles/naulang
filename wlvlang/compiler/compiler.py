@@ -29,12 +29,8 @@ def _print_syntax_error_message(message, source_position, source):
 
     os.write(2, "Syntax Error on line %d, column %d: %s\n" % (lineno, colno, message))
 
-def _parse_source(source):
-    return parser.parse(lexer.lex(source))
-
 def parse(source):
-    return _parse_source(source)
-
+    return parser.parse(lexer.lex(source))
 
 def compile_file_with_arguments(filename, object_space, command_line_arguments=[]):
     path = os.getcwd()
@@ -43,7 +39,7 @@ def compile_file_with_arguments(filename, object_space, command_line_arguments=[
         input_file = open_file_as_stream(fullname, "r")
         source = input_file.readall()
         try:
-            ast = _parse_source(source)
+            ast = parse(source)
         except ParsingError, e:
             _print_syntax_error_message(e.message, e.getsourcepos(), source)
             raise e
