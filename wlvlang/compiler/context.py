@@ -22,8 +22,6 @@ class FunctionCompilerContext(object):
         # value 2 being the label for the block after the loop.
         self.loop_control = []
 
-        self.optimiser = optimiser
-
     def get_top_position(self):
         """ Returns:
             The position of the last operation, 0 if none
@@ -115,9 +113,6 @@ class FunctionCompilerContext(object):
 
         # First replace bytecode labels with actual values
         bytecode = self.get_bytecode()
-
-        if self.optimiser is not None:
-            bytecode = self.optimiser.optimise(bytecode)
 
         stack_depth = self._calculate_stack_depth(bytecode)
 
