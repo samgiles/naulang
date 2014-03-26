@@ -1,6 +1,6 @@
 
 from wlvlang.interpreter.interpreter import Interpreter
-from wlvlang.interpreter.activationrecord import  ActivationRecord
+from wlvlang.interpreter.frame import Frame
 from wlvlang.interpreter.bytecode import Bytecode
 from wlvlang.interpreter.space import ObjectSpace
 
@@ -15,7 +15,7 @@ def create_test_method(literals, locals, bytecode):
     return Method(literals, locals, bytecode, 20)
 
 def create_frame(method, parent=None, access_link=None):
-    return ActivationRecord(previous_record=parent, method=method, access_link=access_link)
+    return Frame(previous_frame=parent, method=method, access_link=access_link)
 
 def create_space_and_interpreter():
     space = ObjectSpace()

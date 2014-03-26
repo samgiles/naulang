@@ -1,6 +1,6 @@
 import pytest
 
-from wlvlang.interpreter.activationrecord import ActivationRecord
+from wlvlang.interpreter.frame import Frame
 
 from wlvlang.interpreter.objectspace.integer import Integer
 from wlvlang.interpreter.objectspace.boolean import Boolean
@@ -18,12 +18,12 @@ def test_get_value():
 def setup_primitive_test(left_int, right_int):
     # Create an empty method object (it's not used in these tests)
     m = Method([], 0, [], 2)
-    arec = ActivationRecord(previous_record=None, method=m, access_link=None)
+    frame = Frame(previous_frame=None, method=m, access_link=None)
 
-    arec.push(Integer(left_int))
-    arec.push(Integer(right_int))
+    frame.push(Integer(left_int))
+    frame.push(Integer(right_int))
 
-    return arec, ObjectSpace()
+    return frame, ObjectSpace()
 
 
 def test_mul_primitive():

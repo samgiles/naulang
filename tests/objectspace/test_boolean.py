@@ -1,4 +1,4 @@
-from wlvlang.interpreter.activationrecord import ActivationRecord
+from wlvlang.interpreter.frame import Frame
 from wlvlang.interpreter.interpreter import Interpreter
 from wlvlang.interpreter.space import ObjectSpace
 
@@ -17,7 +17,7 @@ def test_get_value():
 def setup_primitive_test(left_val, right_val):
     # Create an empty method object (it's not used in these tests)
     m = Method([], 0, [], 2)
-    arec = ActivationRecord(previous_record=None, method=m, access_link=None)
+    arec = Frame(previous_frame=None, method=m, access_link=None)
 
     arec.push(Boolean(left_val))
     arec.push(Boolean(right_val))

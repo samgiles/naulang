@@ -9,13 +9,13 @@ class Frame(Object):
     _virtualizable_ = ["_locals[*]", "_literals[*]", "_stack_pointer", "_stack[*]", "_pc"]
     _immutable_fields_ = ["_literals", "_locals", "_stack"]
 
-    def __init__(self, previous_record=None, method=None, access_link=None):
+    def __init__(self, previous_frame=None, method=None, access_link=None):
         self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
 
         self._stack = [None] * method.stack_depth
         self._stack_pointer = r_uint(0)
 
-        self.previous_frame = previous_record
+        self.previous_frame = previous_frame
         self.access_link = access_link
 
         self._locals = [None] * method.local_count
@@ -52,7 +52,7 @@ class Frame(Object):
         """ Get the access link for this object (if it has one).  Returns None if it does not """
         return self.access_link;
 
-    def is_root_record(self):
+    def is_root_frame(self):
         return self.get_previous_frame() == None
 
     def push(self, value):

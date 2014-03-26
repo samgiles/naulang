@@ -1,11 +1,10 @@
 from wlvlang.interpreter.interpreter import Interpreter
-from wlvlang.interpreter.activationrecord import ActivationRecord
+from wlvlang.interpreter.frame import Frame
 from wlvlang.interpreter.bytecode import bytecode_names
 from rpythonex.rdequeue import CircularWorkStealingDeque
 from rpythonex.rthread import thread_join
 
 from rpython.rlib import jit, rthread, rrandom
-from rpython.rtyper.lltypesystem import rffi
 from wlvlang.runtime.os_thread import start_new_thread
 
 
@@ -66,7 +65,7 @@ class Universe(object):
 
 
     def _bootstrap(self, main_method, arg_local, arg_array):
-        frame = ActivationRecord(method=main_method)
+        frame = Frame(method=main_method)
         frame.set_local_at(arg_local, arg_array)
 
         main_task = Task(self.main_scheduler)
@@ -197,12 +196,12 @@ class Task(object):
         top_frame = self.get_top_frame()
 
         if top_frame is not None:
-            frame.set_previous_record(top_frame)
+            frame.set_previous_frame(top_frame)
 
         self.top_frame = frame
 
     def restore_previous_frame(self):
-        self.top_frame = self.get_top_frame().get_previous_record()
+        self.top_frame = self.get_top_frame().get_previous_frame()
 
     def get_current_method(self):
         return self.top_frame.method

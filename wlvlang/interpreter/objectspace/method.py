@@ -42,7 +42,7 @@ class Method(Object):
         else:
             previous_frame = task.get_top_frame()
 
-        new_frame = Frame(previous_record=previous_frame, method=self, access_link=self.get_enclosing_frame())
+        new_frame = Frame(previous_frame=previous_frame, method=self, access_link=self.get_enclosing_frame())
 
         # Push arguments into locals of new frame in reverse order
         arg_number = self.argument_count - 1
