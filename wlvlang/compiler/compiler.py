@@ -55,7 +55,7 @@ def compile_file_with_arguments(filename, object_space, command_line_arguments=[
     # Add file arguments into 'args' array parameter
     array = object_space.new_array(len(command_line_arguments))
 
-    i = len(arguments) - 1
+    i = len(command_line_arguments) - 1
     while i >= 0:
         array.set_value_at(i, object_space.new_string(str(command_line_arguments[i])))
         i -= 1
