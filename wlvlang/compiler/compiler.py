@@ -70,7 +70,3 @@ def compile_file_with_arguments(filename, object_space, command_line_arguments=[
     compiler_context.emit(Bytecode.HALT)
 
     return compiler_context.generate_method(), arg_local, array
-
-def parse_file(filename, object_space):
-    method, _, _ = compile_file_with_arguments(filename, object_space)
-    return method
