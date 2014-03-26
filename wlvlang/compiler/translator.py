@@ -265,8 +265,6 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
 
     def visit_scopedassignment(self, node):
         local = self.context.register_local(node.varname)
-
-        # TODO: Error checking
         node.expression.accept(self)
         self.context.emit(Bytecode.STORE, local)
         return False
