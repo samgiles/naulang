@@ -137,12 +137,12 @@ class FunctionCompilerContext(object):
                 # loaded method therefore the arguments consumed by this
                 # argument are assumed to be none.  Having a slightly larger
                 # stack size than necessary shouldn't have a huge effect on
-                # performance although not ideal.
+                # performance, although not ideal.
+
                 # Adding one for the return value
                 depth += 1
             else:
                 depth += get_stack_effect(bc)
-
 
             if depth > max_depth:
                 max_depth = depth
