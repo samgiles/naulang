@@ -210,7 +210,7 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
             arg.accept(self)
 
         if node.identifier in _builtin_functions:
-            raise CompilerException("Built in functions can not be called with the async modifier")
+            raise CompilerException("Built in functions can not be called with the async modifier", node.getsourcepos())
 
         local = self.context.register_local(node.identifier)
         self.context.emit(Bytecode.INVOKE_ASYNC, local)
