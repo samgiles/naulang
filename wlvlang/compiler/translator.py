@@ -3,7 +3,6 @@ from wlvlang.compiler import ast
 from wlvlang.compiler.error import CompilerException
 
 from wlvlang.interpreter.bytecode import Bytecode
-
 from wlvlang.interpreter.objectspace.primitives.builtin_definitions import builtin_functions
 
 _builtin_functions = builtin_functions()
