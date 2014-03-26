@@ -5,6 +5,9 @@ class Node(BaseBox):
     def __init__(self, sourceposition):
         self.sourceposition = sourceposition
 
+    def getsourceposition(self):
+        return self.sourceposition
+
     """ Base ast Node """
     def __eq__(self, other):
         return (self.__class__ == other.__class__ and self.__dict__ == other.__dict__)
@@ -27,6 +30,7 @@ class Block(Node):
 
     def get_statements(self):
         return self.statements
+
 
     def accept(self, astvisitor):
         if astvisitor.visit_block(self):
