@@ -1,8 +1,8 @@
 from rply import LexerGenerator
 
-lg = LexerGenerator()
+lexer_gen = LexerGenerator()
 
-lg.ignore(r"([\s\f\t\n\r\v]+)|#.*$")
+lexer_gen.ignore(r"([\s\f\t\n\r\v]+)|#.*$")
 
 def get_tokens():
     return [
@@ -60,9 +60,9 @@ def get_tokens():
 tokens = get_tokens()
 
 for token in tokens:
-    lg.add(token[0], token[1])
+    lexer_gen.add(token[0], token[1])
 
-LEXER = lg.build()
+LEXER = lexer_gen.build()
 
 def get_lexer():
     return LEXER
