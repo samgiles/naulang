@@ -5,7 +5,7 @@ class Node(BaseBox):
     def __init__(self, sourceposition):
         self.sourceposition = sourceposition
 
-    def getsourceposition(self):
+    def getsourcepos(self):
         return self.sourceposition
 
     """ Base ast Node """
@@ -461,7 +461,7 @@ class ArgumentList(Node):
         """ Args:
                 arglist -- A List of expressions
         """
-        Node.__init__(self, sourceposition, sourceposition)
+        Node.__init__(self, sourceposition)
         self.arguments = arglist
 
     def get_argument_list(self):
