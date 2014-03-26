@@ -1,10 +1,8 @@
-from wlvlang.interpreter.bytecode import Bytecode, bytecode_names
+from wlvlang.interpreter.bytecode import Bytecode
 
 from wlvlang.interpreter.objectspace.array import Array
 from wlvlang.interpreter.objectspace.channel import ChannelInterface, YieldException
 from wlvlang.interpreter.objectspace.method import Method
-
-from rpython.rlib import jit
 
 class Interpreter(object):
 
@@ -149,7 +147,7 @@ class Interpreter(object):
         elif bytecode == Bytecode.RETURN:
 
             # Push the result onto the callers frame
-            caller = frame.get_previous_record()
+            caller = frame.get_previous_frame()
             if caller is not None:
                 caller.push(frame.pop())
 

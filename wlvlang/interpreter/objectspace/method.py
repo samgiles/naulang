@@ -1,5 +1,5 @@
 from wlvlang.interpreter.objectspace.object import Object
-from wlvlang.interpreter.activationrecord import ActivationRecord
+from wlvlang.interpreter.frame import Frame
 from rpython.rlib import jit
 
 class Method(Object):
@@ -17,14 +17,14 @@ class Method(Object):
         self.local_count = local_count
         self.bytecodes = bytecodes
         self.argument_count = argument_count
-        self.enclosing_arec = None
+        self.enclosing_frame = None
         self.stack_depth = stack_depth
 
-    def set_enclosing_arec(self, arec):
-        self.enclosing_arec = arec
+    def set_enclosing_frame(self, frame):
+        self.enclosing_frame = frame
 
-    def get_enclosing_arec(self):
-        return self.enclosing_arec
+    def get_enclosing_frame(self):
+        return self.enclosing_frame
 
     def get_bytecode(self, index):
         assert 0 <= index and index < len(self.bytecodes)
@@ -42,9 +42,9 @@ class Method(Object):
         else:
             previous_frame = task.get_top_frame()
 
-        new_frame = ActivationRecord(previous_record=previous_frame, method=self, access_link=self.get_enclosing_arec())
+        new_frame = Frame(previous_record=previous_frame, method=self, access_link=self.get_enclosing_frame())
 
-        # Push arguments into locals of new arec in reverse order
+        # Push arguments into locals of new frame in reverse order
         arg_number = self.argument_count - 1
         while arg_number >= 0:
             new_frame.set_local_at(arg_number, task.get_top_frame().pop())
@@ -68,7 +68,7 @@ class Method(Object):
         return space.methodClass
 
     def __repr__(self):
-        return "Method<%r>: closed by: <%r>" % (hex(id(self)), hex(id(self.enclosing_arec)))
+        return "Method<%r>: closed by: <%r>" % (hex(id(self)), hex(id(self.enclosing_frame)))
 
 def disassemble(method):
     from wlvlang.interpreter.bytecode import bytecode_names, get_bytecode_length

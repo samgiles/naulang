@@ -11,19 +11,6 @@ class Object(object):
     def __init__(self):
         self.slots = {}
 
-    def send(self, activation_record, selector, arguments, vm_universe, interpreter):
-        activation_record.push(self)
-
-        invokable = self.get_class(object_space).lookup_invokable(selector)
-
-        if not invokable:
-            raise OperationNotFound()
-
-        for arg in arguments:
-            activation_record.push(arg)
-
-        invokable(self, activation_record, interpreter)
-
     def get_as_string(self):
         return "Object"
 

@@ -3,20 +3,19 @@ from wlvlang.interpreter.objectspace.object import Object
 from rpython.rlib.rarithmetic import r_uint
 from rpython.rlib import jit
 
-class ActivationRecord(Object):
+class Frame(Object):
     """ Defines an Activation Record. """
 
     _virtualizable_ = ["_locals[*]", "_literals[*]", "_stack_pointer", "_stack[*]", "_pc"]
     _immutable_fields_ = ["_literals", "_locals", "_stack"]
 
-    def __init__(self, previous_record=None, method=None,
-                 access_link=None):
+    def __init__(self, previous_record=None, method=None, access_link=None):
         self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
 
         self._stack = [None] * method.stack_depth
         self._stack_pointer = r_uint(0)
 
-        self.previous_record = previous_record
+        self.previous_frame = previous_record
         self.access_link = access_link
 
         self._locals = [None] * method.local_count
@@ -40,21 +39,21 @@ class ActivationRecord(Object):
 
                 # Since literal methods exist in methods that have been
                 # invoked we set the activation record
-                self._literals[i].set_enclosing_arec(self)
+                self._literals[i].set_enclosing_frame(self)
 
-    def get_previous_record(self):
+    def get_previous_frame(self):
         """ Get the previous activation record. """
-        return self.previous_record;
+        return self.previous_frame;
 
-    def set_previous_record(self, previous):
-        self.previous_record = previous
+    def set_previous_frame(self, previous):
+        self.previous_frame = previous
 
     def get_access_link(self):
         """ Get the access link for this object (if it has one).  Returns None if it does not """
         return self.access_link;
 
     def is_root_record(self):
-        return self.get_previous_record() == None
+        return self.get_previous_frame() == None
 
     def push(self, value):
         """ Push an object onto the stack """
@@ -87,22 +86,21 @@ class ActivationRecord(Object):
         assert index < len(self._locals) and index >= 0
         self._locals[index] = value
 
-    def _get_arec_at_level(self, level):
+    def _get_frame_at_level(self, level):
         i = 1
-        arec = self.get_access_link()
+        frame = self.get_access_link()
         while i is not level:
-            arec = arec.get_access_link()
+            frame = frame.get_access_link()
             i += 1
 
-        return arec
+        return frame
 
     def get_dynamic_at(self, index, level):
-        arec = self._get_arec_at_level(level)
-        if arec:
-            return arec.get_local_at(index)
+        frame = self._get_frame_at_level(level)
+        if frame: return frame.get_local_at(index)
 
         return None
 
     def set_dynamic_at(self, index, level, value):
-        arec = self._get_arec_at_level(level)
-        return arec.set_local_at(index, value)
+        frame = self._get_frame_at_level(level)
+        return frame.set_local_at(index, value)
