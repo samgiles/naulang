@@ -6,7 +6,8 @@ from rpython.rlib import jit
 class Frame(Object):
     """ Defines an Activation Record. """
 
-    _virtualizable_ = ["_locals[*]", "_literals[*]", "_stack_pointer", "_stack[*]", "_pc"]
+    _virtualizable_ = ["_locals[*]", "_stack[*]", "_pc", "_stack_pointer"]
+    _immutable_fields_ = ["_literals[*]"]
 
     def __init__(self, previous_frame=None, method=None, access_link=None):
         self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
