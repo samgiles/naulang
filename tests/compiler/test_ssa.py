@@ -25,8 +25,8 @@ def test_addition_expression():
     )
 
     node.accept(tac)
-    tacs = tac.get_tacs()
-    assert tac.get_tacs() == {
+    tacs = tac.get_current_block().get_tacs()
+    assert tacs == {
         "v0": (ast.Operator.CONST, 10, None),
         "v1": (ast.Operator.CONST, 6, None),
         "v2": (ast.Operator.MUL, "v0", "v1"),
