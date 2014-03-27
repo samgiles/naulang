@@ -90,10 +90,10 @@ let fannkuch = fn(n) {
 let n = int(args[1])
 
 let i = 0
-let warmup = 5
+let warmup = 50
 
 while i < warmup {
-    fannkuch(n)
+    let temp = fannkuch(n)
     i = i + 1
 }
 
@@ -103,11 +103,10 @@ let t1 = 0
 i = 0
 
 let total = 0
-
 while runs >= 0 {
     runs = runs - 1
     t0 = time()
-    fannkuch(n)
+    temp = fannkuch(n)
     t1 = time()
     total = total + (t1 - t0)
 }
