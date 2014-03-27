@@ -102,7 +102,13 @@ class TACGen(ASTVisitor):
         return False
 
     def visit_continuestatement(self, node):
-        pass
+        current_block = self.get_current_block()
+        continue_block = Block([current_block])
+        controls = self._loop_controls[len(self._loop_controls) - 1]
+        continue_block.next_block = controls[0]
+        current_block.next_block = continue_block
+        self.set_current_block(Block([continue_block]))
+        return False
 
     def visit_whilestatement(self, node):
         current_block = self.get_current_block()
