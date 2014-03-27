@@ -5,7 +5,27 @@ from wlvlang.interpreter.space import ObjectSpace
 def create_tac_generator():
     return TACGen(ObjectSpace())
 
+def test_print_statement():
+    tac = create_tac_generator()
+    node = ast.WhileStatement(ast.BooleanConstant(True), ast.Block([ast.BooleanConstant(True)]))
+    node.accept(tac)
+
+    root_block = tac.get_root_block()
+    root_block.get_tacs() == { "v0": (ast.Operator.CONST, True, None), "v1": (ast.Operator.PRINT, "v0", None) }
+
 def test_while_statement():
+    '''     Tests that we end up with a graph like:
+
+                R---C[true|false]
+                       |     |--------------B
+                       |                   /
+                       |------------------A
+
+            for code:
+                while True {
+                    dostuff
+                }
+    '''
     tac = create_tac_generator()
     node = ast.WhileStatement(ast.BooleanConstant(True), ast.Block([ast.BooleanConstant(True)]))
     node.accept(tac)

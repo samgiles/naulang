@@ -18,6 +18,7 @@ class Operator(object):
     NOT = 15
     NEGATE = 16
     ASSIGN = 17
+    PRINT = 18
 
 class Node(BaseBox):
 

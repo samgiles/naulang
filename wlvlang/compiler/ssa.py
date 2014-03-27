@@ -151,7 +151,9 @@ class TACGen(ASTVisitor):
 
 
     def visit_printstatement(self, node):
-        pass
+        node.expression.accept(self)
+        expression_label = self.last_label()
+        self.current_block.tacs[expression_label] = (Operator.PRINT, expression_label, None)
 
     def visit_identifierexpression(self, node):
         pass
