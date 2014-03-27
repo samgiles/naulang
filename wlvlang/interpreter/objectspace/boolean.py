@@ -1,6 +1,6 @@
-from wlvlang.interpreter.objectspace.object import Object
+from wlvlang.interpreter.objectspace.primitive_object import PrimitiveObject
 
-class Boolean(Object):
+class Boolean(PrimitiveObject):
     """ Represents a Boolean object """
 
     _immutable_fields_ = ["value"]
@@ -22,3 +22,28 @@ class Boolean(Object):
 
     def get_class(self, space):
         return space.booleanClass
+
+    def w_eq(self, activation_record, space):
+        right = activation_record.pop()
+        left = activation_record.pop()
+
+        result = left.get_boolean_value() == right.get_boolean_value()
+        activation_record.push(space.new_boolean(result))
+
+    def w_or(self, activation_record, space):
+        right = activation_record.pop()
+        left = activation_record.pop()
+
+        result = left.get_boolean_value() or right.get_boolean_value()
+        activation_record.push(space.new_boolean(result))
+
+    def w_and(self, activation_record, space):
+        right = activation_record.pop()
+        left = activation_record.pop()
+
+        result = left.get_boolean_value() and right.get_boolean_value()
+        activation_record.push(space.new_boolean(result))
+
+    def w_print(self, activation_record, space):
+        top = activation_record.pop()
+        print top.get_as_string()

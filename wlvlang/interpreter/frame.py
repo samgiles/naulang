@@ -7,7 +7,6 @@ class Frame(Object):
     """ Defines an Activation Record. """
 
     _virtualizable_ = ["_locals[*]", "_literals[*]", "_stack_pointer", "_stack[*]", "_pc"]
-    _immutable_fields_ = ["_literals", "_locals", "_stack"]
 
     def __init__(self, previous_frame=None, method=None, access_link=None):
         self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
@@ -20,10 +19,10 @@ class Frame(Object):
 
         self._locals = [None] * method.local_count
         self._literals = method.literals
-        self._set_up_local_methods()
 
         self._pc = 0
         self.method = method
+        self._set_up_local_methods()
 
     def set_pc(self, pc):
         self._pc = pc
@@ -31,6 +30,7 @@ class Frame(Object):
     def get_pc(self):
         return self._pc
 
+    @jit.unroll_safe
     def _set_up_local_methods(self):
         from wlvlang.interpreter.objectspace.method import Method
         for i in range(0, len(self._literals)):

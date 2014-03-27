@@ -1,6 +1,6 @@
-from wlvlang.interpreter.objectspace.object import Object
+from wlvlang.interpreter.objectspace.primitive_object import PrimitiveObject
 
-class String(Object):
+class String(PrimitiveObject):
 
     def __init__(self, value):
         self.string = value
@@ -16,3 +16,14 @@ class String(Object):
 
     def get_class(self, space):
         return space.stringClass
+
+    def w_add(self, activation_record, space):
+        left = activation_record.pop()
+        right = activation_record.pop()
+
+        result = space.new_string(left.get_as_string() + right.get_as_string())
+        activation_record.push(result)
+
+    def w_print(self, activation_record, space):
+        top = activation_record.pop()
+        print top.get_as_string()

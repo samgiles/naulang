@@ -37,6 +37,7 @@ class Method(Object):
     def copy(self):
         return Method(self.literals, self.local_count, self.bytecodes, self.stack_depth, argument_count=self.argument_count)
 
+    @jit.unroll_safe
     def _create_new_frame(self, previous_frame, is_async=False):
         new_frame = Frame(previous_frame=previous_frame if not is_async else None, method=self, access_link=self.get_enclosing_frame())
 

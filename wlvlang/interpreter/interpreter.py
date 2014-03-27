@@ -1,6 +1,7 @@
 from wlvlang.interpreter.bytecode import Bytecode
 
 from wlvlang.interpreter.objectspace.array import Array
+from wlvlang.interpreter.objectspace.primitive_object import PrimitiveObject
 from wlvlang.interpreter.objectspace.channel import ChannelInterface, YieldException
 from wlvlang.interpreter.objectspace.method import Method
 
@@ -16,10 +17,6 @@ class Interpreter(object):
 
     def __init__(self, space):
         self.space = space
-
-    def _invoke_primitive(self, frame, signature):
-        invokable = frame.peek().get_class(self.space).lookup_invokable(signature)
-        invokable(frame, self.space)
 
     def _invoke_global(self, global_index, frame):
         new_method = self.space.get_builtin_function(global_index)
@@ -54,49 +51,78 @@ class Interpreter(object):
             local = method.get_bytecode(pc - 1)
             frame.set_local_at(local, frame.pop())
         elif bytecode == Bytecode.OR:
-            self._invoke_primitive(frame, "or")
+            value = frame.peek()
+            value.w_or(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.AND:
-            self._invoke_primitive(frame, "and")
+            value = frame.peek()
+            assert isinstance(value, PrimitiveObject)
+            value.w_and(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.EQUAL:
-            self._invoke_primitive(frame, "==")
+            value = frame.peek()
+            assert isinstance(value, PrimitiveObject)
+            value.w_eq(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.NOT_EQUAL:
-            self._invoke_primitive(frame, "!=")
+            value = frame.peek()
+            assert isinstance(value, PrimitiveObject)
+            value.w_neq(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.LESS_THAN:
-            self._invoke_primitive(frame, "<")
+            value = frame.peek()
+            assert isinstance(value, PrimitiveObject)
+            value.w_lt(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.LESS_THAN_EQ:
-            self._invoke_primitive(frame, "<=")
+            value = frame.peek()
+            assert isinstance(value, PrimitiveObject)
+            value.w_lteq(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.GREATER_THAN:
-            self._invoke_primitive(frame, ">")
+            value = frame.peek()
+            assert isinstance(value, PrimitiveObject)
+            value.w_gt(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.GREATER_THAN_EQ:
-            self._invoke_primitive(frame, ">=")
+            value = frame.peek()
+            assert isinstance(value, PrimitiveObject)
+            value.w_gteq(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.ADD:
-            self._invoke_primitive(frame, "+")
+            value = frame.peek()
+            assert isinstance(value, PrimitiveObject)
+            value.w_add(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.SUB:
-            self._invoke_primitive(frame, "-")
+            value = frame.peek()
+            assert isinstance(value, PrimitiveObject)
+            value.w_sub(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.MUL:
-            self._invoke_primitive(frame, "*")
+            value = frame.peek()
+            assert isinstance(value, PrimitiveObject)
+            value.w_mul(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.DIV:
-            self._invoke_primitive(frame, "/")
+            value = frame.peek()
+            assert isinstance(value, PrimitiveObject)
+            value.w_div(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.NOT:
-            self._invoke_primitive(frame, "not")
+            value = frame.peek()
+            assert isinstance(value, PrimitiveObject)
+            value.w_not(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.NEG:
-            self._invoke_primitive(frame, "_neg")
+            value = frame.peek()
+            assert isinstance(value, PrimitiveObject)
+            value.w_neg(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.MOD:
-            self._invoke_primitive(frame, "%")
+            value = frame.peek()
+            assert isinstance(value, PrimitiveObject)
+            value.w_mod(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.JUMP_IF_FALSE:
             pc += 1
@@ -110,7 +136,9 @@ class Interpreter(object):
             jmp_to = method.get_bytecode(pc + 1)
             pc = jmp_to
         elif bytecode == Bytecode.PRINT:
-            self._invoke_primitive(frame, "print")
+            value = frame.peek()
+            assert isinstance(value, PrimitiveObject)
+            value.w_print(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.INVOKE:
             pc += 2
