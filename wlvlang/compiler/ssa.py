@@ -2,19 +2,19 @@ from wlvlang.compiler.ast import Operator, ASTVisitor
 
 class Block(object):
 
-    def __init__(self, previous_block, next_block=None):
+    def __init__(self, previous_blocks, next_block=None):
         """ Represents a Graph node with one input and at least one output. """
         self.tacs = {}
         self.symbol_map = {}
-        self.previous_block = previous_block
+        self.previous_blocks = previous_blocks
         self.next_block = next_block
 
     def get_tacs(self):
         return self.tacs
 
 class BooleanBlock(Block):
-    def __init__(self, previous_block, true_block=None, false_block=None):
-        Block.__init__(self, previous_block, true_block)
+    def __init__(self, previous_blocks, true_block=None, false_block=None):
+        Block.__init__(self, previous_blocks, true_block)
         self.true_block = true_block
         self.false_block = false_block
 
@@ -100,27 +100,41 @@ class TACGen(ASTVisitor):
     def visit_whilestatement(self, node):
         current_block = self.get_current_block()
 
-        condition_block = BooleanBlock(current_block, None, None)
+        condition_block = BooleanBlock([current_block], None, None)
         current_block.next_block = condition_block
 
-        loop_block = Block(condition_block, condition_block)
+        loop_block = Block([condition_block], condition_block)
         condition_block.true_block = loop_block
         self.set_current_block(condition_block)
         node.condition.accept(self)
         self.set_current_block(loop_block)
         node.block.accept(self)
 
-        out_block = Block(condition_block)
+        out_block = Block([condition_block])
         condition_block.false_block = out_block
         self.set_current_block(out_block)
         return False
 
     def visit_ifstatement(self, node):
-        pass
+        current_block = self.get_current_block()
+        condition_block = BooleanBlock([current_block], None, None)
+        current_block.next_block = condition_block
+
+        ifstatement_body = Block([condition_block])
+        condition_block.true_block = ifstatement_body
+        self.set_current_block(condition_block)
+        node.condition.accept(self)
+
+        self.set_current_block(ifstatement_body)
+        node.ifclause.accept(self)
+
+        out_block = Block([condition_block, ifstatement_body])
+        condition_block.false_block = out_block
+        self.set_current_block(out_block)
+
 
     def visit_printstatement(self, node):
         pass
 
     def visit_identifierexpression(self, node):
         pass
-
