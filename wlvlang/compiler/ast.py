@@ -1,5 +1,24 @@
 from rply.token import BaseBox
 
+class Operator(object):
+    MUL = 1
+    CONST = 2
+    OR = 3
+    ADD = 4
+    SUB = 5
+    AND = 6
+    GREATERTHAN = 7
+    LESSTHAN = 8
+    GREATERTHANEQ = 9
+    LESSTHANEQ = 10
+    MOD = 11
+    DIV = 12
+    NOTEQUALS = 13
+    EQUALS = 14
+    NOT = 15
+    NEGATE = 16
+    ASSIGN = 17
+
 class Node(BaseBox):
 
     def __init__(self, sourceposition):
@@ -175,6 +194,9 @@ class BinaryExpression(Node):
     def get_rhs(self):
         return self.rhs
 
+    def get_operator(self):
+        pass
+
     def accept(self, astvisitor):
         if astvisitor.visit_binaryexpression(self):
             self.lhs.accept(astvisitor)
@@ -190,6 +212,9 @@ class Or(BinaryExpression):
         if astvisitor.visit_or(self):
             BinaryExpression.accept(self, astvisitor)
 
+    def get_operator(self):
+        return Operator.OR
+
     def __repr__(self):
         return "ast.Or(%r, %r)" % (self.lhs, self.rhs)
 
@@ -198,6 +223,9 @@ class And(BinaryExpression):
     def accept(self, astvisitor):
         if astvisitor.visit_and(self):
             BinaryExpression.accept(self, astvisitor)
+
+    def get_operator(self):
+        return Operator.AND
 
     def __repr__(self):
         return "ast.And(%r, %r)" % (self.lhs, self.rhs)
@@ -209,6 +237,9 @@ class Equals(BinaryExpression):
         if astvisitor.visit_equals(self):
             BinaryExpression.accept(self, astvisitor)
 
+    def get_operator(self):
+        return Operator.EQUALS
+
     def __repr__(self):
         return "ast.Equals(%r, %r)" % (self.lhs, self.rhs)
 
@@ -218,6 +249,9 @@ class NotEquals(BinaryExpression):
     def accept(self, astvisitor):
         if astvisitor.visit_notequals(self):
             BinaryExpression.accept(self, astvisitor)
+
+    def get_operator(self):
+        return Operator.NOTEQUALS
 
     def __repr__(self):
         return "ast.NotEquals(%r, %r)" % (self.lhs, self.rhs)
@@ -231,6 +265,9 @@ class LessThan(BinaryExpression):
         if astvisitor.visit_lessthan(self):
             BinaryExpression.accept(self, astvisitor)
 
+    def get_operator(self):
+        return Operator.LESSTHAN
+
     def __repr__(self):
         return "ast.LessThan(%r, %r)" % ((self.lhs), (self.rhs))
 
@@ -240,6 +277,9 @@ class LessThanOrEqual(BinaryExpression):
     def accept(self, astvisitor):
         if astvisitor.visit_lessthanorequal(self):
             BinaryExpression.accept(self, astvisitor)
+
+    def get_operator(self):
+        return Operator.LESSTHANEQ
 
     def __repr__(self):
         return "ast.LessThanOrEqual(%r, %r)" % ((self.lhs), (self.rhs))
@@ -251,6 +291,9 @@ class GreaterThan(BinaryExpression):
         if astvisitor.visit_greaterthan(self):
             BinaryExpression.accept(self, astvisitor)
 
+    def get_operator(self):
+        return Operator.GREATERTHAN
+
     def __repr__(self):
         return "ast.GreaterThan(%r, %r)" % ((self.lhs), (self.rhs))
 
@@ -260,6 +303,9 @@ class GreaterThanOrEqual(BinaryExpression):
     def accept(self, astvisitor):
         if astvisitor.visit_greaterthanorequal(self):
             BinaryExpression.accept(self, astvisitor)
+
+    def get_operator(self):
+        return Operator.GREATERTHANEQ
 
     def __repr__(self):
         return "ast.GreaterThanOrEqual(%r, %r)" % ((self.lhs), (self.rhs))
@@ -273,6 +319,9 @@ class Add(BinaryExpression):
         if astvisitor.visit_add(self):
             BinaryExpression.accept(self, astvisitor)
 
+    def get_operator(self):
+        return Operator.ADD
+
     def __repr__(self):
         return "ast.AddOp(%r, %r)" % ((self.lhs), (self.rhs))
 
@@ -282,6 +331,9 @@ class Subtract(BinaryExpression):
     def accept(self, astvisitor):
         if astvisitor.visit_subtract(self):
             BinaryExpression.accept(self, astvisitor)
+
+    def get_operator(self):
+        return Operator.SUB
 
     def __repr__(self):
         return "ast.Subtract(%r, %r)" % ((self.lhs), (self.rhs))
@@ -293,6 +345,9 @@ class Multiply(BinaryExpression):
         if astvisitor.visit_multiply(self):
             BinaryExpression.accept(self, astvisitor)
 
+    def get_operator(self):
+        return Operator.MUL
+
     def __repr__(self):
         return "ast.MulOp(%r, %r)" % ((self.lhs), (self.rhs))
 
@@ -303,6 +358,9 @@ class Divide(BinaryExpression):
         if astvisitor.visit_divide(self):
             BinaryExpression.accept(self, astvisitor)
 
+    def get_operator(self):
+        return Operator.DIV
+
     def __repr__(self):
         return "ast.DivOp(%r, %r)" % ((self.lhs), (self.rhs))
 
@@ -312,6 +370,9 @@ class Mod(BinaryExpression):
     def accept(self, astvisitor):
         if astvisitor.visit_mod(self):
             BinaryExpression.accept(self, astvisitor)
+
+    def get_operator(self):
+        return Operator.MOD
 
     def __repr__(self):
         return "ast.Mod(%r, %r)" % ((self.lhs), (self.rhs))
