@@ -5,6 +5,18 @@ from wlvlang.interpreter.space import ObjectSpace
 def create_tac_generator():
     return TACGen(ObjectSpace())
 
+def test_while_statement():
+    tac = create_tac_generator()
+    node = ast.WhileStatement(ast.BooleanConstant(True), ast.Block([ast.BooleanConstant(True)]))
+    node.accept(tac)
+
+    root_block = tac.get_root_block()
+    assert root_block.next_block.get_tacs() == { "v0": (ast.Operator.CONST, True, None) }
+    assert root_block.next_block.true_block.get_tacs() == { "v1": (ast.Operator.CONST, True, None) }
+    assert root_block.next_block.false_block.get_tacs() == {}
+    assert root_block.next_block.previous_block is root_block
+
+
 def test_addition_expression():
     tac = create_tac_generator()
     node = ast.Add(
