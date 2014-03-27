@@ -16,6 +16,27 @@ def test_while_statement():
     assert root_block.next_block.false_block.get_tacs() == {}
     assert root_block.next_block.previous_blocks[0] is root_block
 
+def test_break_statement():
+    """     Tests that we end up with a graph like:
+
+                R---C[true|false]
+                       |     |--------------B
+                       |                   /
+                       |-----------------A/
+
+            for code:
+                while True {
+                    break
+                }
+    """
+    tac = create_tac_generator()
+    node = ast.WhileStatement(ast.BooleanConstant(True), ast.Block([ast.BooleanConstant(True), ast.BreakStatement()]))
+    node.accept(tac)
+
+    root_block = tac.get_root_block()
+    assert root_block.next_block.true_block.get_tacs() == { "v1": (ast.Operator.CONST, True, None) }
+    assert root_block.next_block.true_block.next_block.next_block is root_block.next_block.false_block
+
 def test_if_statement():
     tac = create_tac_generator()
     node = ast.IfStatement(ast.BooleanConstant(True), ast.Block([ast.BooleanConstant(True)]))

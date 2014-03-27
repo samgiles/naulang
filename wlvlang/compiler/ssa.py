@@ -25,6 +25,7 @@ class TACGen(ASTVisitor):
         self.symbol_index = 0
         self.root_block = Block(None)
         self.current_block = self.root_block
+        self._loop_controls = []
 
     def get_root_block(self):
         return self.root_block
@@ -92,7 +93,13 @@ class TACGen(ASTVisitor):
         return False
 
     def visit_breakstatement(self, node):
-        pass
+        current_block = self.get_current_block()
+        break_block = Block([current_block])
+        controls = self._loop_controls[len(self._loop_controls) - 1]
+        break_block.next_block = controls[1]
+        current_block.next_block = break_block
+        self.set_current_block(Block([break_block]))
+        return False
 
     def visit_continuestatement(self, node):
         pass
@@ -105,13 +112,17 @@ class TACGen(ASTVisitor):
 
         loop_block = Block([condition_block], condition_block)
         condition_block.true_block = loop_block
-        self.set_current_block(condition_block)
-        node.condition.accept(self)
-        self.set_current_block(loop_block)
-        node.block.accept(self)
-
         out_block = Block([condition_block])
         condition_block.false_block = out_block
+
+        self.set_current_block(condition_block)
+        node.condition.accept(self)
+
+        self._loop_controls.append((condition_block, out_block))
+        self.set_current_block(loop_block)
+        node.block.accept(self)
+        self._loop_controls.pop()
+
         self.set_current_block(out_block)
         return False
 
