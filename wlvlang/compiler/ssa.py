@@ -18,7 +18,7 @@ class BooleanBlock(Block):
         self.true_block = true_block
         self.false_block = false_block
 
-class TACGen(ASTVisitor):
+class SSAGen(ASTVisitor):
     """ Generate Three Address Code """
 
     def __init__(self, space):
@@ -155,5 +155,33 @@ class TACGen(ASTVisitor):
         expression_label = self.last_label()
         self.current_block.tacs[expression_label] = (Operator.PRINT, expression_label, None)
 
+    def visit_functionexpression(self, node):
+        pass
+
     def visit_identifierexpression(self, node):
         pass
+
+class GraphTranslator(object):
+
+
+    def __init__(self, space):
+        self.space = space
+        self.current_context = FunctionCompilerContext(space)
+
+    def compile(self, node):
+        tacs = node.get_tacs()
+
+        for tac in tacs:
+
+            self.compile_tac(tacs[tac])
+
+            if tac in node.symbol_map:
+                # Assign expression
+                pass
+
+    def compile_tac(self, tac):
+        operator = tac[0]
+        arg_1 = tac[1]
+        arg_2 = tac[2]
+
+
