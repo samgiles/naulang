@@ -2,7 +2,8 @@ from wlvlang.interpreter.objectspace.primitive_object import PrimitiveObject
 
 class Integer(PrimitiveObject):
 
-    _immutable_fields_ = ["value"]
+    _immutable_ = True
+    _immutable_fields = ["value"]
 
     def __init__(self, value):
         self.value = value

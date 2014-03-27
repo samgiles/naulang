@@ -14,23 +14,10 @@ class ObjectSpace(object):
 
     _immutable_fields_ = [
         "builtin_functions[*]",
-        "integerClass",
-        "methodClass",
-        "booleanClass",
-        "arrayClass",
-        "builtinClass",
-        "stringClass"
     ]
 
     def __init__(self):
         # Classes define the operations that can be performed on a type
-        self.integerClass = Class()
-        self.methodClass = Class()
-        self.booleanClass = Class()
-        self.arrayClass = Class()
-        self.builtinClass = Class()
-        self.stringClass = Class()
-
         self.builtin_functions = []
         self.initialise_primitives()
 
