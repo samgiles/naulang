@@ -90,7 +90,7 @@ let fannkuch = fn(n) {
 let n = int(args[1])
 
 let i = 0
-let warmup = 50
+let warmup = 10
 
 while i < warmup {
     let temp = fannkuch(n)

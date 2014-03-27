@@ -1,4 +1,4 @@
-from wlvlang.compiler.ssa import TACGen
+from wlvlang.compiler.ssa import SSAGen
 from wlvlang.compiler import ast
 from wlvlang.interpreter.space import ObjectSpace
 

@@ -5,8 +5,6 @@ from wlvlang.interpreter.space import ObjectSpace
 from wlvlang.interpreter.objectspace.method import Method
 from wlvlang.interpreter.objectspace.boolean import Boolean
 
-from wlvlang.interpreter.objectspace.primitives.boolean_primitive import _eq, _or, _and
-
 def test_get_value():
     subjecta = Boolean(True)
     subjectb = Boolean(False)
@@ -26,7 +24,7 @@ def setup_primitive_test(left_val, right_val):
 
 def test_eq_primitive_true_true():
     arec, space = setup_primitive_test(True, True)
-    _eq(arec, space)
+    arec.peek().w_eq(arec, space)
 
     value = arec.pop()
     assert value.get_boolean_value() == True
@@ -34,7 +32,7 @@ def test_eq_primitive_true_true():
 def test_eq_primitive_true_false():
     arec, space = setup_primitive_test(True, False)
 
-    _eq(arec, space)
+    arec.peek().w_eq(arec, space)
 
     value = arec.pop()
     assert value.get_boolean_value() == False
@@ -42,7 +40,7 @@ def test_eq_primitive_true_false():
 def test_eq_primitive_false_true():
     arec, space = setup_primitive_test(False, True)
 
-    _eq(arec, space)
+    arec.peek().w_eq(arec, space)
 
     value = arec.pop()
     assert value.get_boolean_value() == False
@@ -50,7 +48,7 @@ def test_eq_primitive_false_true():
 def test_or_primitive_true_true():
     arec, space = setup_primitive_test(True, True)
 
-    _or(arec, space)
+    arec.peek().w_or(arec, space)
 
     value = arec.pop()
     assert value.get_boolean_value() == True
@@ -58,7 +56,7 @@ def test_or_primitive_true_true():
 def test_or_primitive_true_false():
     arec, space = setup_primitive_test(True, False)
 
-    _or(arec, space)
+    arec.peek().w_or(arec, space)
 
     value = arec.pop()
     assert value.get_boolean_value() == True
@@ -66,7 +64,7 @@ def test_or_primitive_true_false():
 def test_or_primitive_false_true():
     arec, space = setup_primitive_test(False, True)
 
-    _or(arec, space)
+    arec.peek().w_or(arec, space)
 
     value = arec.pop()
     assert value.get_boolean_value() == True
@@ -74,7 +72,7 @@ def test_or_primitive_false_true():
 def test_or_primitive_false_false():
     arec, space = setup_primitive_test(False, False)
 
-    _or(arec, space)
+    arec.peek().w_or(arec, space)
 
     value = arec.pop()
     assert value.get_boolean_value() == False
@@ -82,7 +80,7 @@ def test_or_primitive_false_false():
 def test_and_primitive_true_true():
     arec, space = setup_primitive_test(True, True)
 
-    _and(arec, space)
+    arec.peek().w_and(arec, space)
 
     value = arec.pop()
     assert value.get_boolean_value() == True
@@ -90,6 +88,6 @@ def test_and_primitive_true_true():
 def test_and_primitive_false_true():
     arec, space = setup_primitive_test(False, True)
 
-    _and(arec, space)
+    arec.peek().w_and(arec, space)
     value = arec.pop()
     assert value.get_boolean_value() == False
