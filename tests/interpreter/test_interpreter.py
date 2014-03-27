@@ -34,12 +34,19 @@ def simple_setup(literals=[], locals=0, bytecode=[]):
     task = create_task(frame)
     return space, interpreter, task, frame
 
+def _interpreter_step(interpreter, task):
+    pc = task.get_top_frame().get_pc()
+    method = task.get_current_method()
+    frame = task.get_top_frame()
+    return interpreter.interpreter_step(pc, method, frame, task)
+
+
 def test_bc_HALT():
     # TODO: Is this test needed? No assertions here, but I guess it's a little useful
     # to have in case this code starts failing
     _, interpreter, task, _ = simple_setup(bytecode=[Bytecode.HALT])
 
-    while interpreter.interpreter_step(task):
+    while _interpreter_step(interpreter, task):
         pass
 
 def test_bc_LOAD_CONST():
@@ -50,7 +57,7 @@ def test_bc_LOAD_CONST():
     """
     space, interpreter, task, frame = simple_setup(literals=[Integer(10)], locals=1, bytecode=[Bytecode.LOAD_CONST, 0, Bytecode.HALT])
 
-    while interpreter.interpreter_step(task):
+    while _interpreter_step(interpreter, task):
         pass
 
     assert frame.peek() == space.new_integer(10)
@@ -66,7 +73,7 @@ def test_bc_LOAD():
     space, interpreter, task, frame = simple_setup(literals=[], locals=1, bytecode=[Bytecode.LOAD, 0])
 
     frame.set_local_at(0, space.new_integer(10))
-    interpreter.interpreter_step(task)
+    _interpreter_step(interpreter, task)
 
     assert frame.peek() == Integer(10)
     assert frame.get_pc() == 2
@@ -80,7 +87,7 @@ def test_bc_STORE():
     """
     space, interpreter, task, frame = simple_setup(literals=[], locals=1, bytecode=[Bytecode.STORE, 0])
     frame.push(space.new_integer(100))
-    interpreter.interpreter_step(task)
+    _interpreter_step(interpreter, task)
 
     assert frame.get_local_at(0) == Integer(100)
     assert frame.get_pc() == 2
@@ -95,7 +102,7 @@ def test_bc_MUL():
     space, interpreter, task, frame = simple_setup(literals=[], locals=1, bytecode=[Bytecode.MUL])
     frame.push(space.new_integer(100))
     frame.push(space.new_integer(30))
-    interpreter.interpreter_step(task)
+    _interpreter_step(interpreter, task)
 
     assert frame.peek() == Integer(3000)
     assert frame.get_pc() == 1
@@ -117,7 +124,7 @@ def test_bc_ARRAY_STORE():
     frame.push(array)
     frame.push(space.new_integer(0))
     frame.push(space.new_integer(100))
-    interpreter.interpreter_step(task)
+    _interpreter_step(interpreter, task)
 
     assert array.get_value_at(0) == Integer(100)
     assert frame.get_pc() == 1
@@ -137,7 +144,7 @@ def test_bc_ARRAY_LOAD():
     array.set_value_at(0, space.new_integer(900))
     frame.push(array)
     frame.push(space.new_integer(0))
-    interpreter.interpreter_step(task)
+    _interpreter_step(interpreter, task)
 
     assert frame.peek() == Integer(900)
     assert frame.get_pc() == 1
@@ -166,7 +173,7 @@ def test_bc_LOAD_DYNAMIC():
     frame = create_frame(method, 5)
     task = create_task(frame)
 
-    while interpreter.interpreter_step(task):
+    while _interpreter_step(interpreter, task):
         pass
 
     stack_top = frame.peek()
@@ -184,21 +191,21 @@ def test_bc_GREATER_THAN_EQ():
 
     frame.push(space.new_integer(10))
     frame.push(space.new_integer(20))
-    interpreter.interpreter_step(task)
+    _interpreter_step(interpreter, task)
 
     assert frame.pop() == space.new_boolean(False)
 
     frame.push(space.new_integer(20))
     frame.push(space.new_integer(20))
     frame.set_pc(0)
-    interpreter.interpreter_step(task)
+    _interpreter_step(interpreter, task)
 
     assert frame.pop() == space.new_boolean(True)
 
     frame.push(space.new_integer(30))
     frame.push(space.new_integer(20))
     frame.set_pc(0)
-    interpreter.interpreter_step(task)
+    _interpreter_step(interpreter, task)
 
     assert frame.pop() == space.new_boolean(True)
 
@@ -212,21 +219,21 @@ def test_bc_LESS_THAN():
 
     frame.push(space.new_integer(20))
     frame.push(space.new_integer(10))
-    interpreter.interpreter_step(task)
+    _interpreter_step(interpreter, task)
 
     assert frame.pop() == space.new_boolean(False)
 
     frame.push(space.new_integer(20))
     frame.push(space.new_integer(20))
     frame.set_pc(0)
-    interpreter.interpreter_step(task)
+    _interpreter_step(interpreter, task)
 
     assert frame.pop() == space.new_boolean(False)
 
     frame.push(space.new_integer(10))
     frame.push(space.new_integer(20))
     frame.set_pc(0)
-    interpreter.interpreter_step(task)
+    _interpreter_step(interpreter, task)
 
     assert frame.pop() == space.new_boolean(True)
 
@@ -240,21 +247,21 @@ def test_bc_GREATER_THAN():
 
     frame.push(space.new_integer(20))
     frame.push(space.new_integer(10))
-    interpreter.interpreter_step(task)
+    _interpreter_step(interpreter, task)
 
     assert frame.pop() == space.new_boolean(True)
 
     frame.push(space.new_integer(20))
     frame.push(space.new_integer(20))
     frame.set_pc(0)
-    interpreter.interpreter_step(task)
+    _interpreter_step(interpreter, task)
 
     assert frame.pop() == space.new_boolean(False)
 
     frame.push(space.new_integer(10))
     frame.push(space.new_integer(20))
     frame.set_pc(0)
-    interpreter.interpreter_step(task)
+    _interpreter_step(interpreter, task)
 
     assert frame.pop() == space.new_boolean(False)
 
@@ -266,7 +273,7 @@ def test_bc_INVOKE_GLOBAL():
     space, interpreter, task, frame = simple_setup(literals=[], locals=0, bytecode=[Bytecode.INVOKE_GLOBAL, 0])
     frame.push(space.new_integer(10))
 
-    interpreter.interpreter_step(task)
+    _interpreter_step(interpreter, task)
 
     assert isinstance(frame.peek(), Array)
 
@@ -305,10 +312,10 @@ def test_bc_INVOKE():
     ], 10, argument_count=0)
 
     task = create_task(None)
-    mainmethod.invoke(task)
+    mainmethod.invoke(task.get_top_frame(), task)
 
     last_active_frame = task.get_top_frame();
-    while interpreter.interpreter_step(task):
+    while _interpreter_step(interpreter, task):
         has_task_finished = task.get_top_frame() is None
         if has_task_finished:
             break
