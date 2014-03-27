@@ -17,12 +17,10 @@ class ObjectSpace(object):
     ]
 
     def __init__(self):
-        # Classes define the operations that can be performed on a type
         self.builtin_functions = []
         self.initialise_primitives()
 
     def initialise_primitives(self):
-        # Initialise prims
         initialise_primitives(self)
 
     def get_builtin_function(self, index):
