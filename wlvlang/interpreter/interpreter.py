@@ -4,6 +4,8 @@ from wlvlang.interpreter.objectspace.array import Array
 from wlvlang.interpreter.objectspace.channel import ChannelInterface, YieldException
 from wlvlang.interpreter.objectspace.method import Method
 
+from rpython.rlib import jit
+
 class Interpreter(object):
 
     _immutable_fields = ["space"]
@@ -15,29 +17,25 @@ class Interpreter(object):
     def __init__(self, space):
         self.space = space
 
-    def _invoke_primitive(self, task, signature):
-        frame = task.get_top_frame()
+    def _invoke_primitive(self, frame, signature):
         invokable = frame.peek().get_class(self.space).lookup_invokable(signature)
         invokable(frame, self.space)
 
-    def _invoke_global(self, global_index, task):
+    def _invoke_global(self, global_index, frame):
         new_method = self.space.get_builtin_function(global_index)
-        new_method.invoke(task, self)
+        new_method.invoke(frame, self)
 
-    def _invoke_method(self, method_at_local, task):
-        new_method = task.get_top_frame().get_local_at(method_at_local)
+    def _invoke_method(self, method_at_local, frame, task):
+        new_method = frame.get_local_at(method_at_local)
         assert isinstance(new_method, Method)
-        new_method.invoke(task)
+        new_method.invoke(frame, task)
 
-    def _invoke_method_async(self, method_at_local, task):
-        new_method = task.get_top_frame().get_local_at(method_at_local)
+    def _invoke_method_async(self, method_at_local, frame, task):
+        new_method = frame.get_local_at(method_at_local)
         assert isinstance(new_method, Method)
         new_method.async_invoke(task)
 
-    def interpreter_step(self, task):
-        frame = task.get_top_frame()
-        pc = frame.get_pc()
-        method = task.get_current_method()
+    def interpreter_step(self, pc, method, frame, task):
         bytecode = method.get_bytecode(pc)
 
         if bytecode == Bytecode.HALT:
@@ -45,7 +43,7 @@ class Interpreter(object):
             return False
         elif bytecode == Bytecode.LOAD_CONST:
             pc += 2
-            literal = method.get_bytecode(pc - 1)
+            literal = jit.promote(method.get_bytecode(pc - 1))
             frame.push(frame.get_literal_at(literal))
         elif bytecode == Bytecode.LOAD:
             pc += 2
@@ -56,49 +54,49 @@ class Interpreter(object):
             local = method.get_bytecode(pc - 1)
             frame.set_local_at(local, frame.pop())
         elif bytecode == Bytecode.OR:
-            self._invoke_primitive(task, "or")
+            self._invoke_primitive(frame, "or")
             pc += 1
         elif bytecode == Bytecode.AND:
-            self._invoke_primitive(task, "and")
+            self._invoke_primitive(frame, "and")
             pc += 1
         elif bytecode == Bytecode.EQUAL:
-            self._invoke_primitive(task, "==")
+            self._invoke_primitive(frame, "==")
             pc += 1
         elif bytecode == Bytecode.NOT_EQUAL:
-            self._invoke_primitive(task, "!=")
+            self._invoke_primitive(frame, "!=")
             pc += 1
         elif bytecode == Bytecode.LESS_THAN:
-            self._invoke_primitive(task, "<")
+            self._invoke_primitive(frame, "<")
             pc += 1
         elif bytecode == Bytecode.LESS_THAN_EQ:
-            self._invoke_primitive(task, "<=")
+            self._invoke_primitive(frame, "<=")
             pc += 1
         elif bytecode == Bytecode.GREATER_THAN:
-            self._invoke_primitive(task, ">")
+            self._invoke_primitive(frame, ">")
             pc += 1
         elif bytecode == Bytecode.GREATER_THAN_EQ:
-            self._invoke_primitive(task, ">=")
+            self._invoke_primitive(frame, ">=")
             pc += 1
         elif bytecode == Bytecode.ADD:
-            self._invoke_primitive(task, "+")
+            self._invoke_primitive(frame, "+")
             pc += 1
         elif bytecode == Bytecode.SUB:
-            self._invoke_primitive(task, "-")
+            self._invoke_primitive(frame, "-")
             pc += 1
         elif bytecode == Bytecode.MUL:
-            self._invoke_primitive(task, "*")
+            self._invoke_primitive(frame, "*")
             pc += 1
         elif bytecode == Bytecode.DIV:
-            self._invoke_primitive(task, "/")
+            self._invoke_primitive(frame, "/")
             pc += 1
         elif bytecode == Bytecode.NOT:
-            self._invoke_primitive(task, "not")
+            self._invoke_primitive(frame, "not")
             pc += 1
         elif bytecode == Bytecode.NEG:
-            self._invoke_primitive(task, "_neg")
+            self._invoke_primitive(frame, "_neg")
             pc += 1
         elif bytecode == Bytecode.MOD:
-            self._invoke_primitive(task, "%")
+            self._invoke_primitive(frame, "%")
             pc += 1
         elif bytecode == Bytecode.JUMP_IF_FALSE:
             pc += 1
@@ -112,7 +110,7 @@ class Interpreter(object):
             jmp_to = method.get_bytecode(pc + 1)
             pc = jmp_to
         elif bytecode == Bytecode.PRINT:
-            self._invoke_primitive(task, "print")
+            self._invoke_primitive(frame, "print")
             pc += 1
         elif bytecode == Bytecode.INVOKE:
             pc += 2
@@ -127,7 +125,7 @@ class Interpreter(object):
             # In order to restart the interpreter loop we return early after
             # this call to _invoke_method
             frame.set_pc(pc)
-            self._invoke_method(local, task)
+            self._invoke_method(local, frame, task)
             return True
 
         elif bytecode == Bytecode.INVOKE_ASYNC:
@@ -137,12 +135,12 @@ class Interpreter(object):
             # shouldn't need to save the pc before calling the method (I don't
             # think)
             frame.set_pc(pc)
-            self._invoke_method_async(local, task)
+            self._invoke_method_async(local, frame, task)
             return True
         elif bytecode == Bytecode.INVOKE_GLOBAL:
             pc += 1
             global_index = method.get_bytecode(pc)
-            self._invoke_global(global_index, task)
+            self._invoke_global(global_index, frame)
             pc += 1
         elif bytecode == Bytecode.RETURN:
 

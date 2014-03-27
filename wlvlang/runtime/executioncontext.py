@@ -127,6 +127,7 @@ class ThreadLocalSched(object):
         while True:
             pc = task.get_top_frame().get_pc()
             method = task.get_current_method()
+            frame = task.get_top_frame()
 
             if pc < oldpc:
                 jitdriver.can_enter_jit(
@@ -134,7 +135,7 @@ class ThreadLocalSched(object):
                     sched=self,
                     method=method,
                     task=task,
-                    frame=task.get_top_frame(),
+                    frame=frame,
                 )
 
             oldpc = pc
@@ -144,10 +145,10 @@ class ThreadLocalSched(object):
                     sched=self,
                     method=method,
                     task=task,
-                    frame=task.get_top_frame(),
+                    frame=frame,
                 )
 
-            should_continue = self.interpreter.interpreter_step(task)
+            should_continue = self.interpreter.interpreter_step(pc, method, frame, task)
 
             if not should_continue:
                 return
