@@ -3,7 +3,7 @@ from wlvlang.compiler import ast
 from wlvlang.interpreter.space import ObjectSpace
 
 def create_tac_generator():
-    return TACGen(ObjectSpace())
+    return SSAGen(ObjectSpace())
 
 def test_print_statement():
     tac = create_tac_generator()
