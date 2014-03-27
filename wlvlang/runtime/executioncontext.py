@@ -118,6 +118,7 @@ class ThreadLocalSched(object):
 
         return task
 
+    @jit.unroll_safe
     def run_task(self, task):
         assert task is not None
         oldpc = 0

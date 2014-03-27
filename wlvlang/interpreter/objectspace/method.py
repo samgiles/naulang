@@ -57,7 +57,6 @@ class Method(Object):
         task.sched.add_ready_task(new_task)
 
     def invoke(self, current_frame, current_task):
-        jit.promote(self)
         new_frame = self._create_new_frame(previous_frame=current_frame)
         current_task.set_top_frame(new_frame)
 
