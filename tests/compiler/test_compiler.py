@@ -246,20 +246,20 @@ def test_ast_functionexpression():
 def test_ast_functioncall():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)
-
-    node = ast.FunctionCall('a', ast.ArgumentList([DummyCompilationUnit(90), DummyCompilationUnit(91)]))
+    function_local = ctx.register_local('a')
+    node = ast.FunctionCall(ast.IdentifierExpression('a'), ast.ArgumentList([DummyCompilationUnit(90), DummyCompilationUnit(91)]))
     node.accept(t)
 
-    assert ctx.get_bytecode() == [90, 91, Bytecode.INVOKE, 0]
+    assert ctx.get_bytecode() == [90, 91, Bytecode.LOAD, function_local, Bytecode.INVOKE]
 
 def test_ast_asyncfunctioncall():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)
-
-    node = ast.AsyncFunctionCall('a', ast.ArgumentList([DummyCompilationUnit(90), DummyCompilationUnit(91)]))
+    function_local = ctx.register_local('a')
+    node = ast.AsyncFunctionCall(ast.IdentifierExpression('a'), ast.ArgumentList([DummyCompilationUnit(90), DummyCompilationUnit(91)]))
     node.accept(t)
 
-    assert ctx.get_bytecode() == [90, 91, Bytecode.INVOKE_ASYNC, 0]
+    assert ctx.get_bytecode() == [90, 91, Bytecode.LOAD, function_local, Bytecode.INVOKE_ASYNC]
 
 def test_ast_returnstatement():
     ctx = create_interpreter_context()
@@ -292,7 +292,7 @@ def test_invoke_global_list():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)
 
-    node = ast.FunctionCall('list', ast.ArgumentList([ast.IntegerConstant(10)]))
+    node = ast.FunctionCall(ast.IdentifierExpression('list'), ast.ArgumentList([ast.IntegerConstant(10)]))
     node.accept(t)
 
     assert ctx.get_bytecode() == [Bytecode.LOAD_CONST, 0, Bytecode.INVOKE_GLOBAL, 0]
@@ -432,28 +432,31 @@ def test_ast_scoped_usage():
                 ])
             )),
             ast.FunctionCall(
-                'a',
+                ast.IdentifierExpression('a'),
                 ast.ArgumentList([ast.IntegerConstant(2)])
             ),
             ast.FunctionCall(
-                'a',
+                ast.IdentifierExpression('a'),
                 ast.ArgumentList([ast.IntegerConstant(4)])
             )
         ])
 
     node.accept(t)
 
-    assert ctx.get_bytecode() == [
+    expected = [
             Bytecode.LOAD_CONST, 0,
             Bytecode.STORE, 0,
             Bytecode.LOAD_CONST, 1,
             Bytecode.STORE, 1,
             Bytecode.LOAD_CONST, 2,
-            Bytecode.INVOKE, 1,
+            Bytecode.LOAD, 1,
+            Bytecode.INVOKE,
             Bytecode.LOAD_CONST, 3,
-            Bytecode.INVOKE, 1,
+            Bytecode.LOAD, 1,
+            Bytecode.INVOKE,
     ]
 
+    assert ctx.get_bytecode() == expected
     inner_contexts = ctx.get_inner_contexts()
 
     assert inner_contexts[0].get_bytecode() == [

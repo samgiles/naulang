@@ -242,7 +242,7 @@ class FunctionCompilerContext(object):
         while i < len(self.bytecode):
             bytecodes[i] = self.bytecode[i]
 
-            if  bytecode[i] == Bytecode.LOAD_CONST or bytecode[i] == Bytecode.STORE or bytecode[i] == Bytecode.LOAD  or bytecode[i] == Bytecode.INVOKE or bytecode[i] == Bytecode.INVOKE_GLOBAL:
+            if  bytecode[i] == Bytecode.LOAD_CONST or bytecode[i] == Bytecode.STORE or bytecode[i] == Bytecode.LOAD  or bytecode[i] == Bytecode.INVOKE_GLOBAL:
                 i += 1
                 bytecodes[i] = bytecode[i]
                 i += 1

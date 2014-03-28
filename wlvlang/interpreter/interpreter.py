@@ -4,6 +4,7 @@ from wlvlang.interpreter.objectspace.array import Array
 from wlvlang.interpreter.objectspace.primitive_object import PrimitiveObject
 from wlvlang.interpreter.objectspace.channel import ChannelInterface, YieldException
 from wlvlang.interpreter.objectspace.method import Method
+from wlvlang.interpreter.objectspace.builtin import BuiltIn
 
 from rpython.rlib import jit
 
@@ -20,15 +21,14 @@ class Interpreter(object):
 
     def _invoke_global(self, global_index, frame):
         new_method = self.space.get_builtin_function(global_index)
+        assert isinstance(new_method, BuiltIn)
         new_method.invoke(frame, self)
 
-    def _invoke_method(self, method_at_local, frame, task):
-        new_method = frame.get_local_at(method_at_local)
-        assert isinstance(new_method, Method)
-        new_method.invoke(frame, task)
+    def _invoke_method(self, method, frame, task):
+        assert isinstance(method, Method)
+        method.invoke(frame, task)
 
-    def _invoke_method_async(self, method_at_local, frame, task):
-        new_method = frame.get_local_at(method_at_local)
+    def _invoke_method_async(self, new_method, frame, task):
         assert isinstance(new_method, Method)
         new_method.async_invoke(task)
 
@@ -141,8 +141,8 @@ class Interpreter(object):
             value.w_print(frame, self.space)
             pc += 1
         elif bytecode == Bytecode.INVOKE:
-            pc += 2
-            local = method.get_bytecode(pc - 1)
+            new_method = frame.pop()
+            assert isinstance(method, Method)
 
             # Unlike other bytecodes, the invoke method
             # alters the state of the task currently running,
@@ -152,18 +152,19 @@ class Interpreter(object):
             # result in some missed instructions in the new method
             # In order to restart the interpreter loop we return early after
             # this call to _invoke_method
-            frame.set_pc(pc)
-            self._invoke_method(local, frame, task)
+            frame.set_pc(pc + 1)
+            self._invoke_method(new_method, frame, task)
             return True
 
         elif bytecode == Bytecode.INVOKE_ASYNC:
-            pc += 2
-            local = method.get_bytecode(pc - 1)
+            new_method = frame.pop()
+            assert isinstance(new_method, Method)
+
             # TODO: When this method invocation is made asynchronous we
             # shouldn't need to save the pc before calling the method (I don't
             # think)
-            frame.set_pc(pc)
-            self._invoke_method_async(local, frame, task)
+            frame.set_pc(pc + 1)
+            self._invoke_method_async(new_method, frame, task)
             return True
         elif bytecode == Bytecode.INVOKE_GLOBAL:
             pc += 1

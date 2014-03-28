@@ -98,7 +98,7 @@ _bytecode_lengths = [
             2, # jump_if_false
             2, # jump_back
             1, # print
-            2, # invoke
+            1, # invoke
             1, # return
             1, # array_load
             1, # array_store
@@ -108,7 +108,7 @@ _bytecode_lengths = [
             1, # mod
             1, # copy_local
             1, # dup
-            2, # invoke async
+            1, # invoke async
             1, # chan out
             1, # chan in
         ]

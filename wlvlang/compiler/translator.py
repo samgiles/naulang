@@ -28,16 +28,17 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         return True
 
     def visit_assignment(self, node):
-        node.expression.accept(self)
 
         if self.context.has_local(node.get_varname()):
             local = self.context.register_local(node.get_varname())
+            node.expression.accept(self)
             self.context.emit(Bytecode.STORE, local)
         else:
             slot, level = self.context.register_dynamic(node.get_varname())
             if slot is FunctionCompilerContext.REGISTER_DYNAMIC_FAILED:
                 raise CompilerException("'%s' has not been defined in this scope. You should use `let %s = ...` to initialise a variable" % (node.get_varname(), node.get_varname()), node.getsourcepos())
 
+            node.expression.accept(self)
             self.context.emit(Bytecode.STORE_DYNAMIC, slot)
             self.context.emit(level)
 
@@ -208,11 +209,11 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         for arg in node.get_arguments().get_argument_list():
             arg.accept(self)
 
-        if node.identifier in _builtin_functions:
+        if node.identifier.get_identifier() in _builtin_functions:
             raise CompilerException("Built in functions can not be called with the async modifier", node.getsourcepos())
 
-        local = self.context.register_local(node.identifier)
-        self.context.emit(Bytecode.INVOKE_ASYNC, local)
+        node.identifier.accept(self)
+        self.context.emit(Bytecode.INVOKE_ASYNC)
 
         return False
 
@@ -220,12 +221,12 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         for arg in node.get_arguments().get_argument_list():
             arg.accept(self)
 
-        if node.identifier in _builtin_functions:
-            function = _builtin_functions[node.identifier]
+        if node.identifier.get_identifier() in _builtin_functions:
+            function = _builtin_functions[node.identifier.get_identifier()]
             self.context.emit(Bytecode.INVOKE_GLOBAL, function[1])
         else:
-            local = self.context.register_local(node.identifier)
-            self.context.emit(Bytecode.INVOKE, local)
+            node.identifier.accept(self)
+            self.context.emit(Bytecode.INVOKE)
 
         return False
 

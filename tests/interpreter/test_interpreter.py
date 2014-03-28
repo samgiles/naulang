@@ -166,7 +166,8 @@ def test_bc_LOAD_DYNAMIC():
         Bytecode.STORE, 0,
         Bytecode.LOAD_CONST, 1,
         Bytecode.STORE, 1,
-        Bytecode.INVOKE, 1,
+        Bytecode.LOAD, 1,
+        Bytecode.INVOKE,
         Bytecode.HALT
     ])
 
@@ -297,15 +298,19 @@ def test_bc_INVOKE():
         Bytecode.LOAD_CONST, 0,
         Bytecode.STORE, 0,
         Bytecode.LOAD_CONST, 1,
-        Bytecode.INVOKE, 0,
+        Bytecode.LOAD, 0,
+        Bytecode.INVOKE,
         Bytecode.STORE, 1,
         Bytecode.LOAD_CONST, 2,
-        Bytecode.INVOKE, 0,
+        Bytecode.LOAD, 0,
+        Bytecode.INVOKE,
         Bytecode.STORE, 2,
         Bytecode.LOAD_CONST, 3,
-        Bytecode.INVOKE, 1,
+        Bytecode.LOAD, 1,
+        Bytecode.INVOKE,
         Bytecode.LOAD_CONST, 3,
-        Bytecode.INVOKE, 2,
+        Bytecode.LOAD, 2,
+        Bytecode.INVOKE,
         Bytecode.SUB,
         Bytecode.RETURN,
         Bytecode.HALT

@@ -108,10 +108,10 @@ def test_function_expression_no_args():
     }""") == ast.Block([ast.FunctionExpression(ast.ParameterList([]), ast.Block([ast.IntegerConstant(100)]))])
 
 def test_function_call_statement():
-    assert parse("a()") == ast.Block([ast.FunctionCall('a', ast.ArgumentList([]))])
+    assert parse("a()") == ast.Block([ast.FunctionCall(ast.IdentifierExpression('a'), ast.ArgumentList([]))])
 
 def test_function_call_statement_arguments():
-    assert parse("""b(10, a, 0) """) == ast.Block([ast.FunctionCall('b', ast.ArgumentList([ast.IntegerConstant(10), ast.IdentifierExpression('a'), ast.IntegerConstant(0)]))])
+    assert parse("""b(10, a, 0) """) == ast.Block([ast.FunctionCall(ast.IdentifierExpression('b'), ast.ArgumentList([ast.IntegerConstant(10), ast.IdentifierExpression('a'), ast.IntegerConstant(0)]))])
 
 def test_return_statement():
     assert parse("""return 10""") == ast.Block([ast.ReturnStatement(ast.IntegerConstant(10))])
@@ -173,27 +173,27 @@ def test_function_call_and_definition():
                 ])
             )
         ),
-        ast.FunctionCall('a',
+        ast.FunctionCall(ast.IdentifierExpression('a'),
             ast.ArgumentList([
                 ast.IntegerConstant(2)
             ])
         ),
-        ast.FunctionCall('a',
+        ast.FunctionCall(ast.IdentifierExpression('a'),
             ast.ArgumentList([
                 ast.IntegerConstant(4)
             ])
         ),
-        ast.FunctionCall('a',
+        ast.FunctionCall(ast.IdentifierExpression('a'),
             ast.ArgumentList([
                 ast.IntegerConstant(8)
             ])
         ),
-        ast.FunctionCall('a',
+        ast.FunctionCall(ast.IdentifierExpression('a'),
             ast.ArgumentList([
                 ast.IntegerConstant(16)
             ])
         ),
-        ast.FunctionCall('a',
+        ast.FunctionCall(ast.IdentifierExpression('a'),
             ast.ArgumentList([
                 ast.IntegerConstant(32)
             ])
@@ -207,7 +207,7 @@ def test_parse_continue_statement():
     assert parse("""continue""") == ast.Block([ast.ContinueStatement()])
 
 def test_async_function_call():
-    assert parse("""async a()""") == ast.Block([ast.AsyncFunctionCall('a', ast.ArgumentList([]))])
+    assert parse("""async a()""") == ast.Block([ast.AsyncFunctionCall(ast.IdentifierExpression('a'), ast.ArgumentList([]))])
 
 def test_parse_channel_in():
     assert parse("""channel <- 10 * 10""") == ast.Block([ast.ChannelIn(ast.IdentifierExpression('channel'), ast.Multiply(ast.IntegerConstant(10), ast.IntegerConstant(10)))])
