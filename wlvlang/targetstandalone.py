@@ -9,7 +9,6 @@ def target(driver, args):
         driver.exe_name = "wlvlang-jit"
     else:
         driver.exe_name = "wlvlang-nojit"
-    driver.config.translation.thread = True
     return entry_point
 
 def jitpolicy(driver):

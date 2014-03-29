@@ -23,7 +23,6 @@ class Universe(object):
         self._rand = rrandom.Random(9)
         self._thread_count = thread_count + 1
         self._thread_local_scheds = [None] * (self._thread_count + 1)
-        self._thread_pool = [-1] * (self._thread_count)
         self.space = space
 
 
@@ -34,17 +33,9 @@ class Universe(object):
     def start(self, main_method, arg_local, arg_array):
         self.main_scheduler = ThreadLocalSched(self.space, self)
         self._bootstrap(main_method, arg_local, arg_array)
-        self._thread_pool = [-1] * (self._thread_count)
 
-        for i in range(1, self._thread_count):
-            self._thread_pool[i] = int(start_new_thread(self.space, self, [self]))
-
-        identifier = rthread.get_ident()
-        self.register_scheduler(identifier, self.main_scheduler)
+        self.register_scheduler(0, self.main_scheduler)
         self._main_sched()
-
-        for i in range(1, self._thread_count):
-            thread_join(self._thread_pool[i])
 
 
     def _bootstrap(self, main_method, arg_local, arg_array):
@@ -139,7 +130,6 @@ class ThreadLocalSched(object):
 
 
     def run(self):
-        self.universe.register_scheduler(rthread.get_ident(), self)
         while True:
             task = self._get_next_task()
             if task is None:
