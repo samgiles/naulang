@@ -1,4 +1,6 @@
-# wlvlang
+# naulang
+
+In process of renaming from wlvlang to naulang.
 
 wlvlang is an experimental language and interpreter implementation written in RPython.
 
