@@ -28,7 +28,7 @@ let tak = fn(x, y, z) {
 
 let i = 3
 
-while i <= 5 {
+while i <= 10 {
     ack(3, i)
     fib(17 + i)
     tak(3*i+3, 2*i+2, i+1)
