@@ -24,4 +24,8 @@ c_compare_and_swap = llexternal('cas', [rffi.SIGNEDP, lltype.Signed, lltype.Sign
 c_fetch_and_add = llexternal('faa', [llmemory.Address, lltype.Signed], lltype.Signed, macro=True)
 
 def compare_and_swap(value, old, new):
-    return bool(c_compare_and_swap(value, old, new))
+    condition = value[0] == old
+    if condition:
+        value[0] = new
+    return condition
+
