@@ -171,7 +171,6 @@ class Task(object):
         return self.top_frame
 
     def set_top_frame(self, frame):
-        # Save the state: pc
         # Then set the top frame, this context
         # will then continue from the method call
         top_frame = self.get_top_frame()

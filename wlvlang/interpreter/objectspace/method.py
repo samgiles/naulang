@@ -10,6 +10,7 @@ class Method(Object):
             "literals",
             "bytecodes",
             "stack_depth",
+            "argument_count",
         ]
 
     def __init__(self, literals, local_count, bytecodes, stack_depth, argument_count=0):
