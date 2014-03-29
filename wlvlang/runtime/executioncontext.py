@@ -8,10 +8,6 @@ from rpython.rlib import jit, rthread, rrandom
 from wlvlang.runtime.os_thread import start_new_thread
 
 
-# For the sake of experimentation this is hardcoded
-# deadlocks abound when the number of tasks exceeds this
-_max_interleaved_interp = 10
-
 def get_printable_location(pc, sched, method):
     return "%d: %s" % (pc, bytecode_names[method.get_bytecode(pc)])
 
@@ -34,15 +30,6 @@ class Universe(object):
     def register_scheduler(self, identifier, scheduler):
         index = int(identifier) % self._thread_count
         self._thread_local_scheds[index] = scheduler
-
-    def steal(self):
-        index = int(self._rand.random() * self._thread_count) % self._thread_count
-        sched = self._thread_local_scheds[index]
-
-        if sched is not None:
-            return sched.steal()
-
-        return None
 
     def start(self, main_method, arg_local, arg_array):
         self.main_scheduler = ThreadLocalSched(self.space, self)
@@ -85,8 +72,8 @@ class ThreadLocalSched(object):
     _immutable_fields_ = ["interpreter", "universe"]
 
     def __init__(self, space, universe):
-        self.ready_tasks = CircularWorkStealingDeque(4)
-        self.yielding_tasks = CircularWorkStealingDeque(4)
+        self.ready_tasks = CircularWorkStealingDeque(8)
+        self.yielding_tasks = CircularWorkStealingDeque(8)
 
         # Interpreters are mostly stateless (they simply contain code and a
         # reference to a space), they can be shared between local tasks in an
@@ -103,18 +90,14 @@ class ThreadLocalSched(object):
         task = self.ready_tasks.pop_bottom()
 
         if task is None:
-            yielding_task = self.yielding_tasks.pop_bottom()
-            if yielding_task is None:
-                return self.universe.steal()
+            while True:
+                yielding_task = self.yielding_tasks.steal()
+                if yielding_task is None:
+                    break
+                self.ready_tasks.push_bottom(yielding_task)
 
-            return yielding_task
+            return self.ready_tasks.pop_bottom()
 
-        return task
-
-    def steal(self):
-        task = self.ready_tasks.steal()
-        if task is None:
-            task = self.yielding_tasks.steal()
 
         return task
 
@@ -122,13 +105,14 @@ class ThreadLocalSched(object):
     def run_task(self, task):
         assert task is not None
         oldpc = 0
+        current_method = None
 
         while True:
             pc = task.get_top_frame().get_pc()
             method = task.get_current_method()
             frame = task.get_top_frame()
 
-            if pc < oldpc:
+            if pc < oldpc and current_method is method:
                 jitdriver.can_enter_jit(
                     pc=pc,
                     sched=self,
@@ -138,6 +122,7 @@ class ThreadLocalSched(object):
                 )
 
             oldpc = pc
+            current_method = method
 
             jitdriver.jit_merge_point(
                     pc=pc,
@@ -164,7 +149,7 @@ class ThreadLocalSched(object):
 
             if task.get_state() == Interpreter.YIELD:
                 self.yielding_tasks.push_bottom(task)
-            elif task.get_state() != Interpreter.HALT:
+            elif task.get_state() is not Interpreter.HALT:
                 self.ready_tasks.push_bottom(task)
 
 

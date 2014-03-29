@@ -16,16 +16,14 @@ class YieldException(Exception):
 class BasicChannel(ChannelInterface):
 
     def __init__(self):
-        self._lock = rthread.allocate_lock()
         self._queue = []
 
     def send(self, value):
-        with self._lock:
-            self._queue.append(value)
+        self._queue.append(value)
 
     def receive(self):
-        with self._lock:
-            if len(self._queue) is not 0:
-                return self._queue.pop()
-            else:
-                raise YieldException()
+        if len(self._queue) is not 0:
+            value = self._queue.pop()
+            return value
+        else:
+            raise YieldException()

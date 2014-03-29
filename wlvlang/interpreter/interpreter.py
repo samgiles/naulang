@@ -1,4 +1,4 @@
-from wlvlang.interpreter.bytecode import Bytecode
+from wlvlang.interpreter.bytecode import Bytecode, bytecode_names
 
 from wlvlang.interpreter.objectspace.array import Array
 from wlvlang.interpreter.objectspace.primitive_object import PrimitiveObject
@@ -159,10 +159,6 @@ class Interpreter(object):
         elif bytecode == Bytecode.INVOKE_ASYNC:
             new_method = frame.pop()
             assert isinstance(new_method, Method)
-
-            # TODO: When this method invocation is made asynchronous we
-            # shouldn't need to save the pc before calling the method (I don't
-            # think)
             frame.set_pc(pc + 1)
             self._invoke_method_async(new_method, frame, task)
             return True
