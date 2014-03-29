@@ -1,6 +1,6 @@
 let ELEMENTS = 256
-let cycles = 1000
-let tokens = 150
+let cycles = int(args[1])
+let tokens = int(args[2])
 
 
 let element = fn(this, next) {
