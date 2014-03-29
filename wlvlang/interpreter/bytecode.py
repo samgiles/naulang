@@ -71,8 +71,8 @@ _stack_effects = [
             0, # copy_local
             1, # dup
             _stack_effect_depends_on_args, # invoke async
+            0,  # chan out
             -2,  # chan in
-            -2,  # chan out
         ]
 
 
@@ -130,6 +130,24 @@ def get_stack_effect(bytecode, number_of_arguments=0):
 def stack_effect_depends_on_args(bytecode):
     assert bytecode >= 0 and bytecode < len(_stack_effects)
     return _stack_effects[bytecode] == _stack_effect_depends_on_args
+
+def disassemble(bytecodes):
+    index = 0
+    values = []
+    while index < len(bytecodes):
+        bytecode = bytecodes[index]
+        values.append(bytecode_names[bytecode])
+        length = get_bytecode_length(bytecode)
+        arg = 1
+        while arg < length:
+            values.append(str(bytecodes[index + arg]))
+            arg += 1
+
+        index += length
+
+    return values
+
+
 
 def _bytecode_names(cls):
     "NOT_RPYTHON"

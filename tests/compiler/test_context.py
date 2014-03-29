@@ -19,6 +19,35 @@ def test_calculate_stack_depth():
 
     assert stack_depth == 3
 
+def test_calculate_stack_depth2():
+    ctx = FunctionCompilerContext(None)
+    code = [Bytecode.LOAD_CONST, 0,         # 1
+            Bytecode.JUMP_IF_FALSE, 37,     # -1
+            Bytecode.LOAD, 0,               # 1
+            Bytecode.CHAN_OUT,              # 0
+            Bytecode.STORE, 2,              # -1
+            Bytecode.LOAD, 2,               # 1
+            Bytecode.LOAD_CONST, 1,         # 1
+            Bytecode.GREATER_THAN,          # -1
+            Bytecode.JUMP_IF_FALSE, 27,     # -1
+            Bytecode.LOAD, 1,               # 1
+            Bytecode.LOAD_CONST, 2,         # 1
+            Bytecode.LOAD, 2,               # 1
+            Bytecode.CHAN_OUT,              # 0
+            Bytecode.ADD,                   # -1
+            Bytecode.CHAN_IN,               # -2
+            Bytecode.JUMP, 0,               # 0
+            Bytecode.LOAD, 1,               # 1
+            Bytecode.LOAD, 2,               # 1
+            Bytecode.CHAN_OUT,              # 0
+            Bytecode.CHAN_IN,               # -2
+            Bytecode.JUMP, 37,              # 0
+            Bytecode.JUMP, 0,               # 0
+            Bytecode.HALT]                  # 0
+
+    stack_depth = ctx._calculate_stack_depth(code)
+    assert stack_depth == 3
+
 def test_register_literal_unique_only():
     ctx = FunctionCompilerContext(None)
     inta = Integer(10)
