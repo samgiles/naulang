@@ -54,7 +54,7 @@ class Frame(Object):
         return self.access_link;
 
     def is_root_frame(self):
-        return self.get_previous_frame() == None
+        return self.get_previous_frame() is None
 
     def push(self, value):
         """ Push an object onto the stack """

@@ -5,7 +5,6 @@ from rpythonex.rdequeue import CircularWorkStealingDeque
 from rpythonex.rthread import thread_join
 
 from rpython.rlib import jit, rthread, rrandom
-from wlvlang.runtime.os_thread import start_new_thread
 
 
 def get_printable_location(pc, sched, method):
@@ -102,8 +101,10 @@ class ThreadLocalSched(object):
             pc = task.get_top_frame().get_pc()
             method = task.get_current_method()
             frame = task.get_top_frame()
+            trace_into_functioncall = not frame.is_root_frame() and (frame.get_previous_frame().method is current_method)
 
-            if pc < oldpc and current_method is method:
+
+            if pc < oldpc and (current_method is method or trace_into_functioncall):
                 jitdriver.can_enter_jit(
                     pc=pc,
                     sched=self,
