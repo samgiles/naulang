@@ -1,4 +1,4 @@
-let ELEMENTS = 256
+let ELEMENTS = 2
 let cycles = int(args[1])
 let tokens = int(args[2])
 
@@ -67,4 +67,25 @@ let ring = fn(cycles, tokens) {
     let t = root(cycles, tokens, this, head)
 }
 
-ring(cycles, tokens)
+
+let warmup = 5
+let i = warmup
+
+while i >= 0 {
+    i = i - 1
+    print "iter " + i
+    ring(cycles, tokens)
+}
+
+let sum = 0
+let tries = 10
+i = tries
+while i >= 0 {
+    i = i - 1
+    let start = time()
+    ring(cycles, tokens)
+    let end = time()
+    sum = sum + (end - start)
+}
+
+print "thread-ring(" + cycles + ", " + tokens + "): total: iterations=" + tries + " runtime: " + sum +"us"
