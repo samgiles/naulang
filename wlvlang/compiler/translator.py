@@ -231,8 +231,12 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         return False
 
     def visit_returnstatement(self, node):
-        node.expression.accept(self)
-        self.context.emit(Bytecode.RETURN)
+        if node.expression is not None:
+            node.expression.accept(self)
+            self.context.emit(Bytecode.RETURN)
+        else:
+            self.context.emit(Bytecode.HALT)
+
         return False
 
     def visit_identifierexpression(self, node):
