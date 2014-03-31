@@ -3,16 +3,11 @@ from rpythonex.ratomic import compare_and_swap
 from rpython.rtyper.lltypesystem import lltype, rffi
 
 
-def _malloc_signed(initial_value):
-        value = lltype.malloc(rffi.SIGNEDP.TO, 1, flavor="raw")
-        value[0] = initial_value
-        return value
-
 
 class CircularWorkStealingDeque(object):
     def __init__(self, log_initial_size):
-        self.bottom = _malloc_signed(0)
-        self.top = _malloc_signed(0)
+        self.bottom = [0]
+        self.top = [0]
         self.active_array = CircularArray(log_initial_size)
 
 
