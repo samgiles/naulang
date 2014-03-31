@@ -10,6 +10,9 @@ class CircularWorkStealingDeque(object):
         self.top = [0]
         self.active_array = CircularArray(log_initial_size)
 
+    def size(self):
+        return self.active_array.size()
+
 
     def _cas_top(self, oldval, newval):
         return compare_and_swap(self.top, oldval, newval)
