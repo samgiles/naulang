@@ -61,8 +61,5 @@ class Method(Object):
         new_frame = self._create_new_frame(previous_frame=current_frame)
         current_task.set_top_frame(new_frame)
 
-    def get_class(self, space):
-        return space.methodClass
-
     def __repr__(self):
         return "Method<%r>: closed by: <%r>" % (hex(id(self)), hex(id(self.enclosing_frame)))

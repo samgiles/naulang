@@ -16,9 +16,6 @@ class Array(Object):
         assert index >= 0 and index < self.size
         self._list[int(index)] = value
 
-    def get_class(self, space):
-        return space.arrayClass
-
     def __str__(self):
         return str(self._list)
 
