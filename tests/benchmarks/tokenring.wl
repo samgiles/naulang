@@ -20,7 +20,6 @@ let root = fn(cycles, tokens, this, next) {
     next <- 1
     let token = <:this
 
-
     let i = 0
     while i < tokens {
         i = i + 1
@@ -84,4 +83,4 @@ while i >= 0 {
     sum = sum + (end - start)
 }
 
-print "thread-ring(" + cycles + ", " + tokens + "): total: iterations=" + tries + " runtime: " + sum +"us"
+print "nau-tokenring(" + cycles + ", " + tokens + "): total: iterations=" + tries + " runtime: " + sum +"us"

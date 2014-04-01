@@ -9,6 +9,3 @@ class BuiltIn(Object):
 
     def invoke(self, frame, interpreter):
         self.invokable(self, frame, interpreter)
-
-    def get_class(self, space):
-        return space.builtinClass

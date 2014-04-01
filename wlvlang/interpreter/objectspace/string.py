@@ -14,9 +14,6 @@ class String(PrimitiveObject):
     def __str__(self):
         return "\"" + self.string + "\""
 
-    def get_class(self, space):
-        return space.stringClass
-
     def w_add(self, activation_record, space):
         left = activation_record.pop()
         right = activation_record.pop()

@@ -20,9 +20,6 @@ class Boolean(PrimitiveObject):
     def __eq__(self, other):
         return isinstance(other, Boolean) and other.value == self.value
 
-    def get_class(self, space):
-        return space.booleanClass
-
     def w_eq(self, activation_record, space):
         right = activation_record.pop()
         left = activation_record.pop()

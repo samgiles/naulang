@@ -1,14 +1,6 @@
 from wlvlang.interpreter.objectspace.object import Object
 class PrimitiveObject(Object):
 
-    @staticmethod
-    def add_primitives(obj, primitives):
-        """ NOT_RPYTHON
-
-        Primitives should be a dictionary
-        keyed by signature """
-        obj.__dict__.update(primitives)
-
     def w_eq(self, frame, space):
         raise NotImplementedError()
 

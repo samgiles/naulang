@@ -1,6 +1,6 @@
 from wlvlang.interpreter.objectspace.object import Object
 
-from rpython.rlib import rthread
+from rpythonex.rdequeue import CircularWorkStealingDeque
 
 class ChannelInterface(Object):
     def send(self, value):
@@ -27,3 +27,15 @@ class BasicChannel(ChannelInterface):
             return value
         else:
             raise YieldException()
+
+class DequeueChannel(ChannelInterface):
+    def __init__(self):
+        self._queue = CircularWorkStealingDeque(1)
+
+    def send(self, value):
+        self._queue.push_bottom(value)
+
+    def receive(self):
+        value = self._queue.steal()
+        if value is None: raise YieldException()
+        return value
