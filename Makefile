@@ -52,6 +52,9 @@ test_runtime:
 test_functional: bin/wlvlang-python
 	tests/functional/wlvtest.py --xml ./bin/wlvlang-python ./tests/functional
 
+build_extras:
+	go build -ldflags='-s' tests/benchmarks/baselines/tokenring.go
+
 clean:
 	rm -rf MANIFEST
 	rm -rf dist/
