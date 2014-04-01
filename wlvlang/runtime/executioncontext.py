@@ -59,7 +59,7 @@ class Universe(object):
 
 class ThreadLocalSched(object):
     """ Describes a scheduler for a number of tasks multiplexed onto a single OS Thread """
-    _immutable_fields_ = ["interpreter", "universe"]
+    _immutable_fields_ = ["interpreter", "universe", "ready_tasks", "yielding_tasks"]
 
     def __init__(self, space, universe):
         self.ready_tasks = CircularWorkStealingDeque(8)
