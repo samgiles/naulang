@@ -1,4 +1,4 @@
-let ELEMENTS = 2
+let ELEMENTS = 256
 let cycles = int(args[1])
 let tokens = int(args[2])
 
@@ -19,8 +19,6 @@ let element = fn(this, next) {
 let root = fn(cycles, tokens, this, next) {
     next <- 1
     let token = <:this
-
-    print "start"
 
     let i = 0
     while i < tokens {
@@ -45,8 +43,6 @@ let root = fn(cycles, tokens, this, next) {
         sum = sum + <:this
     }
 
-    print "end"
-    print sum
     next <- 0
     token = <:this
 }
@@ -73,7 +69,6 @@ let i = warmup
 
 while i >= 0 {
     i = i - 1
-    print "iter " + i
     ring(cycles, tokens)
 }
 
@@ -88,4 +83,4 @@ while i >= 0 {
     sum = sum + (end - start)
 }
 
-print "thread-ring(" + cycles + ", " + tokens + "): total: iterations=" + tries + " runtime: " + sum +"us"
+print "nau-tokenring(" + cycles + ", " + tokens + "): total: iterations=" + tries + " runtime: " + sum +"us"
