@@ -10,7 +10,7 @@ install:
     - wget https://github.com/smarr/ReBench/archive/master.zip
     - unzip master.zip
     - mv ReBench-master ./ReBench
-    - python ./ReBench/setup.py install
+    - sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-not
     - pip install -r requirements.txt
 
 script:
