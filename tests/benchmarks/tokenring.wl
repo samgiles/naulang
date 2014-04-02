@@ -60,7 +60,7 @@ let ring = fn(cycles, tokens) {
         this = next
     }
 
-    let t = root(cycles, tokens, this, head)
+    root(cycles, tokens, this, head)
 }
 
 
