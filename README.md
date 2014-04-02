@@ -28,7 +28,7 @@ You should also run `pip install -r requirements.txt`
 
 To build the plain interpreter run:
 
-`PYPYPATH=path/to/your/pypy make compile`
+`make compile PYPYPATH=path/to/your/pypy`
 
 This takes ~60s on an Intel 4770k processor with 8GB RAM on Ubuntu 13.10.
 
@@ -36,6 +36,6 @@ This takes ~60s on an Intel 4770k processor with 8GB RAM on Ubuntu 13.10.
 
 To build the JITed interpreter run:
 
-`PYPYPATH=path/to/your/pypy make wlvlang-jit`
+`make wlvlang-jit PYPYPATH=path/to/your/pypy`
 
 This takes ~250s on an Intel 4770k processor with 8GB RAM on Ubuntu 13.10.
