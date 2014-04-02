@@ -30,7 +30,7 @@ To build the plain interpreter run:
 
 This takes ~60s on an Intel 4770k processor with 8GB RAM on Ubuntu 13.10.
 
-### JITed Interpreter
+### JIT compiler enabled Interpreter
 
 To build the JITed interpreter run:
 
