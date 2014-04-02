@@ -7,6 +7,10 @@ install:
     - wget https://bitbucket.org/pypy/pypy/get/ac4800c0db8a.zip
     - unzip ac4800c0db8a.zip
     - mv pypy-pypy-ac4800c0db8a ./pypy
+    - wget https://github.com/smarr/ReBench/archive/master.zip
+    - unzip master.zip
+    - mv ReBench-master ./ReBench
+    - python ./ReBench/setup.py install
     - pip install -r requirements.txt
 
 script:
