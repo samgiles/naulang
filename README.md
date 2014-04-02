@@ -1,5 +1,7 @@
 # naulang
 
+[![Build Status](https://travis-ci.org/samgiles/naulang.svg?branch=master)](https://travis-ci.org/samgiles/naulang)
+
 In process of renaming from wlvlang to naulang.
 
 naulang is an experimental language and interpreter implementation written in RPython.
