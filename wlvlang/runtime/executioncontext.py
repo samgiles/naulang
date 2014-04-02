@@ -91,30 +91,29 @@ class ThreadLocalSched(object):
 
         return task
 
+    def _can_enter_jit(self, pc, method, task, frame):
+        jitdriver.can_enter_jit(
+            pc=pc,
+            sched=self,
+            method=method,
+            task=task,
+            frame=frame,
+        )
+
     @jit.unroll_safe
     def run_task(self, task):
         assert task is not None
-        oldpc = 0
-        current_method = None
+        last_pc = 0
+        last_frame = None
 
         while True:
             pc = task.get_top_frame().get_pc()
             method = task.get_current_method()
             frame = task.get_top_frame()
-            trace_into_functioncall = not frame.is_root_frame() and (frame.get_previous_frame().method is current_method)
 
-
-            if pc < oldpc and (current_method is method or trace_into_functioncall):
-                jitdriver.can_enter_jit(
-                    pc=pc,
-                    sched=self,
-                    method=method,
-                    task=task,
-                    frame=frame,
-                )
-
-            oldpc = pc
-            current_method = method
+            still_in_frame = frame is last_frame
+            if pc < last_pc and still_in_frame:
+                self._can_enter_jit(pc, method, task, frame)
 
             jitdriver.jit_merge_point(
                     pc=pc,
@@ -123,6 +122,9 @@ class ThreadLocalSched(object):
                     task=task,
                     frame=frame,
                 )
+
+            last_pc = pc
+            last_frame = frame
 
             should_continue = self.interpreter.interpreter_step(pc, method, frame, task)
 
