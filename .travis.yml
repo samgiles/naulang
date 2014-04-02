@@ -19,3 +19,4 @@ script:
     - make test_all_compiled PYPYPATH=./pypy
     - make wlvlang-jit PYPYPATH=./pypy
     - make test_all_jit PYPYPATH=./pypy
+    - chmod +x ./rebench.sh && ./rebench.sh
