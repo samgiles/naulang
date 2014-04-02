@@ -6,7 +6,7 @@ python:
 install:
     - wget https://bitbucket.org/pypy/pypy/get/ac4800c0db8a.zip
     - unzip ac4800c0db8a.zip
-    - mv ac4800c0db8a ./pypy
+    - mv pypy-pypy-ac4800c0db8a ./pypy
 
 script:
     make test_all PYPYPATH=./pypy
