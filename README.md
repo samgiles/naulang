@@ -2,7 +2,7 @@
 
 In process of renaming from wlvlang to naulang.
 
-wlvlang is an experimental language and interpreter implementation written in RPython.
+naulang is an experimental language and interpreter implementation written in RPython.
 
 It is a piece of software complementing an undergraduate computer science dissertation.
 
@@ -10,7 +10,7 @@ It is a piece of software complementing an undergraduate computer science disser
 
 ## Building
 
-There are two build targets for wlvlang, a standard, non-JITed interpreter build and a build that includes a tracing JIT compiler and optimiser.  Instructions for building each of these is presented below.
+There are two build targets for naulang, a standard, non-JITed interpreter build and a build that includes a tracing JIT compiler and optimiser.  Instructions for building each of these is presented below.
 
 
 ### Prerequisites
