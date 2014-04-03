@@ -7,10 +7,6 @@ install:
     - wget https://bitbucket.org/pypy/pypy/get/ac4800c0db8a.zip
     - unzip ac4800c0db8a.zip
     - mv pypy-pypy-ac4800c0db8a ./pypy
-    - wget https://github.com/smarr/ReBench/archive/master.zip
-    - unzip master.zip
-    - mv ReBench-master ./ReBench
-    - sudo apt-get install python-numpy python-scipy python-matplotlib
     - pip install -r requirements.txt
 
 script:
@@ -19,4 +15,3 @@ script:
     - make test_all_compiled PYPYPATH=./pypy
     - make wlvlang-jit PYPYPATH=./pypy
     - make test_all_jit PYPYPATH=./pypy
-    - chmod +x ./rebench.sh && ./rebench.sh
