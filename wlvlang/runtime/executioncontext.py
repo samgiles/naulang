@@ -84,20 +84,21 @@ class ThreadLocalSched(object):
     def add_ready_task(self, task):
         self.ready_tasks.push_bottom(task)
 
+    def _reload_yielding_tasks(self):
+        while True:
+            yielding_task = self.yielding_tasks.steal()
+            if yielding_task is None:
+                break
+            self.ready_tasks.push_bottom(yielding_task)
+
     def _get_next_task(self):
         task = self.ready_tasks.pop_bottom()
 
-        if task is None:
-            while True:
-                yielding_task = self.yielding_tasks.steal()
-                if yielding_task is None:
-                    break
-                self.ready_tasks.push_bottom(yielding_task)
+        if task is not None: return task
 
-            return self.ready_tasks.pop_bottom()
+        self._reload_yielding_tasks()
+        return self.ready_tasks.pop_bottom()
 
-
-        return task
 
     def _can_enter_jit(self, pc, method, task, frame):
         jitdriver.can_enter_jit(
