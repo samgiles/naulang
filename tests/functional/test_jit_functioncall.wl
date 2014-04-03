@@ -5,7 +5,7 @@ let m = fn(x) {
     return x * 2
 }
 
-while i < 100000000 {
-    i = m(i) + i
+while i < 100000 {
+    i = (m(i) - i) + 1
 }
 print i
