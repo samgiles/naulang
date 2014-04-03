@@ -17,6 +17,10 @@ jitdriver = jit.JitDriver(
         get_printable_location=get_printable_location
     )
 
+taskjitdriver = jit.JitDriver(
+        greens=['sched'],
+        reds='auto')
+
 class Universe(object):
     def __init__(self, thread_count, space):
         self._rand = rrandom.Random(9)
@@ -134,6 +138,8 @@ class ThreadLocalSched(object):
 
     def run(self):
         while True:
+            taskjitdriver.jit_merge_point(sched=self)
+
             task = self._get_next_task()
             if task is None:
                 return
