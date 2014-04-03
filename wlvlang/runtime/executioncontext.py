@@ -17,9 +17,13 @@ jitdriver = jit.JitDriver(
         get_printable_location=get_printable_location
     )
 
+def get_printable_location_taskdriver(sched):
+    return "TODO"
+
 taskjitdriver = jit.JitDriver(
         greens=['sched'],
-        reds='auto')
+        reds='auto',
+        get_printable_location=get_printable_location_taskdriver)
 
 class Universe(object):
     def __init__(self, thread_count, space):
