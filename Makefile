@@ -54,6 +54,9 @@ test_functional: bin/wlvlang-python
 
 build_extras:
 	go build -ldflags='-s' tests/benchmarks/baselines/tokenring.go
+	mv ./tokenring ./tokenring-go
+	which kroc && kroc tests/benchmarks/baselines/tokenring.occ
+	mv ./tokenring ./tokenring-occam
 
 clean:
 	rm -rf MANIFEST
