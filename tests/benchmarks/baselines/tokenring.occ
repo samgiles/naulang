@@ -1,0 +1,85 @@
+
+#INCLUDE "course.module"
+#INCLUDE "file.module"
+#INCLUDE "convert.module"
+
+VAL INT elements IS 256:
+
+PROC element (CHAN INT this?, next!)
+  INITIAL INT token IS 1:
+  WHILE token <> 0
+    SEQ
+      this ? token
+      IF
+        token > 0
+          next ! (token + 1)
+        TRUE
+          next ! token
+:
+
+PROC root (VAL INT cycles, VAL INT tokens, CHAN INT this?, next!, CHAN BYTE scr!)
+  INITIAL INT cycles IS cycles:
+  INT token:
+  INITIAL INT i IS 0:
+  INITIAL INT sum IS 0:
+  SEQ
+    next ! 1
+    this ? token
+
+    WHILE i < tokens
+      SEQ
+        next ! i + 1
+        i := i + 1
+
+    WHILE cycles > 0
+      SEQ
+        i := 0
+        WHILE i < tokens
+          SEQ
+            this ? token
+            next ! (token + 1)
+            i := i + 1
+
+        cycles := cycles - 1
+    i := 0
+    WHILE i < tokens
+      SEQ
+        this ? token
+        sum := sum + token
+        i := i + 1
+
+    next ! 0
+    this ? token
+:
+
+PROC ring (CHAN BYTE kyb?, scr!, err!)
+  INITIAL INT cycles IS 10:
+  INITIAL INT tokens IS 100:
+  INITIAL INT sum IS 0:
+  INITIAL INT t0 IS 0:
+  INITIAL INT t1 IS 0:
+  SEQ
+    [elements]CHAN INT c:
+    INITIAL INT iterations IS 10:
+    TIMER tim:
+    WHILE iterations >= 0
+      SEQ
+        iterations := iterations - 1
+        tim ? t0
+        PAR
+          PAR i = 1 FOR (elements - 1)
+            element (c[i], c[(i + 1) \ (SIZE c)])
+          root (cycles, tokens, c[0], c[1], scr!)
+        tim ? t1
+        sum := sum + (t1 - t0)
+
+    out.string ("occ-tokenring(", 0, scr!)
+    out.int ( cycles, 0, scr!)
+    out.string (", ", 0, scr!)
+    out.int ( tokens, 0, scr!)
+    out.string ("): ", 0, scr!)
+
+    out.string ("total: iterations=10 runtime:", 0, scr!)
+    out.int (sum, 0, scr!)
+    out.string ("us*n", 0, scr!)
+:
