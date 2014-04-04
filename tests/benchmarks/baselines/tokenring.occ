@@ -1,3 +1,9 @@
+--
+-- Token Ring benchmark adapted from the Kent retargetable occam Compiler
+-- Author: C.G. Ritson adapted by Samuel Giles
+-- License: GPL v2
+-- Date: 17/10/2008
+-- Origin: http://github.com/concurrency/kroc
 
 #INCLUDE "course.module"
 #INCLUDE "file.module"
