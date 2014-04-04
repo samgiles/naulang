@@ -2,9 +2,9 @@ from wlvlang.interpreter.interpreter import Interpreter
 from wlvlang.interpreter.frame import Frame
 from wlvlang.interpreter.bytecode import bytecode_names
 from rpythonex.rdequeue import CircularWorkStealingDeque
-from rpythonex.rthread import thread_join
+from rpythonex.rcircular import CircularArray
 
-from rpython.rlib import jit, rthread, rrandom
+from rpython.rlib import jit, rrandom
 
 
 def get_printable_location(pc, sched, method):
@@ -65,13 +65,21 @@ class Universe(object):
         scheduler = ThreadLocalSched(space, args[0])
         scheduler.run()
 
+class TaskCircularArray(CircularArray):
+    def _create_new_instance(self, new_size):
+        return TaskCircularArray(new_size)
+
+class TaskDequeue(CircularWorkStealingDeque):
+    def _initialise_array(self, log_initial_size):
+        return TaskCircularArray(log_initial_size)
+
 class ThreadLocalSched(object):
     """ Describes a scheduler for a number of tasks multiplexed onto a single OS Thread """
     _immutable_fields_ = ["interpreter", "universe", "ready_tasks", "yielding_tasks"]
 
     def __init__(self, space, universe):
-        self.ready_tasks = CircularWorkStealingDeque(8)
-        self.yielding_tasks = CircularWorkStealingDeque(8)
+        self.ready_tasks = TaskDequeue(8)
+        self.yielding_tasks = TaskDequeue(8)
 
         # Interpreters are mostly stateless (they simply contain code and a
         # reference to a space), they can be shared between local tasks in an

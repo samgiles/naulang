@@ -1,4 +1,13 @@
-from rpythonex.rdequeue import CircularWorkStealingDeque as Deq
+from rpythonex.rdequeue import CircularWorkStealingDeque
+from rpythonex.rcircular import CircularArray
+
+class TestCircularArray(CircularArray):
+    def _create_new_instance(self, new_size):
+        return TestCircularArray(new_size)
+
+class Deq(CircularWorkStealingDeque):
+    def _initialise_array(self, log_initial_size):
+        return TestCircularArray(log_initial_size)
 
 def test_init_to_size():
     deq = Deq(4)
