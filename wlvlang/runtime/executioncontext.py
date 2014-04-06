@@ -1,7 +1,7 @@
 from wlvlang.interpreter.interpreter import Interpreter
 from wlvlang.interpreter.frame import Frame
 from wlvlang.interpreter.bytecode import bytecode_names
-from rpythonex.rdequeue import CircularWorkStealingDeque
+from rpythonex.rdequeue import CircularWorkStealingDeque, SimpleDequeue
 from rpythonex.rcircular import CircularArray
 
 from rpython.rlib import jit, rrandom
@@ -78,8 +78,8 @@ class ThreadLocalSched(object):
     _immutable_fields_ = ["interpreter", "universe", "ready_tasks", "yielding_tasks"]
 
     def __init__(self, space, universe):
-        self.ready_tasks = TaskDequeue(8)
-        self.yielding_tasks = TaskDequeue(8)
+        self.ready_tasks = SimpleDequeue()
+        self.yielding_tasks = SimpleDequeue()
 
         # Interpreters are mostly stateless (they simply contain code and a
         # reference to a space), they can be shared between local tasks in an
