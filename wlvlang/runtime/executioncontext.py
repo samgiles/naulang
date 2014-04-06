@@ -140,6 +140,8 @@ class ThreadLocalSched(object):
 
             if task.get_state() == Interpreter.YIELD:
                 self.yielding_tasks.push_bottom(task)
+            if task.get_state() == Interpreter.SUSPEND:
+                continue
             elif task.get_state() is not Interpreter.HALT:
                 self.ready_tasks.push_bottom(task)
 
@@ -182,6 +184,9 @@ class Task(object):
 
     def set_state(self, state):
         self._state = state
+
+    def reschedule(self):
+        self.sched.add_ready_task(self)
 
     def __eq__(self, other):
         return self._state == other._state and self.top_frame == other.top_frame and self.parent == other.parent

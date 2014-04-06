@@ -1,11 +1,10 @@
 let ring_node = fn(in, out) {
-	out <-<: in
+	out <-<:in
 }
 
 let i = 5
 
 let start = chan()
-start <- 200
 
 let in = start
 let out = chan()
@@ -19,4 +18,5 @@ while i > 0 {
 	i = i - 1
 }
 
+start <- 200
 print <: end
