@@ -2,13 +2,16 @@ from rpythonex.rcircular import CircularArray
 from rpythonex.ratomic import compare_and_swap
 from rpython.rtyper.lltypesystem import lltype, rffi
 
-
-
 class CircularWorkStealingDeque(object):
+    _mixin_ = True
+
     def __init__(self, log_initial_size):
         self.bottom = [0]
         self.top = [0]
-        self.active_array = CircularArray(log_initial_size)
+        self.active_array = self._initialise_array(log_initial_size)
+
+    def _initialise_array(self, log_initial_size):
+        raise NotImplementedError
 
     def size(self):
         return self.active_array.size()

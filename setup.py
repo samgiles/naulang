@@ -7,7 +7,7 @@ setup(name='wlvlang',
       description='Programming Language created using RPython',
       author='Samuel Giles',
       author_email='s.giles@wlv.ac.uk',
-      license='MIT',
+      license='GPLv2',
       url='',
       packages=['wlvlang', 'wlvlang.compiler'],
      )

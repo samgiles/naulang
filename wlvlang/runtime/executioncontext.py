@@ -2,9 +2,9 @@ from wlvlang.interpreter.interpreter import Interpreter
 from wlvlang.interpreter.frame import Frame
 from wlvlang.interpreter.bytecode import bytecode_names
 from rpythonex.rdequeue import CircularWorkStealingDeque
-from rpythonex.rthread import thread_join
+from rpythonex.rcircular import CircularArray
 
-from rpython.rlib import jit, rthread, rrandom
+from rpython.rlib import jit, rrandom
 
 
 def get_printable_location(pc, sched, method):
@@ -16,6 +16,14 @@ jitdriver = jit.JitDriver(
         virtualizables=['frame'],
         get_printable_location=get_printable_location
     )
+
+def get_printable_location_taskdriver(sched):
+    return "TODO"
+
+taskjitdriver = jit.JitDriver(
+        greens=['sched'],
+        reds='auto',
+        get_printable_location=get_printable_location_taskdriver)
 
 class Universe(object):
     def __init__(self, thread_count, space):
@@ -57,13 +65,21 @@ class Universe(object):
         scheduler = ThreadLocalSched(space, args[0])
         scheduler.run()
 
+class TaskCircularArray(CircularArray):
+    def _create_new_instance(self, new_size):
+        return TaskCircularArray(new_size)
+
+class TaskDequeue(CircularWorkStealingDeque):
+    def _initialise_array(self, log_initial_size):
+        return TaskCircularArray(log_initial_size)
+
 class ThreadLocalSched(object):
     """ Describes a scheduler for a number of tasks multiplexed onto a single OS Thread """
     _immutable_fields_ = ["interpreter", "universe", "ready_tasks", "yielding_tasks"]
 
     def __init__(self, space, universe):
-        self.ready_tasks = CircularWorkStealingDeque(8)
-        self.yielding_tasks = CircularWorkStealingDeque(8)
+        self.ready_tasks = TaskDequeue(8)
+        self.yielding_tasks = TaskDequeue(8)
 
         # Interpreters are mostly stateless (they simply contain code and a
         # reference to a space), they can be shared between local tasks in an
@@ -76,21 +92,21 @@ class ThreadLocalSched(object):
     def add_ready_task(self, task):
         self.ready_tasks.push_bottom(task)
 
+    def _reload_yielding_tasks(self):
+        while True:
+            yielding_task = self.yielding_tasks.steal()
+            if yielding_task is None:
+                break
+            self.ready_tasks.push_bottom(yielding_task)
+
     def _get_next_task(self):
         task = self.ready_tasks.pop_bottom()
 
-        if task is None:
-            # Once all ready_tasks have been run, reload the yielding tasks
-            while True:
-                yielding_task = self.yielding_tasks.steal()
-                if yielding_task is None:
-                    break
-                self.ready_tasks.push_bottom(yielding_task)
+        if task is not None: return task
 
-            return self.ready_tasks.pop_bottom()
+        self._reload_yielding_tasks()
+        return self.ready_tasks.pop_bottom()
 
-
-        return task
 
     def _can_enter_jit(self, pc, method, task, frame):
         jitdriver.can_enter_jit(
@@ -136,6 +152,8 @@ class ThreadLocalSched(object):
 
     def run(self):
         while True:
+            taskjitdriver.jit_merge_point(sched=self)
+
             task = self._get_next_task()
             if task is None:
                 return
