@@ -14,6 +14,7 @@ def builtin_functions():
         "time": (_time_primitive, 1),
         "int" : (_int_primitive,  2),
         "chan": (_channel_primitive, 3),
+        "async_chan": (_async_channel_primitive, 4),
     }
 
 def _time_primitive(primitive, activation_record, interpreter):
@@ -33,3 +34,7 @@ def _list_primitive(primitive, activation_record, interpreter):
 def _channel_primitive(primitive, activation_record, interpreter):
     """ Creates a new channel object """
     activation_record.push(interpreter.space.new_channel())
+
+def _async_channel_primitive(primitive, frame, interpreter):
+    """ Creates a new buffered channel object """
+    frame.push(interpreter.space.new_asyncchannel())

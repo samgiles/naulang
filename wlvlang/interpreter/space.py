@@ -43,3 +43,6 @@ class ObjectSpace(object):
 
     def new_channel(self):
         return SyncChannel()
+
+    def new_asyncchannel(self):
+        return BasicChannel()
