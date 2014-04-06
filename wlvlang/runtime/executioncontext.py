@@ -170,7 +170,7 @@ class ThreadLocalSched(object):
 
             if task.get_state() == Interpreter.YIELD:
                 self.yielding_tasks.push_bottom(task)
-            if task.get_state() == Interpreter.SUSPEND:
+            elif task.get_state() == Interpreter.SUSPEND:
                 continue
             elif task.get_state() is not Interpreter.HALT:
                 self.ready_tasks.push_bottom(task)
