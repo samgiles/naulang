@@ -49,6 +49,18 @@ def test_bc_HALT():
     while _interpreter_step(interpreter, task):
         pass
 
+def test_bc_RETURN():
+    _, interpreter, task, frame = simple_setup(literals=[Integer(10)], bytecode=[Bytecode.LOAD_CONST, 0, Bytecode.RETURN])
+
+    parent_method = create_test_method([], 0, [Bytecode.HALT])
+    parent_frame = create_frame(parent_method)
+    frame.set_previous_frame(parent_frame)
+
+    while _interpreter_step(interpreter, task):
+        pass
+
+    assert parent_frame.peek() == Integer(10)
+
 def test_bc_LOAD_CONST():
     """ Tests the 'LOAD_CONST n;' bytecode, where n is the offset in the literals' space to load
 
@@ -171,7 +183,7 @@ def test_bc_LOAD_DYNAMIC():
         Bytecode.HALT
     ])
 
-    frame = create_frame(method, 5)
+    frame = create_frame(method)
     task = create_task(frame)
 
     while _interpreter_step(interpreter, task):

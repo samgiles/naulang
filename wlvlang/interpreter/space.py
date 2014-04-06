@@ -1,4 +1,3 @@
-from wlvlang.interpreter.objectspace.klass import Class
 from wlvlang.interpreter.objectspace.integer import Integer
 from wlvlang.interpreter.objectspace.boolean import Boolean
 from wlvlang.interpreter.objectspace.string import String

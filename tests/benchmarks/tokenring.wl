@@ -20,8 +20,6 @@ let root = fn(cycles, tokens, this, next) {
     next <- 1
     let token = <:this
 
-    print "start"
-
     let i = 0
     while i < tokens {
         i = i + 1
@@ -45,8 +43,6 @@ let root = fn(cycles, tokens, this, next) {
         sum = sum + <:this
     }
 
-    print "end"
-    print sum
     next <- 0
     token = <:this
 }
@@ -64,7 +60,27 @@ let ring = fn(cycles, tokens) {
         this = next
     }
 
-    let t = root(cycles, tokens, this, head)
+    root(cycles, tokens, this, head)
 }
 
-ring(cycles, tokens)
+
+let warmup = 5
+let i = warmup
+
+while i >= 0 {
+    i = i - 1
+    ring(cycles, tokens)
+}
+
+let sum = 0
+let tries = 10
+i = tries
+while i >= 0 {
+    i = i - 1
+    let start = time()
+    ring(cycles, tokens)
+    let end = time()
+    sum = sum + (end - start)
+}
+
+print "nau-tokenring(" + cycles + ", " + tokens + "): total: iterations=" + tries + " runtime: " + sum +"us"

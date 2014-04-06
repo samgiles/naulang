@@ -14,9 +14,6 @@ class Integer(PrimitiveObject):
     def get_as_string(self):
         return str(self.value)
 
-    def get_class(self, space):
-        return space.integerClass
-
     def __str__(self):
         return str(self.value)
 

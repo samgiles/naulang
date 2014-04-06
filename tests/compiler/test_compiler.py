@@ -36,6 +36,23 @@ def create_syntax_directed_translator(ctx):
     SyntaxDirectedTranslator.visit_dummycompilationunit = dummy_visit
     return SyntaxDirectedTranslator(ctx)
 
+def test_return_statement_empty():
+    ctx = create_interpreter_context()
+    t = create_syntax_directed_translator(ctx)
+    node = ast.ReturnStatement(None)
+    node.accept(t)
+
+    assert ctx.get_bytecode() == [Bytecode.HALT]
+
+def test_return_statement():
+    ctx = create_interpreter_context()
+    t = create_syntax_directed_translator(ctx)
+    node = ast.ReturnStatement(ast.IntegerConstant(10))
+    node.accept(t)
+
+    assert ctx.literals[0] == Integer(10)
+    assert ctx.get_bytecode() == [Bytecode.LOAD_CONST, 0, Bytecode.RETURN]
+
 def test_ast_integer_compile():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)

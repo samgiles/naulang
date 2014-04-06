@@ -33,12 +33,22 @@ class Interpreter(object):
         assert isinstance(new_method, Method)
         new_method.async_invoke(task)
 
+    def _restore_previous_frame_or_exit(self, task):
+            # Restore the caller
+            is_root_frame = task.get_top_frame().is_root_frame()
+            if is_root_frame:
+                task.set_state(Interpreter.HALT)
+                return False
+
+            task.restore_previous_frame()
+            task.set_state(Interpreter.CONTINUE)
+            return True
+
     def interpreter_step(self, pc, method, frame, task):
         bytecode = method.get_bytecode(pc)
 
         if bytecode == Bytecode.HALT:
-            task.set_state(Interpreter.HALT)
-            return False
+            return self._restore_previous_frame_or_exit(task)
         elif bytecode == Bytecode.LOAD_CONST:
             pc += 2
             literal = jit.promote(method.get_bytecode(pc - 1))
@@ -176,9 +186,7 @@ class Interpreter(object):
                 caller.push(frame.pop())
 
             # Restore the caller
-            task.restore_previous_frame()
-            task.set_state(Interpreter.CONTINUE)
-            return True
+            return self._restore_previous_frame_or_exit(task)
         elif bytecode == Bytecode.ARRAY_LOAD:
             index = frame.pop()
             array = frame.pop()
