@@ -4,6 +4,7 @@ from rpython.rtyper.lltypesystem import lltype, rffi
 
 
 class SimpleDequeue(object):
+    _immutable_fields_ = ["active_array"]
     def __init__(self):
         self.active_array = []
 
