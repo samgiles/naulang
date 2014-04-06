@@ -32,33 +32,38 @@ class BasicChannel(ChannelInterface):
             raise YieldException()
 
 class SyncChannel(ChannelInterface):
-    EMPTY = 0
-    READER_WAITING = 1
-    WRITER_WAITING = 2
-
     def __init__(self):
         self._slot = None
         self._task = None
-        self._state = SyncChannel.EMPTY
 
     def send(self, task, value):
-        self._slot = value
-        if self._state is SyncChannel.EMPTY:
-            self._state = SyncChannel.WRITER_WAITING
+        # if the channel is empty
+        if self._task is None:
             self._task = task
-            raise SuspendException()
-        else:
-            self._task.reschedule()
+            self._slot = value
+            raise SuspendException
+
+        # A reader is waiting:
+        # store the value in the slot
+        self._slot = value
+        # reschedule the reader
+        self._task.reschedule()
+        # Store a reference to this task, the reader will reschedule it
+        # once it has read the value
+        self._task = task
+        raise SuspendException
 
     def receive(self, task):
-        if self._state is SyncChannel.EMPTY:
-            self._state = SyncChannel.READER_WAITING
+        if self._task is None:
+            # READER WAITING
             self._task = task
-            raise SuspendException()
-        else:
-            self._state = SyncChannel.EMPTY
-            self._task.reschedule()
-            return self._slot
+            raise SuspendException
+
+        # if sender waiting
+        value = self._slot
+        self._task.reschedule()
+        self._task = None
+        return value
 
 
 class DequeueChannel(ChannelInterface):

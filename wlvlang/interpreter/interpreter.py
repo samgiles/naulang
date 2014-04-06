@@ -230,6 +230,8 @@ class Interpreter(object):
             assert isinstance(channel, ChannelInterface)
             try:
                 received = channel.receive(task)
+                # pop off the channel (we peeked at it before in case we
+                # suspend or yield
                 frame.pop()
                 frame.push(received)
                 pc += 1
@@ -248,12 +250,11 @@ class Interpreter(object):
             try:
                 channel.send(task, expression)
             except YieldException:
-                # Can continue this process (but try yielding to another)
+                frame.push(channel)
+                frame.push(expression)
                 task.set_state(Interpreter.YIELD)
-                frame.set_pc(pc)
                 return False
             except SuspendException:
-                # Send blocked (at rendezvous)
                 task.set_state(Interpreter.SUSPEND)
                 frame.set_pc(pc)
                 return False

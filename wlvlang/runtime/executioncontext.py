@@ -80,6 +80,7 @@ class ThreadLocalSched(object):
         task = self.ready_tasks.pop_bottom()
 
         if task is None:
+            # Once all ready_tasks have been run, reload the yielding tasks
             while True:
                 yielding_task = self.yielding_tasks.steal()
                 if yielding_task is None:
@@ -103,6 +104,7 @@ class ThreadLocalSched(object):
     @jit.unroll_safe
     def run_task(self, task):
         assert task is not None
+
         last_pc = 0
         last_frame = None
 
