@@ -93,19 +93,27 @@ class ThreadLocalSched(object):
         self.ready_tasks.push_bottom(task)
 
     def _reload_yielding_tasks(self):
+        yielding_taskb = None
         while True:
-            yielding_task = self.yielding_tasks.steal()
-            if yielding_task is None:
+            yielding_taska = self.yielding_tasks.steal()
+            if yielding_taska is None:
                 break
-            self.ready_tasks.push_bottom(yielding_task)
+
+            yielding_taskb = self.yielding_tasks.steal()
+            if yielding_taskb is None:
+                return yielding_taska
+
+            self.ready_tasks.push_bottom(yielding_taska)
+            self.ready_tasks.push_bottom(yielding_taskb)
+
+        return yielding_taskb
 
     def _get_next_task(self):
         task = self.ready_tasks.pop_bottom()
 
         if task is not None: return task
 
-        self._reload_yielding_tasks()
-        return self.ready_tasks.pop_bottom()
+        return self._reload_yielding_tasks()
 
 
     def _can_enter_jit(self, pc, method, task, frame):
