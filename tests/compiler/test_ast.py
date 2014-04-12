@@ -19,6 +19,9 @@ def test_ast_integer_constant():
     assert ast.IntegerConstant(10) == ast.IntegerConstant(10)
     assert ast.IntegerConstant(1231) != ast.IntegerConstant(123231)
 
+def test_ast_float_constant():
+    assert ast.FloatConstant(10.1) == ast.FloatConstant(10.1)
+    assert ast.FloatConstant(10.2) != ast.FloatConstant(10.1)
 
 def test_ast_boolean_constant():
     assert ast.BooleanConstant(True) == ast.BooleanConstant(True)

@@ -12,7 +12,7 @@ class Boolean(PrimitiveObject):
         return self.value
 
     def get_as_string(self):
-        return str(self)
+        return "true" if self.value else "false"
 
     def __str__(self):
         return "true" if self.value else "false"

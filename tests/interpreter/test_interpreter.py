@@ -206,6 +206,8 @@ def test_bc_GREATER_THAN_EQ():
     frame.push(space.new_integer(20))
     _interpreter_step(interpreter, task)
 
+    print repr(frame.peek())
+    print repr(frame.peek().get_as_string())
     assert frame.pop() == space.new_boolean(False)
 
     frame.push(space.new_integer(20))

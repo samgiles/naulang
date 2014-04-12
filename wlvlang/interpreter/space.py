@@ -1,4 +1,5 @@
 from wlvlang.interpreter.objectspace.integer import Integer
+from wlvlang.interpreter.objectspace.float import Float
 from wlvlang.interpreter.objectspace.boolean import Boolean
 from wlvlang.interpreter.objectspace.string import String
 from wlvlang.interpreter.objectspace.array import Array
@@ -29,7 +30,10 @@ class ObjectSpace(object):
         self.builtin_functions[index] = function
 
     def new_integer(self, value):
-        return Integer(value)
+        return Integer(int(value))
+
+    def new_float(self, value):
+        return Float(float(value))
 
     def new_boolean(self, value):
         return Boolean(value)

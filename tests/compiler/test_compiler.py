@@ -7,6 +7,7 @@ from wlvlang.interpreter.space import ObjectSpace
 from wlvlang.interpreter.bytecode import Bytecode
 
 from wlvlang.interpreter.objectspace.integer import Integer
+from wlvlang.interpreter.objectspace.float import Float
 from wlvlang.interpreter.objectspace.boolean import Boolean
 
 class DummyCompilationUnit(ast.Node):
@@ -61,6 +62,18 @@ def test_ast_integer_compile():
 
     # Expect the constant to be stored in the literals area at position 0 (as this was a new context)
     assert ctx.literals[0] == Integer(100)
+
+    # Expect the byte code to be [Bytecode.LOAD_CONST, 0]
+    assert ctx.get_bytecode() == [Bytecode.LOAD_CONST, 0]
+
+def test_ast_float_compile():
+    ctx = create_interpreter_context()
+    t = create_syntax_directed_translator(ctx)
+    node = ast.FloatConstant(100.213)
+    node.accept(t)
+
+    # Expect the constant to be stored in the literals area at position 0 (as this was a new context)
+    assert ctx.literals[0] == Float(100.213)
 
     # Expect the byte code to be [Bytecode.LOAD_CONST, 0]
     assert ctx.get_bytecode() == [Bytecode.LOAD_CONST, 0]

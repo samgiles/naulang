@@ -22,6 +22,10 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         self.context.emit(Bytecode.LOAD_CONST, self.context.register_literal(integer))
         return True
 
+    def visit_floatconstant(self, node):
+        float_val = self.context.space.new_float(node.get_float_constant())
+        self.context.emit(Bytecode.LOAD_CONST, self.context.register_literal(float_val))
+
     def visit_stringconstant(self, node):
         string = self.context.space.new_string(node.get_string_value())
         self.context.emit(Bytecode.LOAD_CONST, self.context.register_literal(string))
@@ -61,6 +65,7 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         node.rhs.accept(self)
         self.context.emit(Bytecode.EQUAL)
         return False
+
 
     def visit_notequals(self, node):
         node.lhs.accept(self)
