@@ -12,13 +12,13 @@ class Frame(Object):
     def __init__(self, previous_frame=None, method=None, access_link=None):
         self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
 
-        self._stack = [None] * method.stack_depth
+        self._stack = [None] * r_uint(method.stack_depth)
         self._stack_pointer = r_uint(0)
 
         self.previous_frame = previous_frame
         self.access_link = access_link
 
-        self._locals = [None] * method.local_count
+        self._locals = [None] * r_uint(method.local_count)
         self._literals = method.literals
 
         self._pc = 0

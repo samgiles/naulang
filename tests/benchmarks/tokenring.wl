@@ -52,7 +52,7 @@ let ring = fn(cycles, tokens) {
     let this = head
     let next = 0
     let i = 0
-    let elems = ELEMENTS - 1
+    let elems = ELEMENTS
     while i < elems {
         i = i + 1
         next = chan()
@@ -75,7 +75,7 @@ while i >= 0 {
 let sum = 0
 let tries = 10
 i = tries
-while i >= 0 {
+while i > 0 {
     i = i - 1
     let start = time()
     ring(cycles, tokens)

@@ -3,7 +3,7 @@ from wlvlang.interpreter.objectspace.float import Float
 from wlvlang.interpreter.objectspace.boolean import Boolean
 from wlvlang.interpreter.objectspace.string import String
 from wlvlang.interpreter.objectspace.array import Array
-from wlvlang.interpreter.objectspace.channel import BasicChannel
+from wlvlang.interpreter.objectspace.channel import BasicChannel, SyncChannel
 
 from wlvlang.interpreter.objectspace.primitives.primitives import initialise_primitives
 
@@ -46,4 +46,7 @@ class ObjectSpace(object):
         return String(value)
 
     def new_channel(self):
+        return SyncChannel()
+
+    def new_asyncchannel(self):
         return BasicChannel()

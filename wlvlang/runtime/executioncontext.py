@@ -1,10 +1,10 @@
 from wlvlang.interpreter.interpreter import Interpreter
 from wlvlang.interpreter.frame import Frame
 from wlvlang.interpreter.bytecode import bytecode_names
-from rpythonex.rdequeue import CircularWorkStealingDeque
-from rpythonex.rthread import thread_join
+from rpythonex.rdequeue import CircularWorkStealingDeque, SimpleDequeue
+from rpythonex.rcircular import CircularArray
 
-from rpython.rlib import jit, rthread, rrandom
+from rpython.rlib import jit, rrandom
 
 
 def get_printable_location(pc, sched, method):
@@ -16,6 +16,14 @@ jitdriver = jit.JitDriver(
         virtualizables=['frame'],
         get_printable_location=get_printable_location
     )
+
+def get_printable_location_taskdriver(sched):
+    return "TODO"
+
+taskjitdriver = jit.JitDriver(
+        greens=['sched'],
+        reds='auto',
+        get_printable_location=get_printable_location_taskdriver)
 
 class Universe(object):
     def __init__(self, thread_count, space):
@@ -57,13 +65,21 @@ class Universe(object):
         scheduler = ThreadLocalSched(space, args[0])
         scheduler.run()
 
+class TaskCircularArray(CircularArray):
+    def _create_new_instance(self, new_size):
+        return TaskCircularArray(new_size)
+
+class TaskDequeue(CircularWorkStealingDeque):
+    def _initialise_array(self, log_initial_size):
+        return TaskCircularArray(log_initial_size)
+
 class ThreadLocalSched(object):
     """ Describes a scheduler for a number of tasks multiplexed onto a single OS Thread """
     _immutable_fields_ = ["interpreter", "universe", "ready_tasks", "yielding_tasks"]
 
     def __init__(self, space, universe):
-        self.ready_tasks = CircularWorkStealingDeque(8)
-        self.yielding_tasks = CircularWorkStealingDeque(8)
+        self.ready_tasks = SimpleDequeue()
+        self.yielding_tasks = SimpleDequeue()
 
         # Interpreters are mostly stateless (they simply contain code and a
         # reference to a space), they can be shared between local tasks in an
@@ -76,20 +92,29 @@ class ThreadLocalSched(object):
     def add_ready_task(self, task):
         self.ready_tasks.push_bottom(task)
 
+    def _reload_yielding_tasks(self):
+        yielding_taskb = None
+        while True:
+            yielding_taska = self.yielding_tasks.steal()
+            if yielding_taska is None:
+                break
+
+            yielding_taskb = self.yielding_tasks.steal()
+            if yielding_taskb is None:
+                return yielding_taska
+
+            self.ready_tasks.push_bottom(yielding_taska)
+            self.ready_tasks.push_bottom(yielding_taskb)
+
+        return yielding_taskb
+
     def _get_next_task(self):
         task = self.ready_tasks.pop_bottom()
 
-        if task is None:
-            while True:
-                yielding_task = self.yielding_tasks.steal()
-                if yielding_task is None:
-                    break
-                self.ready_tasks.push_bottom(yielding_task)
+        if task is not None: return task
 
-            return self.ready_tasks.pop_bottom()
+        return self._reload_yielding_tasks()
 
-
-        return task
 
     def _can_enter_jit(self, pc, method, task, frame):
         jitdriver.can_enter_jit(
@@ -103,6 +128,7 @@ class ThreadLocalSched(object):
     @jit.unroll_safe
     def run_task(self, task):
         assert task is not None
+
         last_pc = 0
         last_frame = None
 
@@ -134,6 +160,8 @@ class ThreadLocalSched(object):
 
     def run(self):
         while True:
+            taskjitdriver.jit_merge_point(sched=self)
+
             task = self._get_next_task()
             if task is None:
                 return
@@ -142,6 +170,8 @@ class ThreadLocalSched(object):
 
             if task.get_state() == Interpreter.YIELD:
                 self.yielding_tasks.push_bottom(task)
+            if task.get_state() == Interpreter.SUSPEND:
+                continue
             elif task.get_state() is not Interpreter.HALT:
                 self.ready_tasks.push_bottom(task)
 
@@ -184,6 +214,9 @@ class Task(object):
 
     def set_state(self, state):
         self._state = state
+
+    def reschedule(self):
+        self.sched.add_ready_task(self)
 
     def __eq__(self, other):
         return self._state == other._state and self.top_frame == other.top_frame and self.parent == other.parent

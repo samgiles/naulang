@@ -2,7 +2,7 @@ from wlvlang.interpreter.bytecode import Bytecode, bytecode_names
 
 from wlvlang.interpreter.objectspace.array import Array
 from wlvlang.interpreter.objectspace.primitive_object import PrimitiveObject
-from wlvlang.interpreter.objectspace.channel import ChannelInterface, YieldException
+from wlvlang.interpreter.objectspace.channel import ChannelInterface, YieldException, SuspendException
 from wlvlang.interpreter.objectspace.method import Method
 from wlvlang.interpreter.objectspace.builtin import BuiltIn
 
@@ -15,6 +15,7 @@ class Interpreter(object):
     HALT     = 1
     CONTINUE = 2
     YIELD    = 4
+    SUSPEND  = 8
 
     def __init__(self, space):
         self.space = space
@@ -228,21 +229,37 @@ class Interpreter(object):
             channel = frame.peek()
             assert isinstance(channel, ChannelInterface)
             try:
-                received = channel.receive()
+                received = channel.receive(task)
+                # pop off the channel (we peeked at it before in case we
+                # suspend or yield
+                frame.pop()
+                frame.push(received)
+                pc += 1
             except YieldException:
                 task.set_state(Interpreter.YIELD)
-                frame.set_pc(pc)
+                return False
+            except SuspendException:
+                task.set_state(Interpreter.SUSPEND)
                 return False
 
-            frame.pop()
-            frame.push(received)
-            pc += 1
         elif bytecode == Bytecode.CHAN_IN:
             expression = frame.pop()
             channel = frame.pop()
             assert isinstance(channel, ChannelInterface)
-            channel.send(expression)
             pc += 1
+            try:
+                channel.send(task, expression)
+            except YieldException:
+                frame.push(channel)
+                frame.push(expression)
+                task.set_state(Interpreter.YIELD)
+                return False
+            except SuspendException:
+                task.set_state(Interpreter.SUSPEND)
+                frame.set_pc(pc)
+                return False
+
+            # send succeeded; continuing
         else:
             raise TypeError("Bytecode is not implemented: %d" % bytecode)
 

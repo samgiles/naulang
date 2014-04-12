@@ -19,13 +19,13 @@ wlvlang-jit:
 
 bin/wlvlang-python:
 	@mkdir -p bin/
-	@cat ./wlvlang/wlvlang-python | sed 's,{PYTHON_PATH},$(PYTHONPATH):$(PYPYPATH):.,g' > ./bin/wlvlang-python
+	@cat ./wlvlang/wlvlang-python.template | sed 's,{PYTHON_PATH},$(PYTHONPATH):$(PYPYPATH):.,g' > ./bin/wlvlang-python
 	@chmod +x bin/wlvlang-python
 
 createdist:
 	python setup.py sdist
 
-test_all:
+test_all: bin/wlvlang-python
 	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/**/test_*.py
 	tests/functional/wlvtest.py ./bin/wlvlang-python ./tests/functional
 
@@ -54,6 +54,9 @@ test_functional: bin/wlvlang-python
 
 build_extras:
 	go build -ldflags='-s' tests/benchmarks/baselines/tokenring.go
+	mv ./tokenring ./tokenring-go
+	which kroc && kroc tests/benchmarks/baselines/tokenring.occ
+	mv ./tokenring ./tokenring-occam
 
 clean:
 	rm -rf MANIFEST

@@ -7,15 +7,15 @@ lexer_gen.ignore(r"([\s\f\t\n\r\v]+)|#.*$")
 def get_tokens():
     return [
         # Keywords
-        ("IF", r"if"),
-        ("PRINT", r"print"),
-        ("FN", r"fn"),
-        ("WHILE", r"while"),
-        ("RETURN", r"return"),
-        ("LET", r"let"),
-        ("BREAK", r"break"),
-        ("CONTINUE", r"continue"),
-        ("ASYNC", r"async"),
+        ("IF", r"if\b"),
+        ("PRINT", r"print\b"),
+        ("FN", r"fn\b"),
+        ("WHILE", r"while\b"),
+        ("RETURN", r"return\b"),
+        ("LET", r"let\b"),
+        ("BREAK", r"break\b"),
+        ("CONTINUE", r"continue\b"),
+        ("ASYNC", r"async\b"),
         # Channel Operators
         ("CHAN_OUT", r"<:"),
         ("CHAN_IN", r"<-"),
@@ -26,9 +26,9 @@ def get_tokens():
         ("PLUS", r"\+"),
         ("MINUS", r"-"),
         # Logical Operators
-        ("AND", r"and"),
-        ("OR", r"or"),
-        ("NOT", r"not"),
+        ("AND", r"and\b"),
+        ("OR", r"or\b"),
+        ("NOT", r"not\b"),
         # Comparison Operators
         ("IS", r"is"),
         ("DOUBLE_EQ", r"=="),
@@ -47,8 +47,8 @@ def get_tokens():
         ("LBRACK", r"\["),
         ("RBRACK", r"\]"),
         # Literals
-        ("TRUE", r"true"),
-        ("FALSE", r"false"),
+        ("TRUE", r"true\b"),
+        ("FALSE", r"false\b"),
         ("FLOAT", r"(((0|[1-9][0-9]*)(\.[0-9]*)+)|(\.[0-9]+))([eE][\+\-]?[0-9]*)?"),
         ("INTEGER", r"-?(0|[1-9][0-9]*)"),
         ("STRING", r"\"([^\"\\]|\\.)*\""),

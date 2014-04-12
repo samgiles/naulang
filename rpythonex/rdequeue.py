@@ -3,12 +3,32 @@ from rpythonex.ratomic import compare_and_swap
 from rpython.rtyper.lltypesystem import lltype, rffi
 
 
+class SimpleDequeue(object):
+    _immutable_fields_ = ["active_array"]
+    def __init__(self):
+        self.active_array = []
+
+    def push_bottom(self, value):
+        self.active_array.append(value)
+
+    def pop_bottom(self):
+        if len(self.active_array) is 0: return None
+        return self.active_array.pop()
+
+    def steal(self):
+        if len(self.active_array) is 0: return None
+        return self.active_array.pop(0)
 
 class CircularWorkStealingDeque(object):
+    _mixin_ = True
+
     def __init__(self, log_initial_size):
         self.bottom = [0]
         self.top = [0]
-        self.active_array = CircularArray(log_initial_size)
+        self.active_array = self._initialise_array(log_initial_size)
+
+    def _initialise_array(self, log_initial_size):
+        raise NotImplementedError
 
     def size(self):
         return self.active_array.size()
