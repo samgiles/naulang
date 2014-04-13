@@ -32,5 +32,27 @@ let run_prime_sieve = fn(n) {
     return sum
 }
 
-let checksum = run_prime_sieve(1000)
-print checksum
+
+let primes_to = 1000
+
+let warmup = 100
+let i = 0
+while i < warmup {
+	i = i + 1
+	print i
+	let checksum = run_prime_sieve(1000)
+}
+
+let totaltime = 0
+let iterations = 10
+let i = 0
+while i < iterations {
+	i = i + 1
+	let t0 = time()
+	let checksum = run_prime_sieve(primes_to)
+	let t1 = time()
+	totaltime = totaltime + (t1 - t0)
+}
+
+
+print "nau-primeseive(" + primes_to + "): total: iterations=" + iterations + " runtime: " + totaltime +"us"
