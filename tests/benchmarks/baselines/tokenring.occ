@@ -59,8 +59,8 @@ PROC root (VAL INT cycles, VAL INT tokens, CHAN INT this?, next!, CHAN BYTE scr!
 :
 
 PROC ring (CHAN BYTE kyb?, scr!, err!)
-  INITIAL INT cycles IS 10:
-  INITIAL INT tokens IS 100:
+  INITIAL INT cycles IS 100:
+  INITIAL INT tokens IS 255:
   INITIAL INT sum IS 0:
   INITIAL INT t0 IS 0:
   INITIAL INT t1 IS 0:
@@ -79,13 +79,13 @@ PROC ring (CHAN BYTE kyb?, scr!, err!)
         tim ? t1
         sum := sum + (t1 - t0)
 
-    out.string ("occ-tokenring(", 0, scr!)
+    out.string ("occ-tokenring-sync(", 0, scr!)
     out.int ( cycles, 0, scr!)
     out.string (", ", 0, scr!)
     out.int ( tokens, 0, scr!)
     out.string ("): ", 0, scr!)
 
-    out.string ("total: iterations=10 runtime:", 0, scr!)
+    out.string ("total: iterations=10 runtime: ", 0, scr!)
     out.int (sum, 0, scr!)
     out.string ("us*n", 0, scr!)
 :

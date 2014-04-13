@@ -99,5 +99,5 @@ func main() {
 		sum = sum + int64(t1.Sub(t0))
 	}
 
-	fmt.Printf("go-tokenring(%d, %d): total: iterations=%d runtime:%dus\n",cycles, tokens, tries, sum / int64(time.Microsecond))
+	fmt.Printf("go-tokenring-async(%d, %d): total: iterations=%d runtime: %dus\n",cycles, tokens, tries, sum / int64(time.Microsecond))
 }

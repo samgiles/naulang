@@ -83,4 +83,4 @@ while i > 0 {
     sum = sum + (end - start)
 }
 
-print "nau-tokenring(" + cycles + ", " + tokens + "): total: iterations=" + tries + " runtime: " + sum +"us"
+print "nau-tokenring-async(" + cycles + ", " + tokens + "): total: iterations=" + tries + " runtime: " + sum +"us"
