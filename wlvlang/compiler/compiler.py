@@ -75,9 +75,13 @@ def _register_symbol_in_compiler_context(compiler_context, symbol):
     return compiler_context.register_local(symbol)
 
 def _print_error_message(message, source_position, source, error_type="Syntax Error"):
-    lineno = source_position.lineno
-    colno = source_position.colno
     lines = source.splitlines()
+    if source_position is not None:
+        lineno = source_position.lineno
+        colno = source_position.colno
+    else:
+        lineno = 0
+        colno = 0
 
     os.write(2, lines[lineno - 1] + "\n")
 
