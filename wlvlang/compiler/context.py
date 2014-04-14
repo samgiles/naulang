@@ -1,5 +1,6 @@
 from wlvlang.interpreter.objectspace.method import Method
 from wlvlang.interpreter.bytecode import Bytecode, get_stack_effect, stack_effect_depends_on_args, get_bytecode_length
+from wlvlang.compiler.sourcemap import SourceMap
 
 class FunctionCompilerContext(object):
     """ Context used for compiling a function """
@@ -21,6 +22,8 @@ class FunctionCompilerContext(object):
         # current loop value 1 being the label for the top of the loop (pre-condition)
         # value 2 being the label for the block after the loop.
         self.loop_control = []
+
+        self.sourcemap = SourceMap()
 
     def get_top_position(self):
         """ Returns:
@@ -123,7 +126,7 @@ class FunctionCompilerContext(object):
         for i in range(0, len(literals)):
             literals[i] = self.literals[i]
 
-        return Method(literals, len(locals), bytecode, stack_depth, argument_count=self.parameter_count)
+        return Method(literals, len(locals), bytecode, stack_depth, argument_count=self.parameter_count, source_map=self.sourcemap)
 
     def _calculate_stack_depth(self, finalized_bytecode):
         max_depth = 0
@@ -226,12 +229,16 @@ class FunctionCompilerContext(object):
         self.literals.append(constant_value)
         return len(self.literals) - 1
 
-    def emit(self, bytecode, argument=-1):
+    def emit(self, bytecode, argument=-1, sourceposition=None):
         """ Emit a bytecode into this function context """
+        if sourceposition is not None:
+            self.sourcemap.add(len(self.bytecode), sourceposition)
+
         self.bytecode.append(bytecode)
 
         if argument >= 0:
             self.bytecode.append(argument)
+
 
     def _add_labels(self, bytecode):
         """

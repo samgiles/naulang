@@ -13,13 +13,14 @@ class Method(Object):
             "argument_count",
         ]
 
-    def __init__(self, literals, local_count, bytecodes, stack_depth, argument_count=0):
+    def __init__(self, literals, local_count, bytecodes, stack_depth, source_map=None, argument_count=0):
         self.literals = literals
         self.local_count = local_count
         self.bytecodes = bytecodes
         self.argument_count = argument_count
         self.enclosing_frame = None
         self.stack_depth = stack_depth
+        self.source_map = source_map
 
     def set_enclosing_frame(self, frame):
         self.enclosing_frame = frame
