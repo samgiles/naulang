@@ -1,5 +1,9 @@
 import time
 
+from wlvlang.interpreter.objectspace.string import String
+from wlvlang.interpreter.objectspace.float import Float
+from wlvlang.interpreter.objectspace.integer import Integer
+
 from rpython.rlib.rarithmetic import ovfcheck_float_to_int
 
 def builtin_functions():
@@ -23,8 +27,15 @@ def _time_primitive(primitive, activation_record, interpreter):
 
 def _int_primitive(primitive, activation_record, interpreter):
     # Parse a value into an integer
-    string = activation_record.pop()
-    activation_record.push(interpreter.space.new_integer(int(string.get_as_string())))
+    value = activation_record.pop()
+    if isinstance(value, String):
+        activation_record.push(interpreter.space.new_integer(int(value.get_as_string())))
+    elif isinstance(value, Float):
+        activation_record.push(interpreter.space.new_integer(int(value.get_float_value())))
+    elif isinstance(value, Integer):
+        activation_record.push(value)
+    else:
+        activation_record.push(interpreter.space.new_integer(int(value.get_as_string())))
 
 def _list_primitive(primitive, activation_record, interpreter):
     """ Creates a new array/list object and pushes onto stack """
