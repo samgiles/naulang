@@ -1,4 +1,5 @@
 from wlvlang.interpreter.interpreter import Interpreter
+from wlvlang.interpreter.error import NauRuntimeError
 from wlvlang.interpreter.frame import Frame
 from wlvlang.interpreter.bytecode import bytecode_names
 from rpythonex.rdequeue import CircularWorkStealingDeque, SimpleDequeue
@@ -132,30 +133,38 @@ class ThreadLocalSched(object):
         last_pc = 0
         last_frame = None
 
-        while True:
-            pc = task.get_top_frame().get_pc()
-            method = task.get_current_method()
-            frame = task.get_top_frame()
+        try:
 
-            still_in_frame = frame is last_frame
-            if pc < last_pc and still_in_frame:
-                self._can_enter_jit(pc, method, task, frame)
+            while True:
+                pc = task.get_top_frame().get_pc()
+                method = task.get_current_method()
+                frame = task.get_top_frame()
 
-            jitdriver.jit_merge_point(
-                    pc=pc,
-                    sched=self,
-                    method=method,
-                    task=task,
-                    frame=frame,
-                )
+                still_in_frame = frame is last_frame
+                if pc < last_pc and still_in_frame:
+                    self._can_enter_jit(pc, method, task, frame)
 
-            last_pc = pc
-            last_frame = frame
+                jitdriver.jit_merge_point(
+                        pc=pc,
+                        sched=self,
+                        method=method,
+                        task=task,
+                        frame=frame,
+                    )
 
-            should_continue = self.interpreter.interpreter_step(pc, method, frame, task)
+                last_pc = pc
+                last_frame = frame
 
-            if not should_continue:
-                return
+                should_continue = self.interpreter.interpreter_step(pc, method, frame, task)
+
+                if not should_continue:
+                    return
+        except NauRuntimeError, e:
+            # add the appropriate information to the error
+            e.pc     = last_pc
+            e.frame  = task.get_top_frame()
+            e.method = method = task.get_current_method()
+            raise e
 
 
     def run(self):

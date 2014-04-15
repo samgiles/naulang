@@ -11,4 +11,7 @@ class SourceMap(object):
         self.source_to_bytecode_map[pc] = sourceposition
 
     def get(self, pc):
-        return self.source_to_bytecode_map[pc]
+        try:
+            return self.source_to_bytecode_map[pc]
+        except:
+            return None

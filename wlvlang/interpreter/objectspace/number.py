@@ -1,4 +1,5 @@
 from wlvlang.interpreter.objectspace.primitive_object import PrimitiveObject
+from wlvlang.interpreter.error import NauRuntimeError
 
 class Number(object):
     _mixin_=True
@@ -56,7 +57,7 @@ class Number(object):
         left_value, right_value, as_float = self._get_left_and_right(activation_record)
 
         if (right_value == 0):
-            raise Exception("Division By Zero")
+            raise NauRuntimeError("Division By Zero")
 
         result = left_value / right_value
         if as_float:

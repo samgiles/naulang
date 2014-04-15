@@ -1,4 +1,4 @@
-from wlvlang.interpreter.bytecode import Bytecode, bytecode_names
+from wlvlang.interpreter.bytecode import Bytecode
 
 from wlvlang.interpreter.objectspace.array import Array
 from wlvlang.interpreter.objectspace.primitive_object import PrimitiveObject

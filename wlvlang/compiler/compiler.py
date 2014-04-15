@@ -9,6 +9,7 @@ from wlvlang.compiler.translator import SyntaxDirectedTranslator
 from wlvlang.compiler.error import CompilerException
 
 from wlvlang.interpreter.bytecode import Bytecode
+from wlvlang.interpreter.error import ErrorDisplay, NauRuntimeError
 
 from rpython.rlib.streamio import open_file_as_stream
 
@@ -20,21 +21,22 @@ parser = create_parser()
 def parse(source):
     return parser.parse(lexer.lex(source))
 
-def compile_file_with_arguments(filename, object_space, command_line_arguments=[]):
+def compile_file_with_arguments(filename, object_space, error_displayer, command_line_arguments=[]):
 
-    source, ast = _parse_file(filename)
+    source, ast = _parse_file(filename, error_displayer)
 
     compiler_context = FunctionCompilerContext(object_space)
-
     arguments_array        = _create_commandline_arguments_array(object_space, command_line_arguments)
     arguments_local_offset = _register_symbol_in_compiler_context(compiler_context, symbol="args")
 
-    translator = SyntaxDirectedTranslator(compiler_context)
-
     try:
+        translator = SyntaxDirectedTranslator(compiler_context)
         ast.accept(translator)
     except CompilerException, e:
-        _print_error_message(e.message, e.getsourcepos(), source, error_type="Compilation Error")
+        error_displayer.handle_compilererror(e)
+        raise e
+    except NauRuntimeError, e:
+        error_displayer.handle_runtimeerror(e)
         raise e
 
     # Ensure the bytecode is halting
@@ -42,16 +44,17 @@ def compile_file_with_arguments(filename, object_space, command_line_arguments=[
 
     return compiler_context.generate_method(), arguments_local_offset, arguments_array
 
-def _parse_file(filename):
+def _parse_file(filename, error_displayer):
     path = os.getcwd()
     fullname = path + os.sep + filename
     try:
         input_file = open_file_as_stream(fullname, "r")
         source = input_file.readall()
+        error_displayer.source = source
         try:
             ast = parse(source)
         except ParsingError, e:
-            _print_error_message(e.message, e.getsourcepos(), source, error_type="Syntax Error")
+            error_displayer.handle_error(e.message, e.getsourcepos(), "Syntax Error")
             raise e
         finally:
             input_file.close()
@@ -74,19 +77,3 @@ def _create_commandline_arguments_array(object_space, command_line_arguments=[])
 def _register_symbol_in_compiler_context(compiler_context, symbol):
     return compiler_context.register_local(symbol)
 
-def _print_error_message(message, source_position, source, error_type="Syntax Error"):
-    lines = source.splitlines()
-    if source_position is not None:
-        lineno = source_position.lineno
-        colno = source_position.colno
-    else:
-        lineno = 0
-        colno = 0
-
-    os.write(2, lines[lineno - 1] + "\n")
-
-    for i in range(0, colno - 1):
-        os.write(2, " ")
-    os.write(2, "^\n")
-
-    os.write(2, "%s on line %d, column %d: %s\n" % (error_type, lineno, colno, message))

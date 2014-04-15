@@ -1,4 +1,5 @@
 from wlvlang.interpreter.objectspace.object import Object
+from wlvlang.interpreter.error import NauRuntimeError
 
 class Array(Object):
 
@@ -9,12 +10,16 @@ class Array(Object):
         self._list = [None] * int(initial_size)
 
     def get_value_at(self, index):
-        assert index >= 0 and index < self.size
-        return self._list[int(index)]
+        if index >= 0 and index < self.size:
+            return self._list[int(index)]
+        raise NauRuntimeError("Index %d not in bounds of array" % index)
 
     def set_value_at(self, index, value):
-        assert index >= 0 and index < self.size
-        self._list[int(index)] = value
+        if index >= 0 and index < self.size:
+            self._list[int(index)] = value
+            return
+
+        raise NauRuntimeError("Index %d not in bounds of array" % index)
 
     def __str__(self):
         return str(self._list)

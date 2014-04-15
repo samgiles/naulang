@@ -20,7 +20,7 @@ class Method(Object):
         self.argument_count = argument_count
         self.enclosing_frame = None
         self.stack_depth = stack_depth
-        self.source_map = source_map
+        self.sourcemap = source_map
 
     def set_enclosing_frame(self, frame):
         self.enclosing_frame = frame
