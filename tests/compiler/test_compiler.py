@@ -37,6 +37,15 @@ def create_syntax_directed_translator(ctx):
     SyntaxDirectedTranslator.visit_dummycompilationunit = dummy_visit
     return SyntaxDirectedTranslator(ctx)
 
+def test_compile_empty_functionexpression():
+    ctx = create_interpreter_context()
+    t = create_syntax_directed_translator(ctx)
+    node = ast.FunctionExpression(ast.ParameterList([]), None)
+    node.accept(t)
+
+    assert ctx.inner_contexts[0].get_bytecode() == [Bytecode.HALT]
+
+
 def test_return_statement_empty():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)

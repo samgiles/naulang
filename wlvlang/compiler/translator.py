@@ -204,7 +204,8 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
 
         new_context.set_parameter_count(parameter_count)
         new_visitor = SyntaxDirectedTranslator(new_context)
-        node.block.accept(new_visitor)
+        if node.block is not None:
+            node.block.accept(new_visitor)
         new_context.emit(Bytecode.HALT)
         method = new_context.generate_method()
         self.context.emit(Bytecode.LOAD_CONST, self.context.register_literal(method), sourceposition=node.getsourcepos())
