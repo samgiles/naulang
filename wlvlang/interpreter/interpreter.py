@@ -224,7 +224,6 @@ class Interpreter(object):
         elif bytecode == Bytecode.DUP:
             frame.push(frame.peek())
             pc += 1
-
         elif bytecode == Bytecode.CHAN_OUT:
             channel = frame.peek()
             assert isinstance(channel, ChannelInterface)

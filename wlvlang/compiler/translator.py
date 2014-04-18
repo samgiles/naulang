@@ -192,7 +192,7 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         raise NotImplementedError()
 
     def visit_functionexpression(self, node):
-        new_context = FunctionCompilerContext(self.context.space, outer=self.context)
+        new_context = FunctionCompilerContext(self.context.space, outer=self.context, optimise=self.context.should_optimise)
         self.context.add_inner_context(new_context)
 
         parameters = node.get_parameterlist().get_parameter_list()

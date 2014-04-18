@@ -25,7 +25,7 @@ def compile_file_with_arguments(filename, object_space, error_displayer, command
 
     source, ast = _parse_file(filename, error_displayer)
 
-    compiler_context = FunctionCompilerContext(object_space)
+    compiler_context = FunctionCompilerContext(object_space, optimise=True)
     arguments_array        = _create_commandline_arguments_array(object_space, command_line_arguments)
     arguments_local_offset = _register_symbol_in_compiler_context(compiler_context, symbol="args")
 

@@ -37,6 +37,16 @@ def create_syntax_directed_translator(ctx):
     SyntaxDirectedTranslator.visit_dummycompilationunit = dummy_visit
     return SyntaxDirectedTranslator(ctx)
 
+def test_optimise_sequential_load_consts():
+    ctx = create_interpreter_context()
+    ctx.should_optimise = True
+
+    t = create_syntax_directed_translator(ctx)
+    node = ast.Block([ast.Multiply(ast.IntegerConstant(10), ast.IntegerConstant(10))])
+    node.accept(t)
+
+    assert ctx.get_bytecode() == [Bytecode.LOAD_CONST, 0, Bytecode.DUP, Bytecode.MUL]
+
 def test_compile_empty_functionexpression():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)

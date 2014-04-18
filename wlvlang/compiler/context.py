@@ -6,7 +6,7 @@ class FunctionCompilerContext(object):
     """ Context used for compiling a function """
     REGISTER_DYNAMIC_FAILED = -1
 
-    def __init__(self, object_space, outer=None, optimiser=None):
+    def __init__(self, object_space, outer=None, optimise=False):
         self.space = object_space
         self.literals = []
         self.locals = []
@@ -24,6 +24,8 @@ class FunctionCompilerContext(object):
         self.loop_control = []
 
         self.sourcemap = SourceMap()
+        self.should_optimise = optimise
+        self.last_bytecode_seq = []
 
     def get_top_position(self):
         """ Returns:
@@ -234,8 +236,23 @@ class FunctionCompilerContext(object):
         if sourceposition is not None:
             self.sourcemap.add(len(self.bytecode), sourceposition)
 
+
+        if self.should_optimise:
+            try:
+                if bytecode_sequence[0] is Bytecode.LOAD_CONST:
+                    if self.last_bytecode_seq[0] is Bytecode.LOAD_CONST:
+                        if bytecode_sequence[1] is self.last_bytecode_seq[1]:
+                            self.bytecode.append(Bytecode.DUP)
+                            return
+            except IndexError:
+                pass
+
         for bytecode in bytecode_sequence:
             self.bytecode.append(bytecode)
+
+        self.last_bytecode_seq = bytecode_sequence
+
+
 
 
     def _add_labels(self, bytecode):
