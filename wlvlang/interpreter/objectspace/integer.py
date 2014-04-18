@@ -4,8 +4,7 @@ from wlvlang.interpreter.error import NauRuntimeError
 
 class Integer(PrimitiveObject):
 
-    _immutable_ = True
-    _immutable_fields = ["value"]
+    _immutable_fields_ = ["value"]
 
     def __init__(self, value):
         self.value = value
