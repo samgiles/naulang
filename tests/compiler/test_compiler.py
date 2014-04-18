@@ -15,7 +15,7 @@ class DummyCompilationUnit(ast.Node):
         self.code_to_emit = code_to_emit
 
     def compile(self, context):
-        context.emit(self.code_to_emit)
+        context.emit([self.code_to_emit])
 
     def accept(self, visitor):
         visitor.visit_dummycompilationunit(self)
@@ -30,7 +30,7 @@ def create_interpreter_context():
 
 def create_syntax_directed_translator(ctx):
     def dummy_visit(self, node):
-        self.context.emit(node.code_to_emit)
+        self.context.emit([node.code_to_emit])
         return True
 
     # Patch the visit dummy method on to the translator
@@ -229,7 +229,7 @@ def test_ast_whilestatement_compiler():
     t = create_syntax_directed_translator(ctx)
 
     # Add padding to bytecodes to test non-zero based context (this is more realistic)
-    ctx.emit(100)
+    ctx.emit([100])
     node = ast.WhileStatement(DummyCompilationUnit(90), ast.Block([DummyCompilationUnit(91)]))
     node.accept(t)
 
@@ -240,7 +240,7 @@ def test_ast_ifstatement_compiler():
     t = create_syntax_directed_translator(ctx)
 
     # Add padding to bytecodes to test non-zero based context (this is more realistic)
-    ctx.emit(100)
+    ctx.emit([100])
     node = ast.IfStatement(DummyCompilationUnit(90), ast.Block([DummyCompilationUnit(91)]))
     node.accept(t)
 

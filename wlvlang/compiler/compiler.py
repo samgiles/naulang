@@ -40,7 +40,7 @@ def compile_file_with_arguments(filename, object_space, error_displayer, command
         raise e
 
     # Ensure the bytecode is halting
-    compiler_context.emit(Bytecode.HALT)
+    compiler_context.emit([Bytecode.HALT])
 
     return compiler_context.generate_method(), arguments_local_offset, arguments_array
 

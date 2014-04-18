@@ -229,15 +229,13 @@ class FunctionCompilerContext(object):
         self.literals.append(constant_value)
         return len(self.literals) - 1
 
-    def emit(self, bytecode, argument=-1, sourceposition=None):
+    def emit(self, bytecode_sequence, sourceposition=None):
         """ Emit a bytecode into this function context """
         if sourceposition is not None:
             self.sourcemap.add(len(self.bytecode), sourceposition)
 
-        self.bytecode.append(bytecode)
-
-        if argument >= 0:
-            self.bytecode.append(argument)
+        for bytecode in bytecode_sequence:
+            self.bytecode.append(bytecode)
 
 
     def _add_labels(self, bytecode):
