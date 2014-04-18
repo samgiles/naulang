@@ -75,7 +75,7 @@ class Frame(Object):
 
     def get_literal_at(self, index):
         assert index < len(self._literals) and index >= 0
-        return self._literals[index]
+        return jit.hint(self._literals[index], access_directly=True)
 
     def get_local_at(self, index):
         index = jit.promote(index)
