@@ -47,6 +47,16 @@ def test_optimise_sequential_load_consts():
 
     assert ctx.get_bytecode() == [Bytecode.LOAD_CONST, 0, Bytecode.DUP, Bytecode.MUL]
 
+def test_optimise_sequential_loads():
+    ctx = create_interpreter_context()
+    ctx.should_optimise = True
+    t = create_syntax_directed_translator(ctx)
+    a = ctx.register_local('a')
+    node = ast.Block([ast.Multiply(ast.IdentifierExpression('a'), ast.IdentifierExpression('a'))])
+    node.accept(t)
+
+    assert ctx.get_bytecode() == [Bytecode.LOAD, a, Bytecode.DUP, Bytecode.MUL]
+
 def test_compile_empty_functionexpression():
     ctx = create_interpreter_context()
     t = create_syntax_directed_translator(ctx)

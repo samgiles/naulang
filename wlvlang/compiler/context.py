@@ -239,8 +239,15 @@ class FunctionCompilerContext(object):
 
         if self.should_optimise:
             try:
+                # TODO put this stuff in a module
                 if bytecode_sequence[0] is Bytecode.LOAD_CONST:
                     if self.last_bytecode_seq[0] is Bytecode.LOAD_CONST:
+                        if bytecode_sequence[1] is self.last_bytecode_seq[1]:
+                            self.bytecode.append(Bytecode.DUP)
+                            return
+
+                if bytecode_sequence[0] is Bytecode.LOAD:
+                    if self.last_bytecode_seq[0] is Bytecode.LOAD:
                         if bytecode_sequence[1] is self.last_bytecode_seq[1]:
                             self.bytecode.append(Bytecode.DUP)
                             return
