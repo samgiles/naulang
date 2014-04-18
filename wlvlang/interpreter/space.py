@@ -39,7 +39,6 @@ class ObjectSpace(object):
         return Boolean(value)
 
     def new_array(self, initial_size):
-        jit.promote(initial_size)
         return Array(initial_size)
 
     def new_string(self, value):
