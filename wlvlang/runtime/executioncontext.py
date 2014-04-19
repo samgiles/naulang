@@ -19,7 +19,7 @@ jitdriver = jit.JitDriver(
     )
 
 def get_printable_location_taskdriver(sched):
-    return "TODO"
+    return "Scheduler Loop"
 
 taskjitdriver = jit.JitDriver(
         greens=['sched'],
@@ -131,17 +131,17 @@ class ThreadLocalSched(object):
         assert task is not None
 
         last_pc = 0
-        last_frame = None
+        last_function = None
 
         try:
 
             while True:
-                pc = task.get_top_frame().get_pc()
-                method = task.get_current_method()
                 frame = task.get_top_frame()
+                pc = frame.get_pc()
+                method = task.get_current_method()
 
-                still_in_frame = frame is last_frame
-                if pc < last_pc and still_in_frame:
+                still_in_function = method is last_function
+                if pc < last_pc and still_in_function:
                     self._can_enter_jit(pc, method, task, frame)
 
                 jitdriver.jit_merge_point(
@@ -153,7 +153,7 @@ class ThreadLocalSched(object):
                     )
 
                 last_pc = pc
-                last_frame = frame
+                last_function = method
 
                 should_continue = self.interpreter.interpreter_step(pc, method, frame, task)
 
