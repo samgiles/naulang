@@ -9,7 +9,12 @@ from rpython.rlib import jit, rrandom
 
 
 def get_printable_location(pc, sched, method):
-    return "%d: %s" % (pc, bytecode_names[method.get_bytecode(pc)])
+    if method.sourcemap is not None:
+        lineno = str(method.sourcemap.get(pc).lineno)
+    else:
+        lineno = "not available"
+
+    return "%d: %s (line: %s)" % (pc, bytecode_names[method.get_bytecode(pc)], lineno)
 
 jitdriver = jit.JitDriver(
         greens=['pc', 'sched', 'method'],
@@ -169,7 +174,6 @@ class ThreadLocalSched(object):
 
     def run(self):
         while True:
-            taskjitdriver.jit_merge_point(sched=self)
 
             task = self._get_next_task()
             if task is None:
