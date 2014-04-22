@@ -33,18 +33,17 @@ let run_prime_sieve = fn(n) {
 }
 
 
-let primes_to = 1000
+let primes_to = 100
 
 let warmup = 100
 let i = 0
 while i < warmup {
 	i = i + 1
-	print i
-	let checksum = run_prime_sieve(1000)
+	let checksum = run_prime_sieve(100)
 }
 
 let totaltime = 0
-let iterations = 10
+let iterations = 1
 let i = 0
 while i < iterations {
 	i = i + 1
