@@ -1,6 +1,6 @@
-from wlvlang.interpreter.objectspace.primitives.builtin_definitions import builtin_functions
+from naulang.interpreter.objectspace.primitives.builtin_definitions import builtin_functions
 
-from wlvlang.interpreter.objectspace.builtin import BuiltIn
+from naulang.interpreter.objectspace.builtin import BuiltIn
 
 def initialise_primitives(space):
 

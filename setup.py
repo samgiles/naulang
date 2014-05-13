@@ -2,12 +2,12 @@
 
 from distutils.core import setup
 
-setup(name='wlvlang',
+setup(name='naulang',
       version='0.0',
       description='Programming Language created using RPython',
       author='Samuel Giles',
       author_email='s.giles@wlv.ac.uk',
       license='GPLv2',
       url='',
-      packages=['wlvlang', 'wlvlang.compiler'],
+      packages=['naulang', 'naulang.compiler'],
      )

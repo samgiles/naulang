@@ -1,9 +1,9 @@
-from wlvlang.compiler.context import FunctionCompilerContext
-from wlvlang.compiler import ast
-from wlvlang.compiler.error import CompilerException
+from naulang.compiler.context import FunctionCompilerContext
+from naulang.compiler import ast
+from naulang.compiler.error import CompilerException
 
-from wlvlang.interpreter.bytecode import Bytecode
-from wlvlang.interpreter.objectspace.primitives.builtin_definitions import builtin_functions
+from naulang.interpreter.bytecode import Bytecode
+from naulang.interpreter.objectspace.primitives.builtin_definitions import builtin_functions
 
 _builtin_functions = builtin_functions()
 

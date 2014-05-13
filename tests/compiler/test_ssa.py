@@ -1,6 +1,6 @@
-from wlvlang.compiler.ssa import SSAGen
-from wlvlang.compiler import ast
-from wlvlang.interpreter.space import ObjectSpace
+from naulang.compiler.ssa import SSAGen
+from naulang.compiler import ast
+from naulang.interpreter.space import ObjectSpace
 
 def create_tac_generator():
     return SSAGen(ObjectSpace())

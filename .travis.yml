@@ -13,5 +13,5 @@ script:
     - make test_all PYPYPATH=./pypy
     - make compile PYPYPATH=./pypy
     - make test_all_compiled PYPYPATH=./pypy
-    - make wlvlang-jit PYPYPATH=./pypy
+    - make naulang-jit PYPYPATH=./pypy
     - make test_all_jit PYPYPATH=./pypy

@@ -1,14 +1,14 @@
 import pytest
-from wlvlang.compiler import ast
-from wlvlang.compiler.context import FunctionCompilerContext
-from wlvlang.compiler.compiler import SyntaxDirectedTranslator
+from naulang.compiler import ast
+from naulang.compiler.context import FunctionCompilerContext
+from naulang.compiler.compiler import SyntaxDirectedTranslator
 
-from wlvlang.interpreter.space import ObjectSpace
-from wlvlang.interpreter.bytecode import Bytecode
+from naulang.interpreter.space import ObjectSpace
+from naulang.interpreter.bytecode import Bytecode
 
-from wlvlang.interpreter.objectspace.integer import Integer
-from wlvlang.interpreter.objectspace.float import Float
-from wlvlang.interpreter.objectspace.boolean import Boolean
+from naulang.interpreter.objectspace.integer import Integer
+from naulang.interpreter.objectspace.float import Float
+from naulang.interpreter.objectspace.boolean import Boolean
 
 class DummyCompilationUnit(ast.Node):
     def __init__(self, code_to_emit):

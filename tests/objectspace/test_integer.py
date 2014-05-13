@@ -1,13 +1,13 @@
 import pytest
 
-from wlvlang.interpreter.frame import Frame
+from naulang.interpreter.frame import Frame
 
-from wlvlang.interpreter.objectspace.integer import Integer
-from wlvlang.interpreter.objectspace.boolean import Boolean
-from wlvlang.interpreter.objectspace.method import Method
+from naulang.interpreter.objectspace.integer import Integer
+from naulang.interpreter.objectspace.boolean import Boolean
+from naulang.interpreter.objectspace.method import Method
 
-from wlvlang.interpreter.interpreter import Interpreter
-from wlvlang.interpreter.space import ObjectSpace
+from naulang.interpreter.interpreter import Interpreter
+from naulang.interpreter.space import ObjectSpace
 
 def test_get_value():
     subject = Integer(42)

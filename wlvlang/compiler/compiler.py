@@ -2,14 +2,14 @@ import os
 
 from rply.errors import ParsingError
 
-from wlvlang.compiler.lexer import get_lexer
-from wlvlang.compiler.parser import create_parser
-from wlvlang.compiler.context import FunctionCompilerContext
-from wlvlang.compiler.translator import SyntaxDirectedTranslator
-from wlvlang.compiler.error import CompilerException
+from naulang.compiler.lexer import get_lexer
+from naulang.compiler.parser import create_parser
+from naulang.compiler.context import FunctionCompilerContext
+from naulang.compiler.translator import SyntaxDirectedTranslator
+from naulang.compiler.error import CompilerException
 
-from wlvlang.interpreter.bytecode import Bytecode
-from wlvlang.interpreter.error import ErrorDisplay, NauRuntimeError
+from naulang.interpreter.bytecode import Bytecode
+from naulang.interpreter.error import ErrorDisplay, NauRuntimeError
 
 from rpython.rlib.streamio import open_file_as_stream
 

@@ -1,11 +1,11 @@
-from wlvlang.interpreter.objectspace.integer import Integer
-from wlvlang.interpreter.objectspace.float import Float
-from wlvlang.interpreter.objectspace.boolean import Boolean
-from wlvlang.interpreter.objectspace.string import String
-from wlvlang.interpreter.objectspace.array import Array
-from wlvlang.interpreter.objectspace.channel import BasicChannel, SyncChannel
+from naulang.interpreter.objectspace.integer import Integer
+from naulang.interpreter.objectspace.float import Float
+from naulang.interpreter.objectspace.boolean import Boolean
+from naulang.interpreter.objectspace.string import String
+from naulang.interpreter.objectspace.array import Array
+from naulang.interpreter.objectspace.channel import BasicChannel, SyncChannel
 
-from wlvlang.interpreter.objectspace.primitives.primitives import initialise_primitives
+from naulang.interpreter.objectspace.primitives.primitives import initialise_primitives
 
 from rpython.rlib import jit
 

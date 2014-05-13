@@ -1,6 +1,6 @@
-from wlvlang.compiler.context import FunctionCompilerContext
-from wlvlang.interpreter.bytecode import Bytecode
-from wlvlang.interpreter.objectspace.integer import Integer
+from naulang.compiler.context import FunctionCompilerContext
+from naulang.interpreter.bytecode import Bytecode
+from naulang.interpreter.objectspace.integer import Integer
 def test_calculate_stack_depth():
     ctx = FunctionCompilerContext(None)
     code = [

@@ -1,7 +1,7 @@
 import py
 
-from wlvlang.runtime.executioncontext import ThreadLocalSched, Task, Universe
-from wlvlang.interpreter.space import ObjectSpace
+from naulang.runtime.executioncontext import ThreadLocalSched, Task, Universe
+from naulang.interpreter.space import ObjectSpace
 
 def test_add_task():
     """ Expected:

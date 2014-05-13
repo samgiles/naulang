@@ -1,5 +1,5 @@
-from wlvlang.interpreter.objectspace.object import Object
-from wlvlang.interpreter.error import NauRuntimeError
+from naulang.interpreter.objectspace.object import Object
+from naulang.interpreter.error import NauRuntimeError
 
 class Array(Object):
 

@@ -3,4 +3,4 @@
 unset CDPATH
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd)"
 cd $DIR/../
-PYTHONPATH={PYTHON_PATH} python wlvlang/targetstandalone.py $@
+PYTHONPATH={PYTHON_PATH} python naulang/targetstandalone.py $@

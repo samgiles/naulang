@@ -1,9 +1,9 @@
 import os
-from wlvlang.compiler import compiler
-from wlvlang.interpreter.space import ObjectSpace
-from wlvlang.runtime.executioncontext import  Universe
+from naulang.compiler import compiler
+from naulang.interpreter.space import ObjectSpace
+from naulang.runtime.executioncontext import  Universe
 
-from wlvlang.interpreter.error import ErrorDisplay, NauRuntimeError
+from naulang.interpreter.error import ErrorDisplay, NauRuntimeError
 
 def _create_space():
     return ObjectSpace()
@@ -14,7 +14,7 @@ def _main(args):
 
     if len(args) < 2:
         os.write(2, "No source file given\n")
-        os.write(2, "    The first argument should be a wlvlang source code file\n")
+        os.write(2, "    The first argument should be a naulang source code file\n")
         return 1
 
     error_displayer = ErrorDisplay("")

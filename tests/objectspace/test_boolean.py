@@ -1,9 +1,9 @@
-from wlvlang.interpreter.frame import Frame
-from wlvlang.interpreter.interpreter import Interpreter
-from wlvlang.interpreter.space import ObjectSpace
+from naulang.interpreter.frame import Frame
+from naulang.interpreter.interpreter import Interpreter
+from naulang.interpreter.space import ObjectSpace
 
-from wlvlang.interpreter.objectspace.method import Method
-from wlvlang.interpreter.objectspace.boolean import Boolean
+from naulang.interpreter.objectspace.method import Method
+from naulang.interpreter.objectspace.boolean import Boolean
 
 def test_get_value():
     subjecta = Boolean(True)

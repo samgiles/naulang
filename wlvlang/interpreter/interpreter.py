@@ -1,10 +1,10 @@
-from wlvlang.interpreter.bytecode import Bytecode
+from naulang.interpreter.bytecode import Bytecode
 
-from wlvlang.interpreter.objectspace.array import Array
-from wlvlang.interpreter.objectspace.primitive_object import PrimitiveObject
-from wlvlang.interpreter.objectspace.channel import ChannelInterface, YieldException, SuspendException
-from wlvlang.interpreter.objectspace.method import Method
-from wlvlang.interpreter.objectspace.builtin import BuiltIn
+from naulang.interpreter.objectspace.array import Array
+from naulang.interpreter.objectspace.primitive_object import PrimitiveObject
+from naulang.interpreter.objectspace.channel import ChannelInterface, YieldException, SuspendException
+from naulang.interpreter.objectspace.method import Method
+from naulang.interpreter.objectspace.builtin import BuiltIn
 
 from rpython.rlib import jit
 

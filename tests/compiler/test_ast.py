@@ -1,7 +1,7 @@
-from wlvlang.compiler import ast
+from naulang.compiler import ast
 
-from wlvlang.interpreter.objectspace.integer import Integer
-from wlvlang.interpreter.objectspace.boolean import Boolean
+from naulang.interpreter.objectspace.integer import Integer
+from naulang.interpreter.objectspace.boolean import Boolean
 
 class DummyNode(ast.Node):
 

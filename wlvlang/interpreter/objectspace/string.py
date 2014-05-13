@@ -1,4 +1,4 @@
-from wlvlang.interpreter.objectspace.primitive_object import PrimitiveObject
+from naulang.interpreter.objectspace.primitive_object import PrimitiveObject
 
 class String(PrimitiveObject):
 

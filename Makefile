@@ -5,37 +5,37 @@ RPYTHON?=$(PYPYPATH)/rpython/bin/rpython
 
 all: test_all
 
-compile: bin/wlvlang-python wlvlang-no-jit
+compile: bin/naulang-python naulang-no-jit
 
-wlvlang-no-jit:
+naulang-no-jit:
 	@mkdir -p bin/
-	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch wlvlang/targetstandalone.py
-	@mv ./wlvlang-nojit ./bin/
+	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch naulang/targetstandalone.py
+	@mv ./naulang-nojit ./bin/
 
-wlvlang-jit:
+naulang-jit:
 	@mkdir -p bin/
-	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch -Ojit wlvlang/targetstandalone.py
-	@mv ./wlvlang-jit ./bin/
+	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(RPYTHON) --batch -Ojit naulang/targetstandalone.py
+	@mv ./naulang-jit ./bin/
 
-bin/wlvlang-python:
+bin/naulang-python:
 	@mkdir -p bin/
-	@cat ./wlvlang/wlvlang-python.template | sed 's,{PYTHON_PATH},$(PYTHONPATH):$(PYPYPATH):.,g' > ./bin/wlvlang-python
-	@chmod +x bin/wlvlang-python
+	@cat ./naulang/naulang-python.template | sed 's,{PYTHON_PATH},$(PYTHONPATH):$(PYPYPATH):.,g' > ./bin/naulang-python
+	@chmod +x bin/naulang-python
 
 createdist:
 	python setup.py sdist
 
-test_all: bin/wlvlang-python
+test_all: bin/naulang-python
 	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/**/test_*.py
-	tests/functional/wlvtest.py ./bin/wlvlang-python ./tests/functional
+	tests/functional/wlvtest.py ./bin/naulang-python ./tests/functional
 
 test_all_compiled:
 	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/**/test_*.py
-	tests/functional/wlvtest.py ./bin/wlvlang-nojit ./tests/functional
+	tests/functional/wlvtest.py ./bin/naulang-nojit ./tests/functional
 
 test_all_jit:
 	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/**/test_*.py
-	tests/functional/wlvtest.py ./bin/wlvlang-jit ./tests/functional
+	tests/functional/wlvtest.py ./bin/naulang-jit ./tests/functional
 
 test_compiler:
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/compiler/test_*.py
@@ -49,8 +49,8 @@ test_objectspace:
 test_runtime:
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/runtime/test_*.py
 
-test_functional: bin/wlvlang-python
-	tests/functional/wlvtest.py --xml ./bin/wlvlang-python ./tests/functional
+test_functional: bin/naulang-python
+	tests/functional/wlvtest.py --xml ./bin/naulang-python ./tests/functional
 
 build_extras:
 	go build -ldflags='-s' tests/benchmarks/baselines/tokenring.go

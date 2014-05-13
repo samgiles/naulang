@@ -1,4 +1,4 @@
-from wlvlang.compiler.ast import Operator, ASTVisitor
+from naulang.compiler.ast import Operator, ASTVisitor
 
 class Block(object):
 

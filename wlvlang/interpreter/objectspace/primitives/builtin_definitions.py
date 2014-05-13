@@ -1,8 +1,8 @@
 import time
 
-from wlvlang.interpreter.objectspace.string import String
-from wlvlang.interpreter.objectspace.float import Float
-from wlvlang.interpreter.objectspace.integer import Integer
+from naulang.interpreter.objectspace.string import String
+from naulang.interpreter.objectspace.float import Float
+from naulang.interpreter.objectspace.integer import Integer
 
 from rpython.rlib.rarithmetic import ovfcheck_float_to_int
 

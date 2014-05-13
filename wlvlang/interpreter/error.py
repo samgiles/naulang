@@ -1,5 +1,5 @@
 import os
-from wlvlang.interpreter.bytecode import bytecode_names
+from naulang.interpreter.bytecode import bytecode_names
 
 class NauRuntimeError(Exception):
     def __init__(self, message, method=None, pc=-1, frame=None):

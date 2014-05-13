@@ -1,14 +1,14 @@
 
-from wlvlang.interpreter.interpreter import Interpreter
-from wlvlang.interpreter.frame import Frame
-from wlvlang.interpreter.bytecode import Bytecode
-from wlvlang.interpreter.space import ObjectSpace
+from naulang.interpreter.interpreter import Interpreter
+from naulang.interpreter.frame import Frame
+from naulang.interpreter.bytecode import Bytecode
+from naulang.interpreter.space import ObjectSpace
 
-from wlvlang.interpreter.objectspace.integer import Integer
-from wlvlang.interpreter.objectspace.method import Method
-from wlvlang.interpreter.objectspace.array import Array
+from naulang.interpreter.objectspace.integer import Integer
+from naulang.interpreter.objectspace.method import Method
+from naulang.interpreter.objectspace.array import Array
 
-from wlvlang.runtime.executioncontext import Task
+from naulang.runtime.executioncontext import Task
 
 def create_test_method(literals, locals, bytecode):
     """ create_test_method(literals, locals, bytecode) """
