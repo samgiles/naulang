@@ -13,6 +13,9 @@ class FunctionCompilerContext(object):
         self.parameter_count = 0
         self.bytecode = []
         self.outer = outer
+
+        # This maintains the symbol table. When an identifier is encountered
+        # it is entered into this dictionary with a unique numeric identifier
         self.id_to_number = {}
         self.inner_contexts = []
 
@@ -128,7 +131,9 @@ class FunctionCompilerContext(object):
         for i in range(0, len(literals)):
             literals[i] = self.literals[i]
 
-        return Method(literals, len(locals), bytecode, stack_depth, argument_count=self.parameter_count, source_map=self.sourcemap)
+        return Method(literals, len(locals), bytecode,
+                      stack_depth, argument_count=self.parameter_count,
+                      source_map=self.sourcemap)
 
     def _calculate_stack_depth(self, finalized_bytecode):
         max_depth = 0
@@ -159,8 +164,8 @@ class FunctionCompilerContext(object):
 
     def get_bytecode(self):
         """
-            Get the bytecode representation of this function context with any optimisations or
-            label applications applied.
+            Get the bytecode representation of this function context with any
+            optimisations or labels applied.
         """
         return self._add_labels(self.bytecode)
 
@@ -266,6 +271,8 @@ class FunctionCompilerContext(object):
         """
             Update the bytecode with added labels
         """
+        # TODO: This is a bit of a mess: we should use the Bytecode size
+        # information in Bytecode here
         bytecodes = [0] * len(bytecode)
         i = 0
         while i < len(self.bytecode):

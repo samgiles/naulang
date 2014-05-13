@@ -1,8 +1,25 @@
 from rpython.rlib import jit
 
 class Bytecode(object):
+    # Halt the current function activation.
+    # This is analogous to a 'return' statement
+    # without a return expression.
+    # HALT;
     HALT            = 0
+
+    # Load Constant loads a constant literal from the
+    # stack frame for the currently executing frame.
+    # The value is placed on the top of the stack.
+    # It takes a single argument pointing to the
+    # offset in the literal array for the frame.
+    # LOAD_CONST [literal];
     LOAD_CONST      = 1
+
+    # Load loads the data stored in a name.  At compile
+    # time a name is assigned a numeric value within each
+    # function, then, at runtime these names are referred
+    # to using its offset.
+    # LOAD [variable];
     LOAD            = 2
     STORE           = 3
     OR              = 4

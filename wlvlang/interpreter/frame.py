@@ -98,11 +98,20 @@ class Frame(Object):
         return frame
 
     def get_dynamic_at(self, index, level):
+        """ The compiler can statically determine scope access
+            (hence static scoping).  Therefore, for efficient access
+            to variables outside of the scope a 'dynamic' load and store
+            bytecode is available.  If this was using some sort of 'Display'
+            mechanism we could perform the lookup in constant time rather than
+            linear time (as it is here).  See Bytecode.STORE_DYNAMIC and
+            Bytecode.LOAD_DYNAMIC.
+        """
         frame = self._get_frame_at_level(level)
         if frame: return frame.get_local_at(index)
 
         return None
 
     def set_dynamic_at(self, index, level, value):
+        """ See get_dynamic_at """
         frame = self._get_frame_at_level(level)
         return frame.set_local_at(index, value)
