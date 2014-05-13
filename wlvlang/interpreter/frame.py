@@ -50,7 +50,8 @@ class Frame(Object):
         self.previous_frame = previous
 
     def get_access_link(self):
-        """ Get the access link for this object (if it has one).  Returns None if it does not """
+        """ Get the access link for this object (if it has one).
+            Returns None if it does not """
         return self.access_link;
 
     def is_root_frame(self):
