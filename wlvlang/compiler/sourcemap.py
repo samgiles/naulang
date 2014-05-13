@@ -1,8 +1,8 @@
-"""
-    Maps a bytecode list for a method to line numbers and column numbers.
-"""
-
 class SourceMap(object):
+    """
+        Maps a sequence of bytecodes for a method to
+        line numbers and column numbers.
+    """
 
     def __init__(self):
         self.source_to_bytecode_map = {}
