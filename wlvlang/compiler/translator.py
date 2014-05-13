@@ -8,6 +8,49 @@ from wlvlang.interpreter.objectspace.primitives.builtin_definitions import built
 _builtin_functions = builtin_functions()
 
 class SyntaxDirectedTranslator(ast.ASTVisitor):
+    """ Translate an AST to a function object graph.
+
+        This doesn't emit pure bytecode, literals and symbol tables. Instead it
+        uses the AST to build a tree of Method objects using the
+        FunctionCompilerContext. Each time a function expression is encountered
+        in the AST, a new FunctionCompilerContext is created and a new
+        translator is created and invoked on the function subtree, this means
+        the tree structure of the function defnitions is recursively translated
+        into a tree of method objects.  Inner functions are stored as literals
+        in its containing function to be referenced with LOAD_CONST bytecodes
+        in the same way that all data is referenced. This allows us to use
+        functions, as first class data types and gives rise to the 'lambda'
+        style syntax of function composition:
+
+            let f = fn(b, x) {
+                return b(fn(y) {
+                    return x + y
+                })
+            }
+
+            print f(fn(x) {
+                return x(10)
+            }, 15)
+
+        Output: 25  (the sum of 10 and 15 [in a somewhat contrived way])
+
+
+        The translator would create 4 Method objects in this instance. One for
+        the containing 'main' function.  One for the function assigned to f,
+        within that function there is another that is used to pass into the
+        function in 'b'.
+
+        Another contained in the main function is the function that returns
+        x(10). The structure created would look something like the following:
+
+        [ MAIN ]
+           |
+           |------ fn(b,x) { ... }
+           |          |
+           |          |----- fn(y) { ... }
+           |
+           |------ fn(x) { ... }
+    """
 
     def __init__(self, compiler_context):
         self.context = compiler_context
