@@ -9,8 +9,8 @@ from signal import alarm, signal, SIGALRM, SIGKILL
 from subprocess import PIPE, Popen
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='Run a suite of programs in a wlvlang interpreter and report on failure states.')
-    parser.add_argument('wlvlang_interpreter', nargs=1,
+    parser = argparse.ArgumentParser(description='Run a suite of programs in a naulang interpreter and report on failure states.')
+    parser.add_argument('naulang_interpreter', nargs=1,
                        help='the interpreter executable to use to run the programs against')
     args = parser.parse_args()
     return args
@@ -54,7 +54,7 @@ def get_process_children(pid):
 if __name__ == '__main__':
     args = parse_arguments()
 
-    executable = args.wlvlang_interpreter[0]
+    executable = args.naulang_interpreter[0]
 
     test_files = [
         "sources/test_simple.wl",

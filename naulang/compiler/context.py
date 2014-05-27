@@ -1,6 +1,6 @@
-from wlvlang.interpreter.objectspace.method import Method
-from wlvlang.interpreter.bytecode import Bytecode, get_stack_effect, stack_effect_depends_on_args, get_bytecode_length
-from wlvlang.compiler.sourcemap import SourceMap
+from naulang.interpreter.objectspace.method import Method
+from naulang.interpreter.bytecode import Bytecode, get_stack_effect, stack_effect_depends_on_args, get_bytecode_length
+from naulang.compiler.sourcemap import SourceMap
 
 class FunctionCompilerContext(object):
     """ Context used for compiling a function """

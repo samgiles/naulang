@@ -12,8 +12,8 @@ from signal import alarm, signal, SIGALRM, SIGKILL
 from subprocess import PIPE, Popen
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='Run a suite of programs in a wlvlang interpreter and test output against expected values.')
-    parser.add_argument('wlvlang_interpreter', nargs=1,
+    parser = argparse.ArgumentParser(description='Run a suite of programs in a naulang interpreter and test output against expected values.')
+    parser.add_argument('naulang_interpreter', nargs=1,
                        help='the interpreter executable to use to run the programs against')
     parser.add_argument('test_directory', nargs=1, help='the directory in which the .wlt files exist')
     parser.add_argument("--xml", help="output JUnit style XML", action="store_true")
@@ -57,7 +57,7 @@ def get_process_children(pid):
 if __name__ == '__main__':
     args = parse_arguments()
 
-    executable = args.wlvlang_interpreter[0]
+    executable = args.naulang_interpreter[0]
     test_directory = args.test_directory[0]
     xml_out = args.xml
     test_cases = []

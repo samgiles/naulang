@@ -1,4 +1,4 @@
-from wlvlang.interpreter.objectspace.object import Object
+from naulang.interpreter.objectspace.object import Object
 
 class BuiltIn(Object):
     """ Defines a primitive invokable method """

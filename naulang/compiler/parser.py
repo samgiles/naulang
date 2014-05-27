@@ -1,8 +1,8 @@
 from rply import ParserGenerator
 from rply.errors import ParsingError
 
-from wlvlang.compiler import ast
-from wlvlang.compiler.lexer import get_tokens, get_lexer
+from naulang.compiler import ast
+from naulang.compiler.lexer import get_tokens, get_lexer
 
 tokentypes, _ = zip(*get_tokens())
 
@@ -17,7 +17,7 @@ pg = ParserGenerator(tokentypes,
                          ("nonassoc", ["LT", "GT", "LTEQ", "GTEQ"]),
                          ("left", ["PLUS", "MINUS"]),
                          ("left", ["MUL", "DIV", "MOD"]),
-                     ], cache_id="wlvlang-parser-test")
+                     ], cache_id="naulang-parser-test")
 
 @pg.production("main : statement_block")
 def main(p):

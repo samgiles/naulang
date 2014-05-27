@@ -1,4 +1,4 @@
-from wlvlang.interpreter.objectspace.object import Object
+from naulang.interpreter.objectspace.object import Object
 
 from rpython.rlib.rarithmetic import r_uint
 from rpython.rlib import jit
@@ -33,7 +33,7 @@ class Frame(Object):
 
     @jit.unroll_safe
     def _set_up_local_methods(self):
-        from wlvlang.interpreter.objectspace.method import Method
+        from naulang.interpreter.objectspace.method import Method
         for i in range(0, len(self._literals)):
             if isinstance(self._literals[i], Method):
                 self._literals[i] = self._literals[i].copy()

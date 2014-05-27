@@ -1,4 +1,4 @@
-from wlvlang.interpreter.objectspace.object import Object
+from naulang.interpreter.objectspace.object import Object
 
 from rpythonex.rdequeue import CircularWorkStealingDeque
 from rpythonex.rcircular import CircularArray

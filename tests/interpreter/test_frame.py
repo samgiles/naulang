@@ -1,5 +1,5 @@
-from wlvlang.interpreter.frame import Frame
-from wlvlang.interpreter.objectspace.method import Method
+from naulang.interpreter.frame import Frame
+from naulang.interpreter.objectspace.method import Method
 
 def test_is_root_frame():
     method = Method([], 0, [], 10)

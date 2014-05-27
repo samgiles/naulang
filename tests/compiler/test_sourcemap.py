@@ -1,4 +1,4 @@
-from wlvlang.compiler.sourcemap import SourceMap
+from naulang.compiler.sourcemap import SourceMap
 
 class DummyCodePosition:
     def __init__(self, val):

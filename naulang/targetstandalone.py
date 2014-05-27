@@ -1,14 +1,14 @@
 import sys
-from wlvlang.main import main
+from naulang.main import main
 
 def entry_point(argv):
     return main(argv)
 
 def target(driver, args):
     if driver.config.translation.jit:
-        driver.exe_name = "wlvlang-jit"
+        driver.exe_name = "naulang-jit"
     else:
-        driver.exe_name = "wlvlang-nojit"
+        driver.exe_name = "naulang-nojit"
     return entry_point
 
 def jitpolicy(driver):

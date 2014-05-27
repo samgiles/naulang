@@ -1,6 +1,6 @@
-from wlvlang.interpreter.objectspace.primitive_object import PrimitiveObject
-from wlvlang.interpreter.objectspace.number import Number
-from wlvlang.interpreter.error import NauRuntimeError
+from naulang.interpreter.objectspace.primitive_object import PrimitiveObject
+from naulang.interpreter.objectspace.number import Number
+from naulang.interpreter.error import NauRuntimeError
 
 from rpython.rlib.rfloat import double_to_string
 
@@ -28,8 +28,8 @@ class Float(PrimitiveObject):
         return isinstance(other, Float) and self.value == other.value
 
     def _get_left_and_right(self, activation_record):
-        from wlvlang.interpreter.objectspace.integer import Integer
-        from wlvlang.interpreter.objectspace.float import Float
+        from naulang.interpreter.objectspace.integer import Integer
+        from naulang.interpreter.objectspace.float import Float
         left = activation_record.pop()
         right = activation_record.pop()
 
@@ -91,8 +91,8 @@ class Float(PrimitiveObject):
         activation_record.push(space.new_boolean(result))
 
     def w_neg(self, activation_record, space):
-        from wlvlang.interpreter.objectspace.integer import Integer
-        from wlvlang.interpreter.objectspace.float import Float
+        from naulang.interpreter.objectspace.integer import Integer
+        from naulang.interpreter.objectspace.float import Float
         top = activation_record.pop()
 
         if isinstance(top, Float):

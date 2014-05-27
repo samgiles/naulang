@@ -1,7 +1,7 @@
 import pytest
 
-from wlvlang.compiler.compiler import parse
-from wlvlang.compiler import ast
+from naulang.compiler.compiler import parse
+from naulang.compiler import ast
 
 def test_parse_constant_integer():
     assert parse("0") == ast.Block([ast.IntegerConstant(0)])

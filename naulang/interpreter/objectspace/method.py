@@ -1,9 +1,9 @@
-from wlvlang.interpreter.objectspace.object import Object
-from wlvlang.interpreter.frame import Frame
+from naulang.interpreter.objectspace.object import Object
+from naulang.interpreter.frame import Frame
 from rpython.rlib import jit
 
 class Method(Object):
-    """ Defines a Method in wlvlang. """
+    """ Defines a Method in naulang. """
 
     _immutable_fields_ = [
             "locals",
@@ -52,7 +52,7 @@ class Method(Object):
         return new_frame
 
     def async_invoke(self, task):
-        from wlvlang.runtime.executioncontext import Task
+        from naulang.runtime.executioncontext import Task
         frame = self._create_new_frame(previous_frame=task.get_top_frame(), is_async=True)
         new_task = Task(task.sched, parent=task)
         new_task.set_top_frame(frame)

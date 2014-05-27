@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/samgiles/naulang.svg?branch=master)](https://travis-ci.org/samgiles/naulang)
 
-In process of renaming from wlvlang to naulang.
+In process of renaming from naulang to naulang.
 
 naulang is an experimental language and interpreter implementation written in RPython.
 
@@ -36,6 +36,6 @@ This takes ~60s on an Intel 4770k processor with 8GB RAM on Ubuntu 13.10.
 
 To build the JITed interpreter run:
 
-`make wlvlang-jit PYPYPATH=path/to/your/pypy`
+`make naulang-jit PYPYPATH=path/to/your/pypy`
 
 This takes ~250s on an Intel 4770k processor with 8GB RAM on Ubuntu 13.10.
