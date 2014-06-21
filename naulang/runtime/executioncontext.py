@@ -9,12 +9,7 @@ from rpython.rlib import jit, rrandom
 
 
 def get_printable_location(pc, sched, method):
-    if method.sourcemap is not None:
-        lineno = str(method.sourcemap.get(pc).lineno)
-    else:
-        lineno = "not available"
-
-    return "%d: %s (line: %s)" % (pc, bytecode_names[method.get_bytecode(pc)], lineno)
+    return "TODO:"
 
 jitdriver = jit.JitDriver(
         greens=['pc', 'sched', 'method'],
