@@ -2,9 +2,7 @@
 
 [![Build Status](https://travis-ci.org/samgiles/naulang.svg?branch=master)](https://travis-ci.org/samgiles/naulang)
 
-In process of renaming from naulang to naulang.
-
-naulang is an experimental language and interpreter implementation written in RPython.
+Naulang is an experimental language and interpreter implementation written in RPython.
 
 It is a piece of software complementing an undergraduate computer science dissertation.
 
