@@ -1,5 +1,3 @@
-import pytest
-
 from naulang.compiler.compiler import parse
 from naulang.compiler import ast
 

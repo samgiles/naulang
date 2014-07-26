@@ -1,7 +1,6 @@
 from naulang.interpreter.interpreter import Interpreter
 from naulang.interpreter.error import NauRuntimeError
 from naulang.interpreter.frame import Frame
-from naulang.interpreter.bytecode import bytecode_names
 from rpythonex.rdequeue import CircularWorkStealingDeque, SimpleDequeue
 from rpythonex.rcircular import CircularArray
 

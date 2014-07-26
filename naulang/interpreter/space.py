@@ -7,8 +7,6 @@ from naulang.interpreter.objectspace.channel import BasicChannel, SyncChannel
 
 from naulang.interpreter.objectspace.primitives.primitives import initialise_primitives
 
-from rpython.rlib import jit
-
 
 class ObjectSpace(object):
 

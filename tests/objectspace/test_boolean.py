@@ -1,5 +1,4 @@
 from naulang.interpreter.frame import Frame
-from naulang.interpreter.interpreter import Interpreter
 from naulang.interpreter.space import ObjectSpace
 
 from naulang.interpreter.objectspace.method import Method

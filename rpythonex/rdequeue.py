@@ -1,6 +1,4 @@
-from rpythonex.rcircular import CircularArray
 from rpythonex.ratomic import compare_and_swap
-from rpython.rtyper.lltypesystem import lltype, rffi
 
 
 class SimpleDequeue(object):

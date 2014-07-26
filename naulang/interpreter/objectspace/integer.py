@@ -1,5 +1,4 @@
 from naulang.interpreter.objectspace.primitive_object import PrimitiveObject
-from naulang.interpreter.objectspace.number import Number
 from naulang.interpreter.error import NauRuntimeError
 
 
@@ -26,7 +25,6 @@ class Integer(PrimitiveObject):
         return isinstance(other, Integer) and self.value == other.value
 
     def _should_do_operation_as_float(self, activation_record):
-        from naulang.interpreter.objectspace.integer import Integer
         from naulang.interpreter.objectspace.float import Float
         left = activation_record.pop()
         right = activation_record.pop()
@@ -131,7 +129,6 @@ class Integer(PrimitiveObject):
         activation_record.push(space.new_boolean(result))
 
     def w_neg(self, activation_record, space):
-        from naulang.interpreter.objectspace.integer import Integer
         top = activation_record.pop()
         result = -top.get_integer_value()
         activation_record.push(space.new_integer(result))

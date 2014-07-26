@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import sys
 import argparse
-import subprocess
 import os
 import glob
 
@@ -56,7 +55,7 @@ def get_process_children(pid):
     p = Popen('ps --no-headers -o pid --ppid %d' % pid, shell=True,
               stdout=PIPE, stderr=PIPE)
     stdout, _stderr = p.communicate()
-    return [int(p) for p in stdout.split()]
+    return [int(word) for word in stdout.split()]
 
 
 if __name__ == '__main__':

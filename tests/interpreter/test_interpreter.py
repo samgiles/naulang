@@ -57,9 +57,7 @@ def test_bc_HALT():
 
 def test_bc_RETURN():
     _, interpreter, task, frame = simple_setup(
-        literals=[
-            Integer(10)], bytecode=[
-            Bytecode.LOAD_CONST, 0, Bytecode.RETURN])
+        literals=[Integer(10)], bytecode=[Bytecode.LOAD_CONST, 0, Bytecode.RETURN])
 
     parent_method = create_test_method([], 0, [Bytecode.HALT])
     parent_frame = create_frame(parent_method)
@@ -78,9 +76,7 @@ def test_bc_LOAD_CONST():
             Load a constant from the literals area of the frame on to the top of the stack
     """
     space, interpreter, task, frame = simple_setup(
-        literals=[
-            Integer(10)], locals=1, bytecode=[
-            Bytecode.LOAD_CONST, 0, Bytecode.HALT])
+        literals=[Integer(10)], locals=1, bytecode=[Bytecode.LOAD_CONST, 0, Bytecode.HALT])
 
     while _interpreter_step(interpreter, task):
         pass
@@ -194,14 +190,14 @@ def test_bc_LOAD_DYNAMIC():
     ],
         locals=2,
         bytecode=[
-        Bytecode.LOAD_CONST, 0,
-        Bytecode.STORE, 0,
-        Bytecode.LOAD_CONST, 1,
-        Bytecode.STORE, 1,
-        Bytecode.LOAD, 1,
-        Bytecode.INVOKE,
-        Bytecode.HALT
-    ])
+            Bytecode.LOAD_CONST, 0,
+            Bytecode.STORE, 0,
+            Bytecode.LOAD_CONST, 1,
+            Bytecode.STORE, 1,
+            Bytecode.LOAD, 1,
+            Bytecode.INVOKE,
+            Bytecode.HALT
+        ])
 
     frame = create_frame(method)
     task = create_task(frame)

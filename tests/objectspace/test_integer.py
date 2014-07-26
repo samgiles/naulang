@@ -1,12 +1,9 @@
-import pytest
-
 from naulang.interpreter.frame import Frame
 
 from naulang.interpreter.objectspace.integer import Integer
 from naulang.interpreter.objectspace.boolean import Boolean
 from naulang.interpreter.objectspace.method import Method
 
-from naulang.interpreter.interpreter import Interpreter
 from naulang.interpreter.space import ObjectSpace
 
 

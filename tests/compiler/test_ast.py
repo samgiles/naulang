@@ -1,8 +1,5 @@
 from naulang.compiler import ast
 
-from naulang.interpreter.objectspace.integer import Integer
-from naulang.interpreter.objectspace.boolean import Boolean
-
 
 class DummyNode(ast.Node):
 
@@ -64,27 +61,19 @@ def test_ast_lessthan():
 def test_ast_lessthanorequal():
     assert ast.LessThanOrEqual(
         DummyNode(True),
-        DummyNode(True)) == ast.LessThanOrEqual(
-        DummyNode(True),
-        DummyNode(True))
+        DummyNode(True)) == ast.LessThanOrEqual(DummyNode(True), DummyNode(True))
     assert ast.LessThanOrEqual(
         DummyNode(False),
-        DummyNode(True)) != ast.LessThanOrEqual(
-        DummyNode(True),
-        DummyNode(True))
+        DummyNode(True)) != ast.LessThanOrEqual(DummyNode(True), DummyNode(True))
 
 
 def test_ast_greaterthanorequal():
     assert ast.GreaterThanOrEqual(
         DummyNode(True),
-        DummyNode(True)) == ast.GreaterThanOrEqual(
-        DummyNode(True),
-        DummyNode(True))
+        DummyNode(True)) == ast.GreaterThanOrEqual(DummyNode(True), DummyNode(True))
     assert ast.GreaterThanOrEqual(
         DummyNode(False),
-        DummyNode(True)) != ast.GreaterThanOrEqual(
-        DummyNode(True),
-        DummyNode(True))
+        DummyNode(True)) != ast.GreaterThanOrEqual(DummyNode(True), DummyNode(True))
 
 
 def test_ast_greaterthan():

@@ -9,7 +9,7 @@ from naulang.compiler.translator import SyntaxDirectedTranslator
 from naulang.compiler.error import CompilerException
 
 from naulang.interpreter.bytecode import Bytecode
-from naulang.interpreter.error import ErrorDisplay, NauRuntimeError
+from naulang.interpreter.error import NauRuntimeError
 
 from rpython.rlib.streamio import open_file_as_stream
 

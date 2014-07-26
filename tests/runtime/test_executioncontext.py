@@ -1,5 +1,3 @@
-import py
-
 from naulang.runtime.executioncontext import ThreadLocalSched, Task, Universe
 from naulang.interpreter.space import ObjectSpace
 

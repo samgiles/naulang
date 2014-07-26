@@ -1,5 +1,4 @@
 from naulang.interpreter.objectspace.primitive_object import PrimitiveObject
-from naulang.interpreter.objectspace.number import Number
 from naulang.interpreter.error import NauRuntimeError
 
 from rpython.rlib.rfloat import double_to_string
@@ -92,7 +91,6 @@ class Float(PrimitiveObject):
         activation_record.push(space.new_boolean(result))
 
     def w_neg(self, activation_record, space):
-        from naulang.interpreter.objectspace.integer import Integer
         from naulang.interpreter.objectspace.float import Float
         top = activation_record.pop()
 
