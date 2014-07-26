@@ -17,7 +17,7 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         FunctionCompilerContext. Each time a function expression is encountered
         in the AST, a new FunctionCompilerContext is created and a new
         translator is created and invoked on the function subtree, this means
-        the tree structure of the function defnitions is recursively translated
+        the tree structure of the function definitions is recursively translated
         into a tree of method objects.  Inner functions are stored as literals
         in its containing function to be referenced with LOAD_CONST bytecodes
         in the same way that all data is referenced. This allows us to use
