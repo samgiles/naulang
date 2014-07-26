@@ -27,15 +27,15 @@ createdist:
 
 test_all: bin/naulang-python
 	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/**/test_*.py
-	tests/functional/wlvtest.py ./bin/naulang-python ./tests/functional
+	tests/functional/nautest.py ./bin/naulang-python ./tests/functional
 
 test_all_compiled:
 	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/**/test_*.py
-	tests/functional/wlvtest.py ./bin/naulang-nojit ./tests/functional
+	tests/functional/nautest.py ./bin/naulang-nojit ./tests/functional
 
 test_all_jit:
 	PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/**/test_*.py
-	tests/functional/wlvtest.py ./bin/naulang-jit ./tests/functional
+	tests/functional/nautest.py ./bin/naulang-jit ./tests/functional
 
 test_compiler:
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/compiler/test_*.py
@@ -50,7 +50,7 @@ test_runtime:
 	@PYTHONPATH=$(PYTHONPATH):$(PYPYPATH):. $(PYTEST) $(PYTESTARGS) tests/runtime/test_*.py
 
 test_functional: bin/naulang-python
-	tests/functional/wlvtest.py --xml ./bin/naulang-python ./tests/functional
+	tests/functional/nautest.py --xml ./bin/naulang-python ./tests/functional
 
 build_extras:
 	go build -ldflags='-s' tests/benchmarks/baselines/tokenring.go
