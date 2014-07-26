@@ -70,4 +70,6 @@ clean:
 	rm -rf dist/
 	rm -rf build/
 
-.PHONY: createdist pep8 pep8_verbose
+.PHONY: createdist pep8 pep8_verbose clean build build_extras all compile \
+	naulang-nojit naulang-jit test_all test_all_compiled test_all_jit \
+	test_compiler test_interpreter test_functional test_objectspace test_runtime
