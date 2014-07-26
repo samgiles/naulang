@@ -2,6 +2,7 @@ PYPYPATH?=~/code/python/pypy/
 PYTEST?=py.test
 PYTESTARGS=
 RPYTHON?=$(PYPYPATH)/rpython/bin/rpython
+PEP8SCRIPT?=/usr/local/bin/pep8
 
 all: test_all
 
@@ -52,6 +53,12 @@ test_runtime:
 test_functional: bin/naulang-python
 	tests/functional/nautest.py --xml ./bin/naulang-python ./tests/functional
 
+pep8:
+	@echo `find . -name \*.py -exec $(PEP8SCRIPT) {} \; | wc -l` PEP8 violations in this repository
+
+pep8_verbose:
+	@find . -name \*.py -exec $(PEP8SCRIPT) {} \;
+
 build_extras:
 	go build -ldflags='-s' tests/benchmarks/baselines/tokenring.go
 	mv ./tokenring ./tokenring-go
@@ -63,4 +70,4 @@ clean:
 	rm -rf dist/
 	rm -rf build/
 
-.PHONY: createdist
+.PHONY: createdist pep8 pep8_verbose
