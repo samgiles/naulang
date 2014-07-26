@@ -140,7 +140,7 @@ class Interpreter(object):
             pc += 1
             jmp_to = method.get_bytecode(pc)
             condition = frame.pop()
-            if condition.get_boolean_value() == False:
+            if not condition.get_boolean_value():
                 pc = jmp_to
             else:
                 pc += 1

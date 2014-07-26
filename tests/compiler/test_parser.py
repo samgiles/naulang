@@ -101,7 +101,9 @@ def test_while_statement():
     assert(parse("""while true {
         100
         200
-    }""") == ast.Block([ast.WhileStatement(ast.BooleanConstant(True), ast.Block([ast.IntegerConstant(100), ast.IntegerConstant(200)]))]))
+    }""") == ast.Block([ast.WhileStatement(ast.BooleanConstant(True),
+                                           ast.Block([ast.IntegerConstant(100),
+                                                      ast.IntegerConstant(200)]))]))
 
 
 def test_print_statement():
@@ -116,7 +118,8 @@ def test_boolean_literal():
 def test_function_expression():
     assert parse("""fn(a, b) {
             100
-        }""") == ast.Block([ast.FunctionExpression(ast.ParameterList(['a', 'b']), ast.Block([ast.IntegerConstant(100)]))])
+        }""") == ast.Block([ast.FunctionExpression(ast.ParameterList(['a', 'b']),
+                                                   ast.Block([ast.IntegerConstant(100)]))])
 
 
 def test_function_expression_one_arg():
@@ -146,7 +149,9 @@ def test_return_statement():
 
 def test_expression_assignment():
     assert parse(
-        """a = 10 * 10""") == ast.Block([ast.Assignment('a', ast.Multiply(ast.IntegerConstant(10), ast.IntegerConstant(10)))])
+        """a = 10 * 10""") == ast.Block([ast.Assignment('a',
+                                                        ast.Multiply(ast.IntegerConstant(10),
+                                                                     ast.IntegerConstant(10)))])
 
 
 def test_function_statement_noarg():
@@ -164,7 +169,9 @@ def test_function_statement_onearg():
 def test_function_statement_args():
     assert parse("""fn a(x, y, z) {
         100
-    }""") == ast.Block([ast.FunctionStatement('a', ast.ParameterList(['x', 'y', 'z']), ast.Block([ast.IntegerConstant(100)]))])
+    }""") == ast.Block([ast.FunctionStatement('a',
+                                              ast.ParameterList(['x', 'y', 'z']),
+                                              ast.Block([ast.IntegerConstant(100)]))])
 
 
 def test_array_access():
@@ -173,7 +180,9 @@ def test_array_access():
 
 def test_array_access_assignment():
     assert parse("""a[0] = 10""") == ast.Block(
-        [ast.ArrayAssignment(ast.ArrayAccess(ast.IdentifierExpression('a'), ast.IntegerConstant(0)), ast.IntegerConstant(10))])
+        [ast.ArrayAssignment(ast.ArrayAccess(ast.IdentifierExpression('a'),
+                             ast.IntegerConstant(0)),
+                             ast.IntegerConstant(10))])
 
 
 def test_scope_assignment():
@@ -253,7 +262,9 @@ def test_async_function_call():
 
 def test_parse_channel_in():
     assert parse("""channel <- 10 * 10""") == ast.Block(
-        [ast.ChannelIn(ast.IdentifierExpression('channel'), ast.Multiply(ast.IntegerConstant(10), ast.IntegerConstant(10)))])
+        [ast.ChannelIn(ast.IdentifierExpression('channel'),
+                       ast.Multiply(ast.IntegerConstant(10),
+                                    ast.IntegerConstant(10)))])
 
 
 def test_parse_channel_out():
@@ -263,4 +274,5 @@ def test_parse_channel_out():
 
 def test_parse_channel_in_out():
     assert parse(
-        """in <-<: out""") == ast.Block([ast.ChannelIn(ast.IdentifierExpression("in"), ast.ChannelOut(ast.IdentifierExpression("out")))])
+        """in <-<: out""") == ast.Block([ast.ChannelIn(ast.IdentifierExpression("in"),
+                                                       ast.ChannelOut(ast.IdentifierExpression("out")))])

@@ -10,8 +10,8 @@ def test_get_value():
     subjecta = Boolean(True)
     subjectb = Boolean(False)
 
-    assert subjecta.get_boolean_value() == True
-    assert subjectb.get_boolean_value() == False
+    assert subjecta.get_boolean_value()
+    assert not subjectb.get_boolean_value()
 
 
 def setup_primitive_test(left_val, right_val):
@@ -30,7 +30,7 @@ def test_eq_primitive_true_true():
     arec.peek().w_eq(arec, space)
 
     value = arec.pop()
-    assert value.get_boolean_value() == True
+    assert value.get_boolean_value()
 
 
 def test_eq_primitive_true_false():
@@ -39,7 +39,7 @@ def test_eq_primitive_true_false():
     arec.peek().w_eq(arec, space)
 
     value = arec.pop()
-    assert value.get_boolean_value() == False
+    assert not value.get_boolean_value()
 
 
 def test_eq_primitive_false_true():
@@ -48,7 +48,7 @@ def test_eq_primitive_false_true():
     arec.peek().w_eq(arec, space)
 
     value = arec.pop()
-    assert value.get_boolean_value() == False
+    assert not value.get_boolean_value()
 
 
 def test_or_primitive_true_true():
@@ -57,7 +57,7 @@ def test_or_primitive_true_true():
     arec.peek().w_or(arec, space)
 
     value = arec.pop()
-    assert value.get_boolean_value() == True
+    assert value.get_boolean_value()
 
 
 def test_or_primitive_true_false():
@@ -66,7 +66,7 @@ def test_or_primitive_true_false():
     arec.peek().w_or(arec, space)
 
     value = arec.pop()
-    assert value.get_boolean_value() == True
+    assert value.get_boolean_value()
 
 
 def test_or_primitive_false_true():
@@ -75,7 +75,7 @@ def test_or_primitive_false_true():
     arec.peek().w_or(arec, space)
 
     value = arec.pop()
-    assert value.get_boolean_value() == True
+    assert value.get_boolean_value()
 
 
 def test_or_primitive_false_false():
@@ -84,7 +84,7 @@ def test_or_primitive_false_false():
     arec.peek().w_or(arec, space)
 
     value = arec.pop()
-    assert value.get_boolean_value() == False
+    assert not value.get_boolean_value()
 
 
 def test_and_primitive_true_true():
@@ -93,7 +93,7 @@ def test_and_primitive_true_true():
     arec.peek().w_and(arec, space)
 
     value = arec.pop()
-    assert value.get_boolean_value() == True
+    assert value.get_boolean_value()
 
 
 def test_and_primitive_false_true():
@@ -101,4 +101,4 @@ def test_and_primitive_false_true():
 
     arec.peek().w_and(arec, space)
     value = arec.pop()
-    assert value.get_boolean_value() == False
+    assert not value.get_boolean_value()

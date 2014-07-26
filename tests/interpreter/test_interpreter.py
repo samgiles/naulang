@@ -124,7 +124,8 @@ def test_bc_MUL():
     """ Tests the 'MUL;' bytecode
 
         Expected:
-            Store a result of a multiply operation on top of the stack using the values on the stack as arguments (uses the primitive operations)
+            Store a result of a multiply operation on top of the stack using
+            the values on the stack as arguments (uses the primitive operations)
     """
 
     space, interpreter, task, frame = simple_setup(literals=[], locals=1, bytecode=[Bytecode.MUL])

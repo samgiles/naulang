@@ -3,7 +3,8 @@ from rpython.rlib import jit
 
 class CircularArray(object):
 
-    """ Simple Circular Array implementation based on implementation by Chase and Lev (2005)  http://dx.doi.org/10.1145/1073970.1073974
+    """ Simple Circular Array implementation based on implementation by Chase and Lev (2005)
+    http://dx.doi.org/10.1145/1073970.1073974
     """
 
     _mixin_ = True

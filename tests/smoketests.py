@@ -75,7 +75,8 @@ if __name__ == '__main__':
             [executable, (current_dir + os.sep + test_file).replace(cwd, '')], cwd, timeout=10)
         if code != 0:
             failed = True
-            print "File %s failed:\n stderr:\n %s\n stdout:\n%s\n---------\n" % (current_dir + os.sep + test_file, serr, sout)
+            print ("File %s failed:\n stderr:\n %s\n stdout:\n%s\n---------\n" %
+                   (current_dir + os.sep + test_file, serr, sout))
     if failed:
         sys.exit(1)
     else:

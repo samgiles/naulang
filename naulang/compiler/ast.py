@@ -34,7 +34,7 @@ class Node(BaseBox):
 
     def __eq__(self, other):
 
-       # Don't include sourceposition in the comparison
+        # Don't include sourceposition in the comparison
         self_compare_dict = dict(self.__dict__)
         other_compare_dict = dict(other.__dict__)
         self_compare_dict['sourceposition'] = None

@@ -316,7 +316,7 @@ def test_ast_functionstatement():
     assert ctx.get_bytecode() == [Bytecode.LOAD_CONST, 0]
     assert len(ctx.inner_contexts) == 1
     assert ctx.inner_contexts[0].get_bytecode() == [90, Bytecode.HALT]
-    assert ctx.inner_contexts[0].has_local('a') == True
+    assert ctx.inner_contexts[0].has_local('a')
     assert ctx.inner_contexts[0].get_parameter_count() == 1
 
 
@@ -331,7 +331,7 @@ def test_ast_functionexpression():
     assert ctx.get_bytecode() == [Bytecode.LOAD_CONST, 0]
     assert len(ctx.inner_contexts) == 1
     assert ctx.inner_contexts[0].get_bytecode() == [Bytecode.LOAD, 0, Bytecode.RETURN, Bytecode.HALT]
-    assert ctx.inner_contexts[0].has_local('a') == True
+    assert ctx.inner_contexts[0].has_local('a')
     assert ctx.inner_contexts[0].get_parameter_count() == 1
 
 

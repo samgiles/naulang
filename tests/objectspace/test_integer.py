@@ -79,7 +79,7 @@ def test_eq_primitive_true():
 
     value = arec.pop()
     assert isinstance(value, Boolean)
-    assert value.get_boolean_value() == True
+    assert value.get_boolean_value()
 
 
 def test_eq_primitive_false():
@@ -89,4 +89,4 @@ def test_eq_primitive_false():
 
     value = arec.pop()
     assert isinstance(value, Boolean)
-    assert value.get_boolean_value() == False
+    assert not value.get_boolean_value()
