@@ -1,4 +1,6 @@
 from naulang.interpreter.objectspace.object import Object
+
+
 class PrimitiveObject(Object):
 
     def w_eq(self, frame, space):

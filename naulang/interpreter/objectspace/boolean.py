@@ -1,6 +1,8 @@
 from naulang.interpreter.objectspace.primitive_object import PrimitiveObject
 
+
 class Boolean(PrimitiveObject):
+
     """ Represents a Boolean object """
 
     _immutable_fields_ = ["value"]

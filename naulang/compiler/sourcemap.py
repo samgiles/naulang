@@ -1,4 +1,5 @@
 class SourceMap(object):
+
     """
         Maps a sequence of bytecodes for a method to
         line numbers and column numbers.

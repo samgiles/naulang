@@ -3,6 +3,7 @@ class BaseBox(object):
 
 
 class Token(BaseBox):
+
     def __init__(self, name, value, source_pos=None):
         self.name = name
         self.value = value
@@ -27,6 +28,7 @@ class Token(BaseBox):
 
 
 class SourcePosition(object):
+
     def __init__(self, idx, lineno, colno):
         self.idx = idx
         self.lineno = lineno

@@ -3,6 +3,7 @@ import py
 from naulang.runtime.executioncontext import ThreadLocalSched, Task, Universe
 from naulang.interpreter.space import ObjectSpace
 
+
 def test_add_task():
     """ Expected:
             Adding two tasks to an empty Scheduler should result in the first

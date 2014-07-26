@@ -4,6 +4,7 @@ import math
 
 ChanType = Channel
 
+
 @process
 def sieve(count, cin, cout):
     n = cin.read()
@@ -14,6 +15,7 @@ def sieve(count, cin, cout):
     newchanin = ChanType()
     Par(_filter(n, cin, newchanin), sieve(count - 1, newchanin, cout)).start()
 
+
 @process
 def _from(start, step, c):
     count = start
@@ -21,16 +23,20 @@ def _from(start, step, c):
         c.write(count)
         count += step
 
+
 @process
 def _filter(n, cin, cout):
     while True:
         a = cin.read()
         if (a % n) != 0:
             cout.write(a)
+
+
 @process
 def primes(chanout, limit):
     c = ChanType()
     Par(_from(2, 1, c), sieve(limit, c, chanout)).start()
+
 
 def sum_primes(n):
     chanout = ChanType()
@@ -49,7 +55,6 @@ if __name__ == '__main__':
     warmup = 10
     for i in range(0, warmup):
         sum_primes(100)
-
 
     t0 = time.time()
     sum_primes(100)

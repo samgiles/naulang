@@ -3,6 +3,7 @@ from collections import MutableMapping
 
 
 class IdentityDict(MutableMapping):
+
     def __init__(self):
         self._contents = {}
         self._keepalive = []
@@ -31,6 +32,7 @@ class IdentityDict(MutableMapping):
 
 
 class Counter(object):
+
     def __init__(self):
         self.value = 0
 

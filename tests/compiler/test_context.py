@@ -1,23 +1,26 @@
 from naulang.compiler.context import FunctionCompilerContext
 from naulang.interpreter.bytecode import Bytecode
 from naulang.interpreter.objectspace.integer import Integer
+
+
 def test_calculate_stack_depth():
     ctx = FunctionCompilerContext(None)
     code = [
-            Bytecode.LOAD, 0,         # 1
-            Bytecode.LOAD_CONST, 1,   # 1
-            Bytecode.ADD,             # -1
-            Bytecode.LOAD, 1,         # 1
-            Bytecode.ADD,             # -1
-            Bytecode.STORE, 1,        # -1
-            Bytecode.LOAD, 1,         # 1
-            Bytecode.LOAD, 2,         # 1
-            Bytecode.LOAD, 3          # 1
-        ]
+        Bytecode.LOAD, 0,         # 1
+        Bytecode.LOAD_CONST, 1,   # 1
+        Bytecode.ADD,             # -1
+        Bytecode.LOAD, 1,         # 1
+        Bytecode.ADD,             # -1
+        Bytecode.STORE, 1,        # -1
+        Bytecode.LOAD, 1,         # 1
+        Bytecode.LOAD, 2,         # 1
+        Bytecode.LOAD, 3          # 1
+    ]
 
     stack_depth = ctx._calculate_stack_depth(code)
 
     assert stack_depth == 3
+
 
 def test_calculate_stack_depth2():
     ctx = FunctionCompilerContext(None)
@@ -47,6 +50,7 @@ def test_calculate_stack_depth2():
 
     stack_depth = ctx._calculate_stack_depth(code)
     assert stack_depth == 3
+
 
 def test_register_literal_unique_only():
     ctx = FunctionCompilerContext(None)

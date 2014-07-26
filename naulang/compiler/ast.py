@@ -1,5 +1,6 @@
 from rply.token import BaseBox
 
+
 class Operator(object):
     MUL = 1
     CONST = 2
@@ -20,6 +21,7 @@ class Operator(object):
     ASSIGN = 17
     PRINT = 18
 
+
 class Node(BaseBox):
 
     def __init__(self, sourceposition):
@@ -29,6 +31,7 @@ class Node(BaseBox):
         return self.sourceposition
 
     """ Base ast Node """
+
     def __eq__(self, other):
 
        # Don't include sourceposition in the comparison
@@ -48,7 +51,9 @@ class Node(BaseBox):
 
 # Structure
 
+
 class Block(Node):
+
     """ A Basic block or collection of Statements/Expressions """
 
     def __init__(self, statement_list, sourceposition=None):
@@ -57,7 +62,6 @@ class Block(Node):
 
     def get_statements(self):
         return self.statements
-
 
     def accept(self, astvisitor):
         if astvisitor.visit_block(self):
@@ -71,6 +75,7 @@ class Block(Node):
 # Constants
 
 class BooleanConstant(Node):
+
     """ Represents a Boolean constant "true" or "false" """
 
     def __init__(self, value, sourceposition=None):
@@ -86,7 +91,9 @@ class BooleanConstant(Node):
     def __repr__(self):
         return "ast.BooleanConstant(%r)" % (self.value)
 
+
 class StringConstant(Node):
+
     """ Represents a String constant """
 
     def __init__(self, value, sourceposition=None):
@@ -102,7 +109,9 @@ class StringConstant(Node):
     def __repr__(self):
         return "ast.StringConstant(%s)" % (self.value)
 
+
 class IntegerConstant(Node):
+
     """ Represents an Integer constant """
 
     def __init__(self, value, sourceposition=None):
@@ -118,7 +127,9 @@ class IntegerConstant(Node):
     def __repr__(self):
         return "ast.IntegerConstant(%d)" % (self.value)
 
+
 class FloatConstant(Node):
+
     """ Represents a Floating point constant """
 
     def __init__(self, value, sourceposition=None):
@@ -136,9 +147,11 @@ class FloatConstant(Node):
 
 # Statements
 
-# # Assignment
+# Assignment
+
 
 class Assignment(Node):
+
     """ Represents simple assignment """
 
     def __init__(self, variable_name, expression, sourceposition=None):
@@ -159,7 +172,9 @@ class Assignment(Node):
     def __repr__(self):
         return "ast.Assignment(%r, %r)" % (self.varname, self.expression)
 
+
 class ScopedAssignment(Node):
+
     """ Represents variable initialisation within a scope (using let keyword) """
 
     def __init__(self, variable_name, expression, sourceposition=None):
@@ -182,8 +197,11 @@ class ScopedAssignment(Node):
 
 # Expressions
 
+
 class BinaryExpression(Node):
+
     """ A generic Binary expression """
+
     def __init__(self, lhs, rhs, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.lhs = lhs
@@ -204,9 +222,10 @@ class BinaryExpression(Node):
             self.rhs.accept(astvisitor)
 
 
-# # Logical
+# Logical
 
 class Or(BinaryExpression):
+
     """ Or Expression """
 
     def accept(self, astvisitor):
@@ -219,8 +238,11 @@ class Or(BinaryExpression):
     def __repr__(self):
         return "ast.Or(%r, %r)" % (self.lhs, self.rhs)
 
+
 class And(BinaryExpression):
+
     """ And Expression """
+
     def accept(self, astvisitor):
         if astvisitor.visit_and(self):
             BinaryExpression.accept(self, astvisitor)
@@ -231,7 +253,9 @@ class And(BinaryExpression):
     def __repr__(self):
         return "ast.And(%r, %r)" % (self.lhs, self.rhs)
 
+
 class Equals(BinaryExpression):
+
     """ Equals/Is expression; ==/is """
 
     def accept(self, astvisitor):
@@ -244,7 +268,9 @@ class Equals(BinaryExpression):
     def __repr__(self):
         return "ast.Equals(%r, %r)" % (self.lhs, self.rhs)
 
+
 class NotEquals(BinaryExpression):
+
     """ Not equals expression; != """
 
     def accept(self, astvisitor):
@@ -257,9 +283,11 @@ class NotEquals(BinaryExpression):
     def __repr__(self):
         return "ast.NotEquals(%r, %r)" % (self.lhs, self.rhs)
 
-# # Relational
+# Relational
+
 
 class LessThan(BinaryExpression):
+
     """ Less than expression; < """
 
     def accept(self, astvisitor):
@@ -272,7 +300,9 @@ class LessThan(BinaryExpression):
     def __repr__(self):
         return "ast.LessThan(%r, %r)" % ((self.lhs), (self.rhs))
 
+
 class LessThanOrEqual(BinaryExpression):
+
     """ Less than or equal; <= """
 
     def accept(self, astvisitor):
@@ -285,7 +315,9 @@ class LessThanOrEqual(BinaryExpression):
     def __repr__(self):
         return "ast.LessThanOrEqual(%r, %r)" % ((self.lhs), (self.rhs))
 
+
 class GreaterThan(BinaryExpression):
+
     """ Greater than; > """
 
     def accept(self, astvisitor):
@@ -298,7 +330,9 @@ class GreaterThan(BinaryExpression):
     def __repr__(self):
         return "ast.GreaterThan(%r, %r)" % ((self.lhs), (self.rhs))
 
+
 class GreaterThanOrEqual(BinaryExpression):
+
     """ Greater than or equal; >= """
 
     def accept(self, astvisitor):
@@ -311,9 +345,11 @@ class GreaterThanOrEqual(BinaryExpression):
     def __repr__(self):
         return "ast.GreaterThanOrEqual(%r, %r)" % ((self.lhs), (self.rhs))
 
-# # Arithmetic
+# Arithmetic
+
 
 class Add(BinaryExpression):
+
     """ Add; +.  Is concatenative if left hand side is string """
 
     def accept(self, astvisitor):
@@ -326,7 +362,9 @@ class Add(BinaryExpression):
     def __repr__(self):
         return "ast.AddOp(%r, %r)" % ((self.lhs), (self.rhs))
 
+
 class Subtract(BinaryExpression):
+
     """ Subtract; -. """
 
     def accept(self, astvisitor):
@@ -339,7 +377,9 @@ class Subtract(BinaryExpression):
     def __repr__(self):
         return "ast.Subtract(%r, %r)" % ((self.lhs), (self.rhs))
 
+
 class Multiply(BinaryExpression):
+
     """ Multiply; *. """
 
     def accept(self, astvisitor):
@@ -352,7 +392,9 @@ class Multiply(BinaryExpression):
     def __repr__(self):
         return "ast.MulOp(%r, %r)" % ((self.lhs), (self.rhs))
 
+
 class Divide(BinaryExpression):
+
     """ Divide; /. """
 
     def accept(self, astvisitor):
@@ -365,7 +407,9 @@ class Divide(BinaryExpression):
     def __repr__(self):
         return "ast.DivOp(%r, %r)" % ((self.lhs), (self.rhs))
 
+
 class Mod(BinaryExpression):
+
     """ Mod; %. """
 
     def accept(self, astvisitor):
@@ -378,9 +422,11 @@ class Mod(BinaryExpression):
     def __repr__(self):
         return "ast.Mod(%r, %r)" % ((self.lhs), (self.rhs))
 
-# # Unary
+# Unary
+
 
 class UnaryExpression(Node):
+
     """ Unary Expression """
 
     def __init__(self, expression, sourceposition=None):
@@ -394,7 +440,9 @@ class UnaryExpression(Node):
         if astvisitor.visit_unaryexpression(self):
             self.expression.accept(astvisitor)
 
+
 class UnaryNot(UnaryExpression):
+
     """ Unary Not expression; not [x]; """
 
     def accept(self, astvisitor):
@@ -404,7 +452,9 @@ class UnaryNot(UnaryExpression):
     def __repr__(self):
         return "ast.UnaryNot(%r)" % (self.expression)
 
+
 class UnaryNegate(UnaryExpression):
+
     """ Unary negate;  - [x] """
 
     def accept(self, astvisitor):
@@ -416,12 +466,14 @@ class UnaryNegate(UnaryExpression):
 
 # Flow Control
 
+
 class WhileStatement(Node):
+
     """ while [condition] { [block] } """
 
     def __init__(self, condition, block, sourceposition=None):
         Node.__init__(self, sourceposition)
-        assert isinstance(condition, Node) # RPython
+        assert isinstance(condition, Node)  # RPython
 
         self.condition = condition
         self.block = block
@@ -440,6 +492,7 @@ class WhileStatement(Node):
     def __repr__(self):
         return "ast.WhileStatement(condition=%r, block=%r)" % (self.condition, self.block)
 
+
 class BreakStatement(Node):
 
     def __init__(self, sourceposition=None):
@@ -450,6 +503,7 @@ class BreakStatement(Node):
 
     def __repr__(self):
         return "ast.BreakStatement()"
+
 
 class ContinueStatement(Node):
 
@@ -462,7 +516,9 @@ class ContinueStatement(Node):
     def __repr__(self):
         return "ast.ContinueStatement()"
 
+
 class IfStatement(Node):
+
     """ if [condition] { [block] } """
 
     def __init__(self, condition, ifclause, sourceposition=None):
@@ -486,7 +542,9 @@ class IfStatement(Node):
 
 # Built ins
 
+
 class PrintStatement(Node):
+
     """ print [statement] """
 
     def __init__(self, expression, sourceposition=None):
@@ -505,8 +563,11 @@ class PrintStatement(Node):
 
 # Functions
 
+
 class ParameterList(Node):
+
     """ Function definition parameter list: fn ([parameters]) """
+
     def __init__(self, parameters, sourceposition=None):
         """ Args:
                 parameters -- A list of parameters
@@ -523,7 +584,9 @@ class ParameterList(Node):
     def __repr__(self):
         return "ast.ParameterList(%r)" % self.parameters
 
+
 class ArgumentList(Node):
+
     """ Function call argument list """
 
     def __init__(self, arglist, sourceposition=None):
@@ -544,7 +607,9 @@ class ArgumentList(Node):
     def __repr__(self):
         return "ast.FunctionArgList(%r)" % (self.arguments)
 
+
 class FunctionExpression(Node):
+
     """ A function expression:  fn([paramlist]) { [block] } """
 
     def __init__(self, paramlist, block, sourceposition=None):
@@ -562,7 +627,9 @@ class FunctionExpression(Node):
     def __repr__(self):
         return "ast.FunctionExpression(paramlist=%r, block=%r)" % (self.paramlist, self.block)
 
+
 class FunctionStatement(Node):
+
     """ A function statement: fn [identifier]([paramlist]) { [block] } """
 
     def __init__(self, identifier, paramlist, block, sourceposition=None):
@@ -584,7 +651,9 @@ class FunctionStatement(Node):
     def __repr__(self):
         return "ast.FunctionStatement(%r, %r, %r)" % (self.identifier, self.paramlist, self.block)
 
+
 class FunctionCall(Node):
+
     """ Function call: [identifier]([arglist]) """
 
     def __init__(self, identifier, arglist, sourceposition=None):
@@ -606,7 +675,9 @@ class FunctionCall(Node):
     def __repr__(self):
         return "ast.FunctionCall(%r, %r)" % (self.identifier, self.arglist)
 
+
 class AsyncFunctionCall(Node):
+
     """ Function call: [identifier]([arglist]) """
 
     def __init__(self, identifier, arglist, sourceposition=None):
@@ -630,6 +701,7 @@ class AsyncFunctionCall(Node):
 
 
 class ReturnStatement(Node):
+
     def __init__(self, expression, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.expression = expression
@@ -646,7 +718,9 @@ class ReturnStatement(Node):
 
 # Value Expressions
 
+
 class IdentifierExpression(Node):
+
     """ identifier: 'a' """
 
     def __init__(self, identifier, sourceposition=None):
@@ -662,8 +736,11 @@ class IdentifierExpression(Node):
     def __repr__(self):
         return "ast.IdentifierExpression(%r)" % (self.identifier)
 
+
 class ArrayAccess(Node):
+
     """ Array access: {identifier}[{index}]; """
+
     def __init__(self, identifier, index, sourceposition=None):
         Node.__init__(self, sourceposition)
         self.identifier = identifier
@@ -682,6 +759,7 @@ class ArrayAccess(Node):
 
     def __repr__(self):
         return "ast.ArrayAccess(identifier=%r, index=%r)" % (self.identifier, self.index)
+
 
 class ArrayAssignment(Node):
 
@@ -708,6 +786,7 @@ class ArrayAssignment(Node):
 
 # Channel Expressions
 
+
 class ChannelIn(Node):
 
     def __init__(self, channel_identifier, expression_in, sourceposition=None):
@@ -729,6 +808,7 @@ class ChannelIn(Node):
     def __repr__(self):
         return "ast.ChannelIn(%r, %r)" % (self.channel, self.expression)
 
+
 class ChannelOut(Node):
 
     def __init__(self, channel_identifier, sourceposition=None):
@@ -745,11 +825,14 @@ class ChannelOut(Node):
     def __repr__(self):
         return "ast.ChannelOut(%r)" % (self.channel)
 
+
 class ASTVisitor(object):
     pass
 
+
 def _visit(visitor, node):
     return True
+
 
 def _create_visitor():
     """ NOT_RPYTHON

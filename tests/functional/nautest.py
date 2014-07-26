@@ -11,22 +11,26 @@ from os import kill
 from signal import alarm, signal, SIGALRM, SIGKILL
 from subprocess import PIPE, Popen
 
+
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='Run a suite of programs in a naulang interpreter and test output against expected values.')
+    parser = argparse.ArgumentParser(
+        description='Run a suite of programs in a naulang interpreter and test output against expected values.')
     parser.add_argument('naulang_interpreter', nargs=1,
-                       help='the interpreter executable to use to run the programs against')
+                        help='the interpreter executable to use to run the programs against')
     parser.add_argument('test_directory', nargs=1, help='the directory in which the .wlt files exist')
     parser.add_argument("--xml", help="output JUnit style XML", action="store_true")
     args = parser.parse_args()
     return args
 
-def run_with_timeout(args, cwd = None, shell = False, kill_tree = True, timeout = -1, stdout = PIPE, stderr = PIPE):
+
+def run_with_timeout(args, cwd=None, shell=False, kill_tree=True, timeout=-1, stdout=PIPE, stderr=PIPE):
     '''
 Run a command with a timeout after which it will be forcibly
 killed.
 '''
     class Alarm(Exception):
         pass
+
     def alarm_handler(signum, frame):
         raise Alarm
 
@@ -47,9 +51,10 @@ killed.
         return -9, '', ''
     return p.returncode, stdout, stderr
 
+
 def get_process_children(pid):
-    p = Popen('ps --no-headers -o pid --ppid %d' % pid, shell = True,
-              stdout = PIPE, stderr = PIPE)
+    p = Popen('ps --no-headers -o pid --ppid %d' % pid, shell=True,
+              stdout=PIPE, stderr=PIPE)
     stdout, _stderr = p.communicate()
     return [int(p) for p in stdout.split()]
 
@@ -61,7 +66,6 @@ if __name__ == '__main__':
     test_directory = args.test_directory[0]
     xml_out = args.xml
     test_cases = []
-
 
     # TODO: Timing on the test cases in XML
     def log_errord(test_name, stderr, stdout):
@@ -99,14 +103,14 @@ if __name__ == '__main__':
             raise Exception("Could not find expected_output file for test %r" % test_name)
 
         # Actually run the test
-        code, sout, serr = run_with_timeout([executable, test_directory + os.sep + test_file], os.getcwd() , timeout=10)
+        code, sout, serr = run_with_timeout([executable, test_directory + os.sep + test_file], os.getcwd(), timeout=10)
 
         if code != 0:
             failed = True
             log_errord(test_name, serr, sout)
         else:
             with open(expected_output, "r") as f:
-                    expected=f.read()
+                expected = f.read()
 
             if sout != expected:
                 failed = True
@@ -122,5 +126,3 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         sys.exit(0)
-
-

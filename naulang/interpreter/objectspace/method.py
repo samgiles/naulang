@@ -2,16 +2,18 @@ from naulang.interpreter.objectspace.object import Object
 from naulang.interpreter.frame import Frame
 from rpython.rlib import jit
 
+
 class Method(Object):
+
     """ Defines a Method in naulang. """
 
     _immutable_fields_ = [
-            "locals",
-            "literals",
-            "bytecodes",
-            "stack_depth",
-            "argument_count",
-        ]
+        "locals",
+        "literals",
+        "bytecodes",
+        "stack_depth",
+        "argument_count",
+    ]
 
     def __init__(self, literals, local_count, bytecodes, stack_depth, source_map=None, argument_count=0):
         self.literals = literals
@@ -37,11 +39,15 @@ class Method(Object):
         return self.literals
 
     def copy(self):
-        return Method(self.literals, self.local_count, self.bytecodes, self.stack_depth, argument_count=self.argument_count)
+        return Method(self.literals, self.local_count, self.bytecodes,
+                      self.stack_depth, argument_count=self.argument_count)
 
     @jit.unroll_safe
     def _create_new_frame(self, previous_frame, is_async=False):
-        new_frame = Frame(previous_frame=previous_frame if not is_async else None, method=self, access_link=self.get_enclosing_frame())
+        new_frame = Frame(
+            previous_frame=previous_frame if not is_async else None,
+            method=self,
+            access_link=self.get_enclosing_frame())
 
         # Push arguments into locals of new frame in reverse order
         arg_number = self.argument_count - 1

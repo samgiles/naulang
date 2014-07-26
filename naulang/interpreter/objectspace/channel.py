@@ -3,15 +3,19 @@ from naulang.interpreter.objectspace.object import Object
 from rpythonex.rdequeue import CircularWorkStealingDeque
 from rpythonex.rcircular import CircularArray
 
+
 class ChannelInterface(Object):
+
     def send(self, task, value):
         pass
 
     def receive(self, task):
         pass
 
+
 class YieldException(Exception):
     pass
+
 
 class SuspendException(Exception):
     pass
@@ -32,7 +36,9 @@ class BasicChannel(ChannelInterface):
         else:
             raise YieldException()
 
+
 class SyncChannel(ChannelInterface):
+
     def __init__(self):
         self._slot = None
         self._task = None
@@ -66,15 +72,21 @@ class SyncChannel(ChannelInterface):
         self._task = None
         return value
 
+
 class ChannelCircularArray(CircularArray):
+
     def _create_new_instance(self, new_size):
         return ChannelCircularArray(new_size)
 
+
 class ChannelDequeue(CircularWorkStealingDeque):
+
     def _initialise_array(self, log_initial_size):
         return ChannelCircularArray(log_initial_size)
 
+
 class DequeueChannel(ChannelInterface):
+
     def __init__(self):
         self._queue = ChannelDequeue(1)
 
@@ -83,5 +95,6 @@ class DequeueChannel(ChannelInterface):
 
     def receive(self, task):
         value = self._queue.steal()
-        if value is None: raise YieldException()
+        if value is None:
+            raise YieldException()
         return value

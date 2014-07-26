@@ -1,6 +1,8 @@
 from naulang.interpreter.objectspace.object import Object
 
+
 class BuiltIn(Object):
+
     """ Defines a primitive invokable method """
 
     def __init__(self, identifier, invokable):

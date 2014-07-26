@@ -4,6 +4,7 @@ lexer_gen = LexerGenerator()
 
 lexer_gen.ignore(r"([\s\f\t\n\r\v]+)|#.*$")
 
+
 def get_tokens():
     return [
         # Keywords
@@ -63,6 +64,7 @@ for token in tokens:
     lexer_gen.add(token[0], token[1])
 
 LEXER = lexer_gen.build()
+
 
 def get_lexer():
     return LEXER

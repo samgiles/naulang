@@ -3,6 +3,7 @@ from rply.token import SourcePosition, Token
 
 
 class Lexer(object):
+
     def __init__(self, rules, ignore_rules):
         self.rules = rules
         self.ignore_rules = ignore_rules
@@ -12,6 +13,7 @@ class Lexer(object):
 
 
 class LexerStream(object):
+
     def __init__(self, lexer, s):
         self.lexer = lexer
         self.s = s

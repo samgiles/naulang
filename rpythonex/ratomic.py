@@ -8,7 +8,7 @@ cdir = os.path.dirname(os.path.realpath(__file__))
 translator_c_dir = py.path.local(cdir)
 
 eci = ExternalCompilationInfo(
-    include_dirs = [translator_c_dir / "atomicprimitives" ],
+    include_dirs=[translator_c_dir / "atomicprimitives"],
     post_include_bits=['''
 #include "atomic.h"
 #define cas(ptr, old, _new) compare_and_swap((volatile unsigned long*)(ptr), (unsigned long)(old), (unsigned long)(_new))
@@ -16,16 +16,17 @@ eci = ExternalCompilationInfo(
 ''']
 )
 
+
 def llexternal(name, args, result, **kwds):
-    return  rffi.llexternal(name, args, result, compilation_info=eci, **kwds)
+    return rffi.llexternal(name, args, result, compilation_info=eci, **kwds)
 
 
 c_compare_and_swap = llexternal('cas', [rffi.SIGNEDP, lltype.Signed, lltype.Signed], lltype.Signed, macro=True)
 c_fetch_and_add = llexternal('faa', [llmemory.Address, lltype.Signed], lltype.Signed, macro=True)
+
 
 def compare_and_swap(value, old, new):
     condition = value[0] == old
     if condition:
         value[0] = new
     return condition
-

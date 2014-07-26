@@ -202,6 +202,7 @@ def traverse(x, N, stack, F, X, R, FP):
 
 
 class LRTable(object):
+
     def __init__(self, grammar, lr_action, lr_goto, default_reductions, sr_conflicts, rr_conflicts):
         self.grammar = grammar
         self.lr_action = lr_action

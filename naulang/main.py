@@ -1,14 +1,16 @@
 import os
 from naulang.compiler import compiler
 from naulang.interpreter.space import ObjectSpace
-from naulang.runtime.executioncontext import  Universe
+from naulang.runtime.executioncontext import Universe
 
 from naulang.interpreter.error import ErrorDisplay, NauRuntimeError
+
 
 def _create_space():
     return ObjectSpace()
 
 SPACE = _create_space()
+
 
 def _main(args):
 
@@ -23,17 +25,19 @@ def _main(args):
     # these are passed to the method that is created as an 'args'
     # argument
     arguments = args[1:]
-    main_method, arg_local, arg_array = compiler.compile_file_with_arguments(args[1], SPACE, error_displayer, command_line_arguments=arguments)
+    main_method, arg_local, arg_array = compiler.compile_file_with_arguments(
+        args[1], SPACE, error_displayer, command_line_arguments=arguments)
 
     thread_count = 0
     universe = Universe(thread_count, SPACE)
     try:
         universe.start(main_method, arg_local, arg_array)
-    except NauRuntimeError, e:
+    except NauRuntimeError as e:
         error_displayer.handle_runtimeerror(e)
         return -1
 
     return 0
+
 
 def _exception_wrapped(main_method):
     if not __debug__:

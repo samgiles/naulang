@@ -2,6 +2,7 @@ from naulang.interpreter.objectspace.primitive_object import PrimitiveObject
 from naulang.interpreter.objectspace.number import Number
 from naulang.interpreter.error import NauRuntimeError
 
+
 class Integer(PrimitiveObject):
 
     _immutable_fields_ = ["value"]
@@ -31,7 +32,7 @@ class Integer(PrimitiveObject):
         right = activation_record.pop()
         as_float = False
 
-        if isinstance(left, Float) or isinstance(right, Float) :
+        if isinstance(left, Float) or isinstance(right, Float):
             as_float = True
 
         activation_record.push(right)
@@ -147,7 +148,6 @@ class Integer(PrimitiveObject):
             result = left_value.get_integer_value() < right_value.get_integer_value()
             activation_record.push(space.new_boolean(result))
 
-
     def w_gt(self, activation_record, space):
         as_float = self._should_do_operation_as_float(activation_record)
         right_value = activation_record.pop()
@@ -159,7 +159,6 @@ class Integer(PrimitiveObject):
         else:
             result = left_value.get_integer_value() > right_value.get_integer_value()
             activation_record.push(space.new_boolean(result))
-
 
     def w_gteq(self, activation_record, space):
         as_float = self._should_do_operation_as_float(activation_record)
@@ -173,7 +172,6 @@ class Integer(PrimitiveObject):
             result = left_value.get_integer_value() >= right_value.get_integer_value()
             activation_record.push(space.new_boolean(result))
 
-
     def w_lteq(self, activation_record, space):
         as_float = self._should_do_operation_as_float(activation_record)
         right_value = activation_record.pop()
@@ -185,7 +183,6 @@ class Integer(PrimitiveObject):
         else:
             result = left_value.get_integer_value() <= right_value.get_integer_value()
             activation_record.push(space.new_boolean(result))
-
 
     def w_print(self, activation_record, space):
         top = activation_record.pop()

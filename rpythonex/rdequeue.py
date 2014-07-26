@@ -5,6 +5,7 @@ from rpython.rtyper.lltypesystem import lltype, rffi
 
 class SimpleDequeue(object):
     _immutable_fields_ = ["active_array"]
+
     def __init__(self):
         self.active_array = []
 
@@ -12,12 +13,15 @@ class SimpleDequeue(object):
         self.active_array.append(value)
 
     def pop_bottom(self):
-        if len(self.active_array) is 0: return None
+        if len(self.active_array) is 0:
+            return None
         return self.active_array.pop()
 
     def steal(self):
-        if len(self.active_array) is 0: return None
+        if len(self.active_array) is 0:
+            return None
         return self.active_array.pop(0)
+
 
 class CircularWorkStealingDeque(object):
     _mixin_ = True
@@ -32,7 +36,6 @@ class CircularWorkStealingDeque(object):
 
     def size(self):
         return self.active_array.size()
-
 
     def _cas_top(self, oldval, newval):
         return compare_and_swap(self.top, oldval, newval)

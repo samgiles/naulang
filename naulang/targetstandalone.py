@@ -1,8 +1,10 @@
 import sys
 from naulang.main import main
 
+
 def entry_point(argv):
     return main(argv)
+
 
 def target(driver, args):
     if driver.config.translation.jit:
@@ -10,6 +12,7 @@ def target(driver, args):
     else:
         driver.exe_name = "naulang-nojit"
     return entry_point
+
 
 def jitpolicy(driver):
     from rpython.jit.codewriter.policy import JitPolicy

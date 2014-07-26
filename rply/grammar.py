@@ -10,6 +10,7 @@ def rightmost_terminal(symbols, terminals):
 
 
 class Grammar(object):
+
     def __init__(self, terminals):
         # A list of all the productions
         self.productions = [None]
@@ -180,6 +181,7 @@ class Grammar(object):
 
 
 class Production(object):
+
     def __init__(self, num, name, prod, precedence, func):
         self.name = name
         self.prod = prod
@@ -205,6 +207,7 @@ class Production(object):
 
 
 class LRItem(object):
+
     def __init__(self, p, n, before, after):
         self.name = p.name
         self.prod = p.prod[:]

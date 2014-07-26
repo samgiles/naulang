@@ -2,6 +2,7 @@ from rply.errors import ParsingError
 
 
 class LRParser(object):
+
     def __init__(self, lr_table, error_handler):
         self.lr_table = lr_table
         self.error_handler = error_handler

@@ -3,7 +3,9 @@ from naulang.interpreter.objectspace.object import Object
 from rpython.rlib.rarithmetic import r_uint
 from rpython.rlib import jit
 
+
 class Frame(Object):
+
     """ Defines an Activation Record. """
 
     _virtualizable_ = ["_locals[*]", "_stack[*]", "_pc", "_stack_pointer"]
@@ -44,7 +46,7 @@ class Frame(Object):
 
     def get_previous_frame(self):
         """ Get the previous activation record. """
-        return self.previous_frame;
+        return self.previous_frame
 
     def set_previous_frame(self, previous):
         self.previous_frame = previous
@@ -52,7 +54,7 @@ class Frame(Object):
     def get_access_link(self):
         """ Get the access link for this object (if it has one).
             Returns None if it does not """
-        return self.access_link;
+        return self.access_link
 
     def is_root_frame(self):
         return self.get_previous_frame() is None
@@ -107,7 +109,8 @@ class Frame(Object):
             Bytecode.LOAD_DYNAMIC.
         """
         frame = self._get_frame_at_level(level)
-        if frame: return frame.get_local_at(index)
+        if frame:
+            return frame.get_local_at(index)
 
         return None
 

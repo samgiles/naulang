@@ -4,6 +4,7 @@ from naulang.interpreter.error import NauRuntimeError
 
 from rpython.rlib.rfloat import double_to_string
 
+
 class Float(PrimitiveObject):
 
     _immutable_fields_ = ["value"]

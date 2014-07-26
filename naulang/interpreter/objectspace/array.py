@@ -1,6 +1,7 @@
 from naulang.interpreter.objectspace.object import Object
 from naulang.interpreter.error import NauRuntimeError
 
+
 class Array(Object):
 
     _immutable_fields_ = ["_list", "size"]

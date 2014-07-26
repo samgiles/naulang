@@ -1,8 +1,9 @@
 from naulang.interpreter.objectspace.primitive_object import PrimitiveObject
 from naulang.interpreter.error import NauRuntimeError
 
+
 class Number(object):
-    _mixin_=True
+    _mixin_ = True
 
     def _get_left_and_right(self, activation_record):
         from naulang.interpreter.objectspace.integer import Integer

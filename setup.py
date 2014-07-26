@@ -10,4 +10,4 @@ setup(name='naulang',
       license='GPLv2',
       url='',
       packages=['naulang', 'naulang.compiler'],
-     )
+      )

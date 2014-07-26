@@ -10,16 +10,20 @@ from naulang.interpreter.objectspace.array import Array
 
 from naulang.runtime.executioncontext import Task
 
+
 def create_test_method(literals, locals, bytecode):
     """ create_test_method(literals, locals, bytecode) """
     return Method(literals, locals, bytecode, 20)
 
+
 def create_frame(method, parent=None, access_link=None):
     return Frame(previous_frame=parent, method=method, access_link=access_link)
+
 
 def create_space_and_interpreter():
     space = ObjectSpace()
     return space, Interpreter(space)
+
 
 def create_task(frame):
     task = Task(None)
@@ -33,6 +37,7 @@ def simple_setup(literals=[], locals=0, bytecode=[]):
     space, interpreter = create_space_and_interpreter()
     task = create_task(frame)
     return space, interpreter, task, frame
+
 
 def _interpreter_step(interpreter, task):
     pc = task.get_top_frame().get_pc()
@@ -49,8 +54,12 @@ def test_bc_HALT():
     while _interpreter_step(interpreter, task):
         pass
 
+
 def test_bc_RETURN():
-    _, interpreter, task, frame = simple_setup(literals=[Integer(10)], bytecode=[Bytecode.LOAD_CONST, 0, Bytecode.RETURN])
+    _, interpreter, task, frame = simple_setup(
+        literals=[
+            Integer(10)], bytecode=[
+            Bytecode.LOAD_CONST, 0, Bytecode.RETURN])
 
     parent_method = create_test_method([], 0, [Bytecode.HALT])
     parent_frame = create_frame(parent_method)
@@ -61,18 +70,23 @@ def test_bc_RETURN():
 
     assert parent_frame.peek() == Integer(10)
 
+
 def test_bc_LOAD_CONST():
     """ Tests the 'LOAD_CONST n;' bytecode, where n is the offset in the literals' space to load
 
          Expected:
             Load a constant from the literals area of the frame on to the top of the stack
     """
-    space, interpreter, task, frame = simple_setup(literals=[Integer(10)], locals=1, bytecode=[Bytecode.LOAD_CONST, 0, Bytecode.HALT])
+    space, interpreter, task, frame = simple_setup(
+        literals=[
+            Integer(10)], locals=1, bytecode=[
+            Bytecode.LOAD_CONST, 0, Bytecode.HALT])
 
     while _interpreter_step(interpreter, task):
         pass
 
     assert frame.peek() == space.new_integer(10)
+
 
 def test_bc_LOAD():
     """ Tests the 'LOAD n;' bytecode, where n is the offset in the locals' space to load
@@ -90,6 +104,7 @@ def test_bc_LOAD():
     assert frame.peek() == Integer(10)
     assert frame.get_pc() == 2
 
+
 def test_bc_STORE():
     """ Tests the 'STORE n;' bytecode where n is the offset in the locals'
              space to store the value at the top of the stack to.
@@ -103,6 +118,7 @@ def test_bc_STORE():
 
     assert frame.get_local_at(0) == Integer(100)
     assert frame.get_pc() == 2
+
 
 def test_bc_MUL():
     """ Tests the 'MUL;' bytecode
@@ -118,6 +134,7 @@ def test_bc_MUL():
 
     assert frame.peek() == Integer(3000)
     assert frame.get_pc() == 1
+
 
 def test_bc_ARRAY_STORE():
     """  Tests the 'ARRAY_STORE;' bytecode which takes three values from the stack,
@@ -141,6 +158,7 @@ def test_bc_ARRAY_STORE():
     assert array.get_value_at(0) == Integer(100)
     assert frame.get_pc() == 1
 
+
 def test_bc_ARRAY_LOAD():
     """ Tests the 'ARRAY_LOAD;' bytecode which takes two values from the stack,
             the top value is the index to access
@@ -161,19 +179,20 @@ def test_bc_ARRAY_LOAD():
     assert frame.peek() == Integer(900)
     assert frame.get_pc() == 1
 
+
 def test_bc_LOAD_DYNAMIC():
     space, interpreter = create_space_and_interpreter()
     outer_integer = space.new_integer(100)
     method = create_test_method(literals=[
         outer_integer,
         create_test_method([], 0, [
-                Bytecode.LOAD_DYNAMIC, 0, 1,
-                Bytecode.RETURN,
-                Bytecode.HALT
-            ])
+            Bytecode.LOAD_DYNAMIC, 0, 1,
+            Bytecode.RETURN,
+            Bytecode.HALT
+        ])
     ],
-    locals=2,
-    bytecode=[
+        locals=2,
+        bytecode=[
         Bytecode.LOAD_CONST, 0,
         Bytecode.STORE, 0,
         Bytecode.LOAD_CONST, 1,
@@ -224,6 +243,7 @@ def test_bc_GREATER_THAN_EQ():
 
     assert frame.pop() == space.new_boolean(True)
 
+
 def test_bc_LESS_THAN():
     """ Tests the 'LESS_THAN;' bytecode
         Expected:
@@ -251,6 +271,7 @@ def test_bc_LESS_THAN():
     _interpreter_step(interpreter, task)
 
     assert frame.pop() == space.new_boolean(True)
+
 
 def test_bc_GREATER_THAN():
     """ Tests the 'GREATER_THAN;' bytecode
@@ -280,6 +301,7 @@ def test_bc_GREATER_THAN():
 
     assert frame.pop() == space.new_boolean(False)
 
+
 def test_bc_INVOKE_GLOBAL():
     """ Tests the 'INVOKE_GLOBAL n;' expect the global method identified by n to be executed
         Expected:
@@ -291,6 +313,7 @@ def test_bc_INVOKE_GLOBAL():
     _interpreter_step(interpreter, task)
 
     assert isinstance(frame.peek(), Array)
+
 
 def test_bc_INVOKE():
     space, interpreter = create_space_and_interpreter()
@@ -333,7 +356,7 @@ def test_bc_INVOKE():
     task = create_task(None)
     mainmethod.invoke(task.get_top_frame(), task)
 
-    last_active_frame = task.get_top_frame();
+    last_active_frame = task.get_top_frame()
     while _interpreter_step(interpreter, task):
         has_task_finished = task.get_top_frame() is None
         if has_task_finished:

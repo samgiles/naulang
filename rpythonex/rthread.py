@@ -11,19 +11,22 @@ eci = ExternalCompilationInfo(
     libraries=["pthread"]
 )
 
+
 def llexternal(name, args, result, **kwargs):
     return rffi.llexternal(name, args, result, compilation_info=eci, **kwargs)
 
 c_thread_join = llexternal("rpy_thread_join", [rffi.LONG, rffi.SIGNEDP], rffi.SIGNED, macro=True)
 
+
 class CConfig:
-    _compilation_info_=eci
+    _compilation_info_ = eci
     EDEADLK = rffi_platform.ConstantInteger("EDEADLK")
     EINVAL = rffi_platform.ConstantInteger("EINVAL")
     ESRCH = rffi_platform.ConstantInteger("ESRCH")
 
 for k, v in rffi_platform.configure(CConfig).items():
     globals()[k] = v
+
 
 def thread_join(thread_id):
     result = lltype.malloc(rffi.SIGNEDP.TO, 1, flavor="raw")
@@ -36,6 +39,8 @@ def thread_join(thread_id):
         elif error_code is ESRCH:
             print "join failed"
         else:
-            raise Exception("Error thread join: unknown. Expected one of (EINVAL: %d; EDEADLK: %d; ESRCH: %d) was %d" % (EINVAL, EDEADLK, ESRCH, error_code))
+            raise Exception(
+                "Error thread join: unknown. Expected one of (EINVAL: %d; EDEADLK: %d; ESRCH: %d) was %d" %
+                (EINVAL, EDEADLK, ESRCH, error_code))
 
     return result[0]

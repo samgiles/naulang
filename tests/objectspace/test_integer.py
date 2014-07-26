@@ -9,10 +9,12 @@ from naulang.interpreter.objectspace.method import Method
 from naulang.interpreter.interpreter import Interpreter
 from naulang.interpreter.space import ObjectSpace
 
+
 def test_get_value():
     subject = Integer(42)
 
     assert subject.get_integer_value() == 42
+
 
 def setup_primitive_test(left_int, right_int):
     # Create an empty method object (it's not used in these tests)
@@ -33,6 +35,7 @@ def test_mul_primitive():
     value = arec.pop()
     assert value.get_integer_value() == 20000
 
+
 def test_add_primitive():
     arec, space = setup_primitive_test(200, 100)
 
@@ -40,6 +43,7 @@ def test_add_primitive():
 
     value = arec.pop()
     assert value.get_integer_value() == 300
+
 
 def test_sub_primitive():
     arec, space = setup_primitive_test(200, 100)
@@ -49,6 +53,7 @@ def test_sub_primitive():
     value = arec.pop()
     assert value.get_integer_value() == -100
 
+
 def test_div_primitive():
     arec, space = setup_primitive_test(50, 100)
 
@@ -56,6 +61,7 @@ def test_div_primitive():
 
     value = arec.pop()
     assert(value.get_integer_value() == 2)
+
 
 def test_mod_primitive():
     arec, space = setup_primitive_test(3, 100)
@@ -65,6 +71,7 @@ def test_mod_primitive():
     value = arec.pop()
     assert value.get_integer_value() == 1
 
+
 def test_eq_primitive_true():
     arec, space = setup_primitive_test(10, 10)
 
@@ -73,6 +80,7 @@ def test_eq_primitive_true():
     value = arec.pop()
     assert isinstance(value, Boolean)
     assert value.get_boolean_value() == True
+
 
 def test_eq_primitive_false():
     arec, space = setup_primitive_test(11, 10)

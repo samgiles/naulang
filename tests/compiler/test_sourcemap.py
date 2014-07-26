@@ -1,8 +1,11 @@
 from naulang.compiler.sourcemap import SourceMap
 
+
 class DummyCodePosition:
+
     def __init__(self, val):
         self.val = val
+
 
 def test_get_and_add():
     sourcemap = SourceMap()

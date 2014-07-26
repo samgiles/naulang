@@ -21,6 +21,7 @@ from rply.lexer import Lexer
 
 
 class Rule(object):
+
     def __init__(self, name, pattern):
         self.name = name
         self.re = re.compile(pattern)
@@ -42,6 +43,7 @@ class Match(object):
 
 
 class LexerGenerator(object):
+
     def __init__(self):
         self.rules = []
         self.ignore_rules = []
@@ -63,6 +65,7 @@ if rpython:
             return SomeRule()
 
     class SomeRule(model.SomeObject):
+
         def rtyper_makekey(self):
             return (type(self),)
 
@@ -102,10 +105,12 @@ if rpython:
             return super(SomeRule, self).getattr(s_attr)
 
     class __extend__(pairtype(SomeRule, SomeRule)):
+
         def union(self):
             return SomeRule()
 
     class RuleRepr(Repr):
+
         def __init__(self, rtyper):
             super(RuleRepr, self).__init__()
 
@@ -162,6 +167,7 @@ if rpython:
             )
 
     class LLRule(object):
+
         @staticmethod
         def ll_get_name(ll_rule):
             return ll_rule.name

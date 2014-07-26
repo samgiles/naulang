@@ -3,6 +3,7 @@ class ParserGeneratorError(Exception):
 
 
 class LexingError(Exception):
+
     def __init__(self, message, source_pos):
         self.message = message
         self.source_pos = source_pos
@@ -12,6 +13,7 @@ class LexingError(Exception):
 
 
 class ParsingError(Exception):
+
     def __init__(self, message, source_pos):
         self.message = message
         self.source_pos = source_pos

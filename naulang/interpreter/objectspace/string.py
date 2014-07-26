@@ -1,8 +1,10 @@
 from naulang.interpreter.objectspace.primitive_object import PrimitiveObject
 
+
 class String(PrimitiveObject):
 
     _immutable_fields_ = ['string']
+
     def __init__(self, value):
         self.string = value
 

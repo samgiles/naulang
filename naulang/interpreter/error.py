@@ -1,7 +1,9 @@
 import os
 from naulang.interpreter.bytecode import bytecode_names
 
+
 class NauRuntimeError(Exception):
+
     def __init__(self, message, method=None, pc=-1, frame=None):
         self.message = message
         self.method = method
@@ -20,6 +22,7 @@ class NauRuntimeError(Exception):
 
 
 class ErrorDisplay:
+
     def __init__(self, source):
         self.source = source
 
@@ -28,7 +31,7 @@ class ErrorDisplay:
         self._print_error_message(runtimeerror.message, runtimeerror.getsourceposition(), error_type="Runtime Error")
 
     def handle_compilererror(self, compilererror):
-        self._print_error_message(compilererror.message, compilererror.getsourcepos(),  error_type="Compilation Error")
+        self._print_error_message(compilererror.message, compilererror.getsourcepos(), error_type="Compilation Error")
 
     def handle_error(self, message, source_position, etype):
         self._print_error_message(message, source_position, etype)

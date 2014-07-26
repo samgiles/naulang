@@ -7,7 +7,9 @@ from naulang.interpreter.objectspace.primitives.builtin_definitions import built
 
 _builtin_functions = builtin_functions()
 
+
 class SyntaxDirectedTranslator(ast.ASTVisitor):
+
     """ Translate an AST to a function object graph.
 
         This doesn't emit pure bytecode, literals and symbol tables. Instead it
@@ -57,21 +59,29 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
 
     def visit_booleanconstant(self, node):
         boolean = self.context.space.new_boolean(node.get_boolean_value())
-        self.context.emit([Bytecode.LOAD_CONST, self.context.register_literal(boolean)], sourceposition=node.getsourcepos())
+        self.context.emit([Bytecode.LOAD_CONST,
+                           self.context.register_literal(boolean)],
+                          sourceposition=node.getsourcepos())
         return True
 
     def visit_integerconstant(self, node):
         integer = self.context.space.new_integer(node.get_integer_constant())
-        self.context.emit([Bytecode.LOAD_CONST, self.context.register_literal(integer)], sourceposition=node.getsourcepos())
+        self.context.emit([Bytecode.LOAD_CONST,
+                           self.context.register_literal(integer)],
+                          sourceposition=node.getsourcepos())
         return True
 
     def visit_floatconstant(self, node):
         float_val = self.context.space.new_float(node.get_float_constant())
-        self.context.emit([Bytecode.LOAD_CONST, self.context.register_literal(float_val)], sourceposition=node.getsourcepos())
+        self.context.emit([Bytecode.LOAD_CONST,
+                           self.context.register_literal(float_val)],
+                          sourceposition=node.getsourcepos())
 
     def visit_stringconstant(self, node):
         string = self.context.space.new_string(node.get_string_value())
-        self.context.emit([Bytecode.LOAD_CONST, self.context.register_literal(string)], sourceposition=node.getsourcepos())
+        self.context.emit([Bytecode.LOAD_CONST,
+                           self.context.register_literal(string)],
+                          sourceposition=node.getsourcepos())
         return True
 
     def visit_assignment(self, node):
@@ -83,7 +93,9 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         else:
             slot, level = self.context.register_dynamic(node.get_varname())
             if slot is FunctionCompilerContext.REGISTER_DYNAMIC_FAILED:
-                raise CompilerException("'%s' has not been defined in this scope. You should use `let %s = ...` to initialise a variable" % (node.get_varname(), node.get_varname()), node.getsourcepos())
+                raise CompilerException(
+                    "'%s' has not been defined in this scope. You should use `let %s = ...` to initialise a variable" %
+                    (node.get_varname(), node.get_varname()), node.getsourcepos())
 
             node.expression.accept(self)
             self.context.emit([Bytecode.STORE_DYNAMIC, slot, level], sourceposition=node.getsourcepos())
@@ -107,7 +119,6 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         node.rhs.accept(self)
         self.context.emit([Bytecode.EQUAL], sourceposition=node.getsourcepos())
         return False
-
 
     def visit_notequals(self, node):
         node.lhs.accept(self)
@@ -169,7 +180,6 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         self.context.emit([Bytecode.MOD], sourceposition=node.getsourcepos())
         return False
 
-
     def visit_unarynot(self, node):
         node.expression.accept(self)
         self.context.emit([Bytecode.NOT], sourceposition=node.getsourcepos())
@@ -194,8 +204,8 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
 
         # Set up the labels for this while block and push them onto the loop control stack
         label_start = self.context.add_label(
-                initial_value=self.context.get_top_position() + 1
-            )
+            initial_value=self.context.get_top_position() + 1
+        )
 
         label_end = self.context.add_label()
 
@@ -235,7 +245,10 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         raise NotImplementedError()
 
     def visit_functionexpression(self, node):
-        new_context = FunctionCompilerContext(self.context.space, outer=self.context, optimise=self.context.should_optimise)
+        new_context = FunctionCompilerContext(
+            self.context.space,
+            outer=self.context,
+            optimise=self.context.should_optimise)
         self.context.add_inner_context(new_context)
 
         parameters = node.get_parameterlist().get_parameter_list()
@@ -250,7 +263,9 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
             node.block.accept(new_visitor)
         new_context.emit([Bytecode.HALT])
         method = new_context.generate_method()
-        self.context.emit([Bytecode.LOAD_CONST, self.context.register_literal(method)], sourceposition=node.getsourcepos())
+        self.context.emit([Bytecode.LOAD_CONST,
+                           self.context.register_literal(method)],
+                          sourceposition=node.getsourcepos())
         return False
 
     def visit_asyncfunctioncall(self, node):
@@ -295,7 +310,9 @@ class SyntaxDirectedTranslator(ast.ASTVisitor):
         else:
             slot, level = self.context.register_dynamic(node.identifier)
             if slot == FunctionCompilerContext.REGISTER_DYNAMIC_FAILED:
-                raise CompilerException("'%s' has not been defined in any scope. You should use `let %s = ...` to initialise a variable" % (node.identifier, node.identifier), node.getsourcepos())
+                raise CompilerException(
+                    "'%s' has not been defined in any scope. You should use `let %s = ...` to initialise a variable" %
+                    (node.identifier, node.identifier), node.getsourcepos())
             self.context.emit([Bytecode.LOAD_DYNAMIC, slot, level], sourceposition=node.getsourcepos())
 
         return True

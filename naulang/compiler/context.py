@@ -2,7 +2,9 @@ from naulang.interpreter.objectspace.method import Method
 from naulang.interpreter.bytecode import Bytecode, get_stack_effect, stack_effect_depends_on_args, get_bytecode_length
 from naulang.compiler.sourcemap import SourceMap
 
+
 class FunctionCompilerContext(object):
+
     """ Context used for compiling a function """
     REGISTER_DYNAMIC_FAILED = -1
 
@@ -161,14 +163,12 @@ class FunctionCompilerContext(object):
 
         return max_depth
 
-
     def get_bytecode(self):
         """
             Get the bytecode representation of this function context with any
             optimisations or labels applied.
         """
         return self._add_labels(self.bytecode)
-
 
     def set_outer(self, outer_context):
         """
@@ -241,7 +241,6 @@ class FunctionCompilerContext(object):
         if sourceposition is not None:
             self.sourcemap.add(len(self.bytecode), sourceposition)
 
-
         if self.should_optimise:
             try:
                 # TODO put this stuff in a module
@@ -264,9 +263,6 @@ class FunctionCompilerContext(object):
 
         self.last_bytecode_seq = bytecode_sequence
 
-
-
-
     def _add_labels(self, bytecode):
         """
             Update the bytecode with added labels
@@ -278,7 +274,8 @@ class FunctionCompilerContext(object):
         while i < len(self.bytecode):
             bytecodes[i] = self.bytecode[i]
 
-            if  bytecode[i] == Bytecode.LOAD_CONST or bytecode[i] == Bytecode.STORE or bytecode[i] == Bytecode.LOAD  or bytecode[i] == Bytecode.INVOKE_GLOBAL:
+            if bytecode[i] == Bytecode.LOAD_CONST or bytecode[i] == Bytecode.STORE or bytecode[
+                    i] == Bytecode.LOAD or bytecode[i] == Bytecode.INVOKE_GLOBAL:
                 i += 1
                 bytecodes[i] = bytecode[i]
                 i += 1

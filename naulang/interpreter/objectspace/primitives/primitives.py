@@ -2,6 +2,7 @@ from naulang.interpreter.objectspace.primitives.builtin_definitions import built
 
 from naulang.interpreter.objectspace.builtin import BuiltIn
 
+
 def initialise_primitives(space):
 
     bifs = builtin_functions()
@@ -9,5 +10,3 @@ def initialise_primitives(space):
 
     for name, value in bifs.iteritems():
         space.add_builtin_function(value[1], BuiltIn(name, value[0]))
-
-
