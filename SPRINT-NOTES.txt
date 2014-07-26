@@ -1,6 +1,0 @@
-Start a thread like this:
-
-    rthread.start_new_thread(func, ())
-
-where func is a global.
-Func should call rthread.gc_thread_start() and rthread.gc_thread_die()
