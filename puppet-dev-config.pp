@@ -17,6 +17,7 @@ class pypydev {
     "python-greenlet",
     "pypy",
     "python-pip",
+    "libffi-devel",
   ]:
     ensure => present
   }
